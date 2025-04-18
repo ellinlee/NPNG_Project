@@ -1,0 +1,44 @@
+<mvc:View controllerName="sync.dc.sd.project01.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page"
+        title="{i18n>title}">
+        <Panel id="app_panel1">
+            <FlexBox id='app_FBox1'
+                class='outerBox'
+                direction="Column"
+                alignItems="Center">
+                <Text id='app_Title'
+                    text="{i18n>companyName}"
+                    class='bigText'>
+                </Text>
+                <Text id="app_Slogan1"
+                    text="{i18n>slogan1}"
+                    class="medium1Text"></Text>
+                <Text id="app_Slogan2"
+                    text="{i18n>slogan2}"
+                    class="medium2Text"></Text>
+                <layoutData>
+                    <FlexItemData id="app_Spacer"
+                        growFactor="0"
+                        styleClass="titleSpacer" />
+                </layoutData>
+                <FlexBox id='app_CustomerLine'
+                    direction="Row"
+                    alignItems="Center"
+                    justifyContent="Center"
+                    class="inlineGroup">
+                    <Label id="app_Label"
+                        text="{i18n>custName}"
+                        class="inputLabel" />
+                    <Input id="app_input1"
+                        placeholder="{i18n>placeholderCustomer}"
+                        class="inputField" />
+                    <Button id="app_Button"
+                        icon="sap-icon://initiative"
+                        press=".onPress"></Button>
+                </FlexBox>
+            </FlexBox>
+        </Panel>
+    </Page>
+</mvc:View>

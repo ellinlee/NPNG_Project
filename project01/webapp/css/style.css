@@ -1,0 +1,48 @@
+/* Enter your custom styles here */
+.outerBox {
+  height: 83vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../images/문의서_배경.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.bigText {
+  font-size: 36px;
+  font-weight: 600;
+  color: #fffdfd;
+  font-family: "Nanum Gothic";
+  margin-bottom: 1rem;
+}
+
+.medium1Text {
+  font-size: 25px;
+  font-weight: 300;
+  color: rgb(126, 177, 227);
+  font-style: "Nanum Gothic";
+}
+
+.medium2Text {
+  font-size: 20px;
+  font-weight: 200;
+  color: rgb(154, 191, 227);
+  font-style: "Nanum Gothic";
+}
+
+.inlineGroup {
+  gap: 10px; /* 라벨과 인풋 사이 간격 */
+  margin-top: 2rem;
+}
+
+.inputLabel {
+  font-size: 1rem;
+  color: #eee;
+}
+
+.inputField {
+  width: 200px;
+}
