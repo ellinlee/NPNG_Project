@@ -20,22 +20,22 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/odata/v2/ODataModel"]
     onPress(){
       var that = this;
 
-      var customerId = this.getView().byId("app_input1").getValue();
+      var customerName = this.getView().byId("app_input1").getValue().trim()
       var oModel1 = this.getView().getModel();
 
       oModel1.read("/ZDCC_InquiryForm", {
     filters: [
-      new sap.ui.model.Filter("cust_id", sap.ui.model.FilterOperator.EQ, customerId)
+      new sap.ui.model.Filter("cust_name", sap.ui.model.FilterOperator.EQ, customerName)
     ],
     success: function (oData) {
       if (oData.results.length > 0) {
-        // 고객 존재 시 라우팅
+        // 고객 존재 시 라우팅`
         var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
         oRouter.navTo("RouteSelect", {
-          customerId: encodeURIComponent(customerId)
+          customerName: encodeURIComponent(customerName)
         });
       } else {
-        // 존재하지 않음
+        // 존재하지 않을 떄 에러
         var oBundle = that.getView().getModel("i18n").getResourceBundle();
         var sErrorMessage = oBundle.getText("error");
         sap.m.MessageToast.show(sErrorMessage);
