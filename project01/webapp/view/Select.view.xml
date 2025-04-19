@@ -1,0 +1,23 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    controllerName="sync.dc.sd.project01.controller.Select">
+    <Page id="select_Page" title="Select View">
+        <Panel id="select_Panel">
+            <VBox id="select_VBox">
+                <Text id="customerId_Text" text="Customer ID" />
+                <Text id="customerName_Text" text="Customer Name" />
+
+                <Label id="paint_Label" text="Select Paint" />
+                <Select id="paint_Select">
+                    <items>
+                        <core:Item id="paint1_Item" key="paint1" text="Paint 1" />
+                        <core:Item id="paint2_Item" key="paint2" text="Paint 2" />
+                        <core:Item id="paint3_Item" key="paint3" text="Paint 3" />
+                    </items>
+                </Select>
+            </VBox>
+        </Panel>
+    </Page>
+</mvc:View>

@@ -104,12 +104,23 @@
                     "target": [
                         "TargetMain"
                     ]
+                },
+                {
+                    "name": "RouteSelect",
+                    "pattern": "select",
+                    "target": [
+                        "TargetSelect"
+                    ]
                 }
             ],
             "targets": {
                 "TargetMain": {
                     "id": "Main",
                     "name": "Main"
+                },
+                "TargetSelect":{
+                    "id": "Select",
+                    "name": "Select"
                 }
             }
         },
