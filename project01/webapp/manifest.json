@@ -107,7 +107,7 @@
                 },
                 {
                     "name": "RouteSelect",
-                    "pattern": "select",
+                    "pattern": "select/{customerName}",
                     "target": [
                         "TargetSelect"
                     ]

@@ -46,3 +46,330 @@
 .inputField {
   width: 200px;
 }
+
+.selectLabel {
+  margin-right: 0.5rem;
+  color: #68b4f1;  
+}
+
+.selectText {
+  margin-right: 32px;
+  color: #eee;
+  margin-left:0.5rem;
+}
+
+.selectGroup {
+  margin-bottom: 0.3rem;
+}
+
+
+.selectBox {
+  height: 35vh;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  background-image: url("../images/문의서_배경.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.select{
+  margin-right: 32px;
+  margin-left:0.5rem;
+}
+
+.colorImage {
+  margin: 6px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.colorImage:hover {
+  border: 2px solid #666;
+}
+
+.disabledImage {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* 불필요한 colorBox 관련 스타일 제거 */
+.disabledColor {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.noText {
+  font-size: 0;
+  padding: 0;
+}
+
+.round {
+  border-radius: 50%;
+}
+
+/* 색상 그리드 스타일 */
+.colorGrid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.1px;
+    background-color: #dbebf4;
+}
+
+/* 색상 버튼 플렉스 박스 스타일 */
+.colorFlexBox {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0.01%;
+    gap: 0 !important;
+}
+
+/* 색상 버튼 래핑 div 스타일 */
+.colorFlexBox > div {
+    width: 12%;
+    margin: 0.0001%;
+    display: flex;
+    justify-content: center;
+}
+
+/* 색상 버튼 공통 스타일 */
+.colorButton {
+    height: 60px;
+    width: 100%;
+    border-radius: 0px;
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.colorButton:hover {
+    transform: scale(1.01);
+    box-shadow: 0px 0.1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.colorButton:active {
+    transform: scale(0.98);
+}
+
+.noText {
+    color: rgba(0, 0, 0, 0);
+}
+
+/* 색상 배경 클래스 */
+/* 그레이스케일 */
+.bg-FFFFFF { background-color: #FFFFFF; }
+.bg-F5F5F5 { background-color: #F5F5F5; }
+.bg-E0E0E0 { background-color: #E0E0E0; }
+.bg-BDBDBD { background-color: #BDBDBD; }
+.bg-9E9E9E { background-color: #9E9E9E; }
+.bg-616161 { background-color: #616161; }
+.bg-424242 { background-color: #424242; }
+.bg-212121 { background-color: #212121; }
+
+/* 레드 계열 */
+.bg-FFEBEE { background-color: #FFEEEE; }
+.bg-FFCDD2 { background-color: #FFD8D8; }
+.bg-EF9A9A { background-color: #F5A3A3; }
+.bg-E57373 { background-color: #E57373; }
+.bg-EF5350 { background-color: #D35F5F; }
+.bg-F44336 { background-color: #BF4040; }
+.bg-E53935 { background-color: #A93636; }
+.bg-C62828 { background-color: #8B2E2E; }
+
+/* 핑크/퍼플 계열 */
+.bg-FCE4EC { background-color: #FCE6F0; }
+.bg-F8BBD0 { background-color: #F8C4D8; }
+.bg-EC407A { background-color: #D670A9; }
+.bg-E91E63 { background-color: #C4447E; }
+.bg-D81B60 { background-color: #B33E73; }
+.bg-C2185B { background-color: #A23768; }
+.bg-AD1457 { background-color: #8C2957; }
+.bg-880E4F { background-color: #731E47; }
+
+/* 블루/그레이 계열 */
+.bg-F3E5F5 { background-color: #EDF0F5; }
+.bg-E1BEE7 { background-color: #D1DFEC; }
+.bg-AB47BC { background-color: #95AAC1; }
+.bg-9C27B0 { background-color: #7792AD; }
+.bg-8E24AA { background-color: #5D7A99; }
+.bg-7B1FA2 { background-color: #4B6484; }
+.bg-6A1B9A { background-color: #3A4E6A; }
+.bg-4A148C { background-color: #2A3A4F; }
+
+/* 블루/민트 계열 */
+.bg-E3F2FD { background-color: #E5F5F5; }
+.bg-BBDEFB { background-color: #C2E5E4; }
+.bg-42A5F5 { background-color: #7CCAC6; }
+.bg-2196F3 { background-color: #5AADA9; }
+.bg-1E88E5 { background-color: #458F8C; }
+.bg-1976D2 { background-color: #327370; }
+.bg-1565C0 { background-color: #265957; }
+.bg-0D47A1 { background-color: #1A3E3C; }
+
+/* 세이지/그린 계열 */
+.bg-E0F7FA { background-color: #E8F4EE; }
+.bg-B2EBF2 { background-color: #C4E6D6; }
+.bg-26C6DA { background-color: #95CDB1; }
+.bg-00BCD4 { background-color: #76B798; }
+.bg-00ACC1 { background-color: #57A17F; }
+.bg-0097A7 { background-color: #3A8C66; }
+.bg-00838F { background-color: #276F4F; }
+.bg-006064 { background-color: #1A553A; }
+
+/* 브라운/골드 계열 */
+.bg-E8F5E9 { background-color: #FFF6E9; }
+.bg-C8E6C9 { background-color: #FFE9C3; }
+.bg-66BB6A { background-color: #F2D399; }
+.bg-4CAF50 { background-color: #E4BB74; }
+.bg-43A047 { background-color: #D1A556; }
+.bg-388E3C { background-color: #BE903B; }
+.bg-2E7D32 { background-color: #A77A2A; }
+.bg-1B5E20 { background-color: #916720; }
+
+/* 코랄/오렌지 계열 */
+.bg-FFF8E1 { background-color: #FFF0E6; }
+.bg-FFECB3 { background-color: #FFD6B8; }
+.bg-FFD54F { background-color: #FFBA8C; }
+.bg-FFC107 { background-color: #FFA066; }
+.bg-FF9800 { background-color: #FF8643; }
+.bg-F57C00 { background-color: #E86A2A; }
+.bg-E65100 { background-color: #D0531A; }
+.bg-795548 { background-color: #A34513; }
+
+.sapMPageHeader::before {
+    background: none !important;
+}
+
+
+.sapMScrollCont {
+    overflow: visible !important;
+}
+
+.inlineLabel {
+    padding-right: 10px;
+}
+
+.noText {
+    color: rgba(0, 0, 0, 0);
+}
+
+/* 색상 버튼 컨테이너 스타일 */
+.colorButtonContainer {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 12.5% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 색상 버튼 컨테이너 내부 버튼 스타일 */
+.colorButtonContainer .colorButton {
+    min-height: 45px;
+    min-width: 45px;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+/* 색상 텍스트 스타일 */
+.colorText {
+    font-size: 0.6rem;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-top: 1px !important;
+    text-align: center;
+    color: #090909;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 검색 결과 강조 표시 스타일 */
+.searchMatch {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+    z-index: 1;
+}
+
+.searchMatch .colorButton {
+    box-shadow: 0 0 5px 2px rgba(33, 150, 243, 0.5) !important;
+    border: 1px solid #2196F3 !important;
+}
+
+/* 선택된 색상 강조 표시 스타일 */
+.selectedColor {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+    z-index: 2;
+}
+
+.selectedColor .colorButton {
+    box-shadow: 0 0 5px 2px rgba(255, 152, 0, 0.7) !important;
+    border: 2px solid #FF9800 !important;
+}
+
+/* 색상 검색 필드 스타일 */
+.colorSearchField {
+    margin-bottom: 10px;
+}
+
+/* 색상 개수 텍스트 스타일 */
+.colorCountText {
+    color: #68b4f1;
+    font-weight: bold;
+    padding: 0.375rem 0;
+}
+
+/* 고객 요청사항 영역 스타일 */
+.customerRequestArea {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.customerRequestTitle {
+    color: #68b4f1;
+    font-weight: bold;
+}
+
+.sapMTextArea.customerRequestInput .sapMInputBaseInner {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #eee;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.sapMTextArea.customerRequestInput .sapMInputBaseInner:focus {
+    border-color: #68b4f1;
+}
+
+/* 선택된 색상 다이얼로그 스타일 */
+.colorSample {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.colorSample:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 다이얼로그 리스트 항목 스타일 */
+.selectedColorsListItem {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+

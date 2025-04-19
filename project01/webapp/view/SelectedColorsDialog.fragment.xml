@@ -1,0 +1,42 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+    
+    <Dialog
+        title="선택한 색상 목록"
+        contentWidth="500px"
+        class="sapUiContentPadding">
+        
+        <List
+            id="selectedColorsList"
+            mode="Delete"
+            delete="onRemoveSelectedColor"
+            noDataText="선택한 색상이 없습니다"
+            items="{colors>/selectedColors}">
+            
+            <CustomListItem class="selectedColorsListItem">
+                <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
+                    <!-- 색상 샘플 표시 -->
+                    <VBox width="60px" height="60px" class="sapUiTinyMargin colorSample" 
+                          style="background-color: {colors>colorCode}; border: 1px solid #ccc; border-radius: 4px;">
+                    </VBox>
+                    
+                    <!-- 색상 정보 -->
+                    <VBox class="sapUiTinyMarginBegin" width="65%">
+                        <Title text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
+                        <Text text="선택 시간: {path: 'colors>timestamp', formatter: '.formatTimestamp'}" />
+                    </VBox>
+                    
+                </HBox>
+            </CustomListItem>
+            
+        </List>
+        
+        <beginButton>
+            <Button text="확인" press="onCloseSelectedColorsDialog" />
+        </beginButton>
+        
+    </Dialog>
+    
+</core:FragmentDefinition> 
