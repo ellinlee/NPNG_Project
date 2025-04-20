@@ -54,7 +54,7 @@
 
 .selectText {
   margin-right: 32px;
-  color: #eee;
+  color: #000000;
   margin-left:0.5rem;
 }
 
@@ -177,74 +177,74 @@
 .bg-212121 { background-color: #212121; }
 
 /* 레드 계열 */
-.bg-FFEBEE { background-color: #FFEEEE; }
-.bg-FFCDD2 { background-color: #FFD8D8; }
-.bg-EF9A9A { background-color: #F5A3A3; }
+.bg-FFEBEE { background-color: #FFEBEE; }
+.bg-FFCDD2 { background-color: #FFCDD2; }
+.bg-EF9A9A { background-color: #EF9A9A; }
 .bg-E57373 { background-color: #E57373; }
-.bg-EF5350 { background-color: #D35F5F; }
-.bg-F44336 { background-color: #BF4040; }
-.bg-E53935 { background-color: #A93636; }
-.bg-C62828 { background-color: #8B2E2E; }
+.bg-EF5350 { background-color: #EF5350; }
+.bg-F44336 { background-color: #F44336; }
+.bg-E53935 { background-color: #E53935; }
+.bg-C62828 { background-color: #C62828; }
 
 /* 핑크/퍼플 계열 */
-.bg-FCE4EC { background-color: #FCE6F0; }
-.bg-F8BBD0 { background-color: #F8C4D8; }
-.bg-EC407A { background-color: #D670A9; }
-.bg-E91E63 { background-color: #C4447E; }
-.bg-D81B60 { background-color: #B33E73; }
-.bg-C2185B { background-color: #A23768; }
-.bg-AD1457 { background-color: #8C2957; }
-.bg-880E4F { background-color: #731E47; }
+.bg-FCE4EC { background-color: #FCE4EC; }
+.bg-F8BBD0 { background-color: #F8BBD0; }
+.bg-EC407A { background-color: #EC407A; }
+.bg-E91E63 { background-color: #E91E63; }
+.bg-D81B60 { background-color: #D81B60; }
+.bg-C2185B { background-color: #C2185B; }
+.bg-AD1457 { background-color: #AD1457; }
+.bg-880E4F { background-color: #880E4F; }
 
 /* 블루/그레이 계열 */
-.bg-F3E5F5 { background-color: #EDF0F5; }
-.bg-E1BEE7 { background-color: #D1DFEC; }
-.bg-AB47BC { background-color: #95AAC1; }
-.bg-9C27B0 { background-color: #7792AD; }
-.bg-8E24AA { background-color: #5D7A99; }
-.bg-7B1FA2 { background-color: #4B6484; }
-.bg-6A1B9A { background-color: #3A4E6A; }
-.bg-4A148C { background-color: #2A3A4F; }
+.bg-F3E5F5 { background-color: #F3E5F5; }
+.bg-E1BEE7 { background-color: #E1BEE7; }
+.bg-AB47BC { background-color: #AB47BC; }
+.bg-9C27B0 { background-color: #9C27B0; }
+.bg-8E24AA { background-color: #8E24AA; }
+.bg-7B1FA2 { background-color: #7B1FA2; }
+.bg-6A1B9A { background-color: #6A1B9A; }
+.bg-4A148C { background-color: #4A148C; }
 
 /* 블루/민트 계열 */
-.bg-E3F2FD { background-color: #E5F5F5; }
-.bg-BBDEFB { background-color: #C2E5E4; }
-.bg-42A5F5 { background-color: #7CCAC6; }
-.bg-2196F3 { background-color: #5AADA9; }
-.bg-1E88E5 { background-color: #458F8C; }
-.bg-1976D2 { background-color: #327370; }
-.bg-1565C0 { background-color: #265957; }
-.bg-0D47A1 { background-color: #1A3E3C; }
+.bg-E3F2FD { background-color: #E3F2FD; }
+.bg-BBDEFB { background-color: #BBDEFB; }
+.bg-42A5F5 { background-color: #42A5F5; }
+.bg-2196F3 { background-color: #2196F3; }
+.bg-1E88E5 { background-color: #1E88E5; }
+.bg-1976D2 { background-color: #1976D2; }
+.bg-1565C0 { background-color: #1565C0; }
+.bg-0D47A1 { background-color: #0D47A1; }
 
 /* 세이지/그린 계열 */
-.bg-E0F7FA { background-color: #E8F4EE; }
-.bg-B2EBF2 { background-color: #C4E6D6; }
-.bg-26C6DA { background-color: #95CDB1; }
-.bg-00BCD4 { background-color: #76B798; }
-.bg-00ACC1 { background-color: #57A17F; }
-.bg-0097A7 { background-color: #3A8C66; }
-.bg-00838F { background-color: #276F4F; }
-.bg-006064 { background-color: #1A553A; }
+.bg-E0F7FA { background-color: #E0F7FA; }
+.bg-B2EBF2 { background-color: #B2EBF2; }
+.bg-26C6DA { background-color: #26C6DA; }
+.bg-00BCD4 { background-color: #00BCD4; }
+.bg-00ACC1 { background-color: #00ACC1; }
+.bg-0097A7 { background-color: #0097A7; }
+.bg-00838F { background-color: #00838F; }
+.bg-006064 { background-color: #006064; }
 
 /* 브라운/골드 계열 */
-.bg-E8F5E9 { background-color: #FFF6E9; }
-.bg-C8E6C9 { background-color: #FFE9C3; }
-.bg-66BB6A { background-color: #F2D399; }
-.bg-4CAF50 { background-color: #E4BB74; }
-.bg-43A047 { background-color: #D1A556; }
-.bg-388E3C { background-color: #BE903B; }
-.bg-2E7D32 { background-color: #A77A2A; }
-.bg-1B5E20 { background-color: #916720; }
+.bg-E8F5E9 { background-color: #E8F5E9; }
+.bg-C8E6C9 { background-color: #C8E6C9; }
+.bg-66BB6A { background-color: #66BB6A; }
+.bg-4CAF50 { background-color: #4CAF50; }
+.bg-43A047 { background-color: #43A047; }
+.bg-388E3C { background-color: #388E3C; }
+.bg-2E7D32 { background-color: #2E7D32; }
+.bg-1B5E20 { background-color: #1B5E20; }
 
 /* 코랄/오렌지 계열 */
-.bg-FFF8E1 { background-color: #FFF0E6; }
-.bg-FFECB3 { background-color: #FFD6B8; }
-.bg-FFD54F { background-color: #FFBA8C; }
-.bg-FFC107 { background-color: #FFA066; }
-.bg-FF9800 { background-color: #FF8643; }
-.bg-F57C00 { background-color: #E86A2A; }
-.bg-E65100 { background-color: #D0531A; }
-.bg-795548 { background-color: #A34513; }
+.bg-FFF8E1 { background-color: #FFF8E1; }
+.bg-FFECB3 { background-color: #FFECB3; }
+.bg-FFD54F { background-color: #FFD54F; }
+.bg-FFC107 { background-color: #FFC107; }
+.bg-FF9800 { background-color: #FF9800; }
+.bg-F57C00 { background-color: #F57C00; }
+.bg-E65100 { background-color: #E65100; }
+.bg-795548 { background-color: #795548; }
 
 .sapMPageHeader::before {
     background: none !important;
@@ -318,7 +318,29 @@
 }
 
 .selectedColor .colorButton {
-    box-shadow: 0 0 5px 2px rgba(255, 152, 0, 0.7) !important;
+    box-shadow: 0 0 5px 2px rgba(33, 150, 243, 0.7) !important;
+    border: 2px solid #2196F3 !important;
+}
+
+/* 자재가 연결된 색상 + 선택된 색상 스타일 */
+.materialColor.selectedColor {
+    transform: scale(1.15);
+    z-index: 3;
+}
+
+.materialColor.selectedColor .colorButton {
+    box-shadow: 0 0 8px 3px rgba(33, 150, 243, 0.7) !important;
+    border: 2px solid #2196F3 !important;
+}
+
+/* 자재가 없는 색상 + 선택된 색상 스타일 */
+.noMaterialColor.selectedColor {
+    transform: scale(1.15);
+    z-index: 3;
+}
+
+.noMaterialColor.selectedColor .colorButton {
+    box-shadow: 0 0 8px 3px rgba(255, 152, 0, 0.7) !important;
     border: 2px solid #FF9800 !important;
 }
 
@@ -360,6 +382,15 @@
 .colorSample {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    display: block !important;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.colorSample[data-background-color] {
+    background-color: attr(data-background-color) !important;
 }
 
 .colorSample:hover {
@@ -372,4 +403,12 @@
     padding: 0.5rem 0;
     border-bottom: 1px solid #e5e5e5;
 }
+
+.selectedColorsListItem .colorSample {
+    background-color: attr(data-color);
+    min-width: 60px !important;
+    min-height: 60px !important;
+    flex: 0 0 60px;
+}
+
 

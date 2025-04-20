@@ -4,6 +4,7 @@
     xmlns:layout="sap.ui.layout">
     
     <Dialog
+        id="selectedColorsDialog"
         title="선택한 색상 목록"
         contentWidth="500px"
         class="sapUiContentPadding">
@@ -15,17 +16,15 @@
             noDataText="선택한 색상이 없습니다"
             items="{colors>/selectedColors}">
             
-            <CustomListItem class="selectedColorsListItem">
-                <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
-                    <!-- 색상 샘플 표시 -->
-                    <VBox width="60px" height="60px" class="sapUiTinyMargin colorSample" 
-                          style="background-color: {colors>colorCode}; border: 1px solid #ccc; border-radius: 4px;">
-                    </VBox>
+            <CustomListItem id="selectedColorsListItem" class="selectedColorsListItem">
+                <HBox id="colorItemHBox" alignItems="Center" justifyContent="SpaceBetween" width="100%">
+                    <!-- 색상 샘플 표시 (HTML 태그로 구현) -->
+                    <core:HTML content="&lt;div style='width: 60px; height: 60px; min-width: 60px; min-height: 60px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
                     
                     <!-- 색상 정보 -->
-                    <VBox class="sapUiTinyMarginBegin" width="65%">
-                        <Title text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
-                        <Text text="선택 시간: {path: 'colors>timestamp', formatter: '.formatTimestamp'}" />
+                    <VBox id="colorInfoVBox" class="sapUiTinyMarginBegin" width="65%">
+                        <Title id="colorCodeTitle" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
+                        <Text id="colorTimestampText" text="선택 시간: {path: 'colors>timestamp', formatter: '.formatTimestamp'}" />
                     </VBox>
                     
                 </HBox>
@@ -34,7 +33,7 @@
         </List>
         
         <beginButton>
-            <Button text="확인" press="onCloseSelectedColorsDialog" />
+            <Button id="closeDialogButton" text="확인" press="onCloseSelectedColorsDialog" />
         </beginButton>
         
     </Dialog>
