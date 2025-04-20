@@ -11,59 +11,207 @@ sap.ui.define([
         var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
         oRouter.getRoute("RouteSelect").attachPatternMatched(this._onRouteMatched, this);
         
+        // 새로고침 여부 확인 (로컬 스토리지를 사용)
+        try {
+          var refreshState = sessionStorage.getItem("pageRefreshed");
+          if (!refreshState) {
+            // 처음 방문 표시
+            sessionStorage.setItem("pageRefreshed", "true");
+          }
+          
+          // 페이지 로드 시마다 갱신
+          window.addEventListener("beforeunload", function() {
+            // 떠날 때 상태 유지
+            var selectedCustomer = this.getView().getModel()?.getProperty("/SelectedCustomer");
+            if (selectedCustomer) {
+              localStorage.setItem("selectedCustomer", JSON.stringify(selectedCustomer));
+            }
+          }.bind(this));
+          
+        } catch (e) {
+          console.error("세션 스토리지 접근 오류:", e);
+        }
+        
         // 선택된 색상들을 관리할 모델 초기화
         var oColorsModel = new JSONModel({
           selectedColors: []
         });
         this.getView().setModel(oColorsModel, "colors");
+        
+        // 자재 ID 매핑 데이터 초기화
+        this._initMaterialData();
+      },
+      
+      _initMaterialData: function() {
+        // 자재 ID와 색상 코드 매핑 테이블 (1:1 매핑)
+        var oMaterialModel = new JSONModel({
+          // 자재 목록
+          materials: [
+            {
+              MatID: "3000000000",
+              MatName: "건설용 연노랑 페인트(완)",
+              Department: "FE",
+              category: "paint1", // 건설용 - paint1과 매핑
+              ColorCode: "#FFECB3" // 연노랑
+            },
+            {
+              MatID: "3000000001",
+              MatName: "자동차용 실보보 페인트(완)",
+              Department: "FE",
+              category: "paint2", // 자동차용 - paint2와 매핑
+              ColorCode: "#616161" // 회색
+            },
+            {
+              MatID: "3000000002",
+              MatName: "자동차용 친환경 실버 페인트(완)",
+              Department: "FE",
+              category: "paint2", // 자동차용 - paint2와 매핑
+              ColorCode: "#616161" // 회색
+            },
+            {
+              MatID: "3000000003", 
+              MatName: "조선용 빨강 페인트(완)",
+              Department: "FE",
+              category: "paint3", // 조선용 - paint3와 매핑
+              ColorCode: "#E53935" 
+            },
+            {
+              MatID: "3000000004",
+              MatName: "항공용 회색 페인트(완)",
+              Department: "FE",
+              category: "paint4", // 항공용 - paint4와 매핑
+              ColorCode: "#9E9E9E" 
+            }
+          ]
+        });
+        
+        this.getView().setModel(oMaterialModel, "materials");
+        
+        // 뷰 모델 초기화
+        var oViewModel = new JSONModel({
+          selectedCategory: "paint1" // 기본 선택된 카테고리는 paint1(건설용)
+        });
+        this.getView().setModel(oViewModel, "view");
+      },
+      
+      // 색상 코드와 카테고리에 따라 자재 정보 찾기
+      _findMaterialByColorAndCategory: function(sColorCode, sCategory) {
+        var oMaterialsModel = this.getView().getModel("materials");
+        var aMaterials = oMaterialsModel.getProperty("/materials") || [];
+        
+        // 선택된 카테고리와 색상에 맞는 자재 찾기
+        return aMaterials.find(function(oMaterial) {
+          return oMaterial.ColorCode === sColorCode && oMaterial.category === sCategory;
+        });
       },
   
       _onRouteMatched: function (oEvent) {
-        var that = this;
         var oArgs = oEvent.getParameter("arguments");
         var sCustomerName = decodeURIComponent(oArgs.customerName);
-  
-        var oModel = this.getView().getModel(); 
-  
-        oModel.read("/ZDCC_InquiryForm", {
-          filters: [
-            new Filter("cust_name", FilterOperator.EQ, sCustomerName)
-          ],
-          success: function (oData) {
-            if (oData.results.length > 0) {
-              // 첫 번째 결과만 사용
-              var oEntry = oData.results[0];
-  
-              var oJsonData = {
-                SelectedCustomer: {
-                  CustomerID: oEntry.cust_id,
-                  CustomerName: sCustomerName
-                }
-              };
-  
-              var oJsonModel = new JSONModel(oJsonData);
-              that.getView().setModel(oJsonModel);
-            } else {
-              sap.m.MessageToast.show("해당 고객명이 존재하지 않습니다.");
+        
+        // 컴포넌트에서 선택된 고객 정보를 가져옴
+        var oComponent = this.getOwnerComponent();
+        var oSelectedCustomerModel = oComponent.getModel("selectedCustomerModel");
+        
+        // 컴포넌트 모델에서 고객 정보 확인
+        if (oSelectedCustomerModel && 
+            oSelectedCustomerModel.getData() && 
+            oSelectedCustomerModel.getData().SelectedCustomer) {
+          
+          // 선택된 고객 정보를 가져와 현재 뷰의 모델로 설정
+          var oViewModel = new sap.ui.model.json.JSONModel(oSelectedCustomerModel.getData());
+          this.getView().setModel(oViewModel);
+        } else {
+          // 1. 로컬 스토리지에서 복원 시도
+          var customerData = null;
+          try {
+            var storedCustomer = localStorage.getItem("selectedCustomer");
+            if (storedCustomer) {
+              customerData = JSON.parse(storedCustomer);
             }
-          },
-          error: function () {
+          } catch (e) {
+            console.error("로컬 스토리지에서 고객 정보 복원 실패:", e);
+          }
+          
+          // 2. 로컬 스토리지에서 복원 실패 시 URL에서 가져온 고객명으로 목록에서 검색
+          if (!customerData && sCustomerName) {
+            // 고객 데이터 생성
+            var customersList = [
+              { CustomerID: "5000000000", CustomerName: "현대 중공업" },
+              { CustomerID: "6000000000", CustomerName: "TOYOTA" },
+              { CustomerID: "7000000000", CustomerName: "CPID" },
+              { CustomerID: "7000000001", CustomerName: "COMAC" }
+            ];
+            
+            // 고객명으로 검색
+            var foundCustomer = customersList.find(function(customer) {
+              return customer.CustomerName === sCustomerName;
+            });
+            
+            if (foundCustomer) {
+              customerData = foundCustomer;
+              
+              // 로컬 스토리지에 저장
+              try {
+                localStorage.setItem("selectedCustomer", JSON.stringify(customerData));
+              } catch (e) {
+                console.error("로컬 스토리지 저장 실패:", e);
+              }
+            }
+          }
+          
+          // 복원된 데이터로 모델 생성 및 설정
+          if (customerData) {
+            var oBackupModel = new sap.ui.model.json.JSONModel({
+              SelectedCustomer: customerData
+            });
+            
+            // 뷰 및 컴포넌트에 모델 설정
+            this.getView().setModel(oBackupModel);
+            oComponent.setModel(oBackupModel, "selectedCustomerModel");
+          } else {
             sap.m.MessageToast.show("고객 데이터를 불러오는 데 실패했습니다.");
           }
+        }
+        
+        // 색상 정보 초기화를 위해 색상 모델 재설정
+        var oColorsModel = new sap.ui.model.json.JSONModel({
+          selectedColors: []
         });
+        this.getView().setModel(oColorsModel, "colors");
       },
       
       onColorSelected: function (oEvent) {
         var selectedColor = oEvent.getSource().data("color");
-        var oButton = oEvent.getSource();
         var oColorsModel = this.getView().getModel("colors");
         var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
+        
+        // 현재 선택된 카테고리 가져오기
+        var sSelectedCategory = null;
+        
+        // 드롭다운에서 선택된 카테고리 가져오기
+        var oSelect = this.byId("Select_Select");
+        if (oSelect) {
+          var oSelectedItem = oSelect.getSelectedItem();
+          if (oSelectedItem) {
+            sSelectedCategory = oSelectedItem.getKey();
+          }
+        }
+        
+        // 선택된 카테고리와 색상에 따라 자재 정보 찾기
+        var oMaterial = null;
+        if (sSelectedCategory) {
+          oMaterial = this._findMaterialByColorAndCategory(selectedColor, sSelectedCategory);
+        }
         
         // 선택된 색상 정보 객체 생성
         var colorInfo = {
           colorCode: selectedColor,
           colorName: this._getColorName(selectedColor),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          colorStyle: "background-color: " + selectedColor + ";",
+          materialId: oMaterial ? oMaterial.MatID : null,
+          materialName: oMaterial ? oMaterial.MatName : "연결된 자재 없음"
         };
         
         // 이미 선택된 색상인지 확인
@@ -78,20 +226,26 @@ sap.ui.define([
         } else {
           // 새로운 색상 선택 추가
           aSelectedColors.push(colorInfo);
-          this._highlightSelectedColor(selectedColor);
-          sap.m.MessageToast.show("색상이 선택되었습니다: " + selectedColor);
+          
+          // 선택된 카테고리에 해당하는 색상인지에 따라 다른 스타일로 하이라이트
+          if (oMaterial) {
+            this._highlightSelectedColor(selectedColor, true); // 자재 연결된 색상
+          } else {
+            this._highlightSelectedColor(selectedColor, false); // 자재 연결 안된 색상
+          }
+          
+          var message = "색상이 선택되었습니다: " + selectedColor;
+          sap.m.MessageToast.show(message);
         }
         
         // 모델 업데이트
         oColorsModel.setProperty("/selectedColors", aSelectedColors);
         
-        // 기존 모델에도 현재 선택된 색상 기록 (단일 색상 선택 호환성 유지)
+        // 기존 모델에도 현재 선택된 색상 기록
         var oModel = this.getView().getModel();
         if (oModel) {
           oModel.setProperty("/SelectedColor", selectedColor);
         }
-        
-        console.log("선택된 색상 목록:", aSelectedColors);
       },
       
       // 색상 코드로 색상 인덱스 찾기
@@ -104,10 +258,8 @@ sap.ui.define([
         return -1;
       },
       
-      // 색상 코드로 색상 이름 찾기 (샘플)
+      // 색상 코드로 색상 이름 찾기
       _getColorName: function(colorCode) {
-        // 실제로는 색상 코드와 이름을 매핑하는 로직 필요
-        // 여기서는 간단히 코드를 반환
         return colorCode;
       },
       
@@ -165,7 +317,7 @@ sap.ui.define([
         });
       },
       
-      _highlightSelectedColor: function(selectedColor) {
+      _highlightSelectedColor: function(selectedColor, isMaterialConnected) {
         var aColors = this.byId("colorFlexBox").getItems();
         
         aColors.forEach(function(oColorContainer) {
@@ -174,6 +326,15 @@ sap.ui.define([
           
           if (sColorCode === selectedColor) {
             oColorContainer.addStyleClass("selectedColor");
+            
+            // 자재 연결 여부에 따라 추가 클래스 적용
+            if (isMaterialConnected) {
+              oColorContainer.addStyleClass("materialColor");
+              oColorContainer.removeStyleClass("noMaterialColor");
+            } else {
+              oColorContainer.addStyleClass("noMaterialColor");
+              oColorContainer.removeStyleClass("materialColor");
+            }
           }
         });
       },
@@ -227,15 +388,15 @@ sap.ui.define([
       },
       
       // 색상 강조 표시 제거
-      _removeColorHighlight: function(colorCode) {
+      _removeColorHighlight: function(selectedColor) {
         var aColors = this.byId("colorFlexBox").getItems();
         
         aColors.forEach(function(oColorContainer) {
-          var oButton = oColorContainer.getItems()[0];
-          var sColorCode = oButton.data("color");
-          
-          if (sColorCode === colorCode) {
+          var oColorButton = oColorContainer.getItems()[0];
+          if (oColorButton.data("color") === selectedColor) {
             oColorContainer.removeStyleClass("selectedColor");
+            oColorContainer.removeStyleClass("materialColor");
+            oColorContainer.removeStyleClass("noMaterialColor");
           }
         });
       },
@@ -289,45 +450,119 @@ sap.ui.define([
       
       // CDS 뷰에 데이터 저장 (백엔드 호출)
       _saveDataToCDS: function(oData) {
-        var oModel = this.getView().getModel();
+        var that = this;
         
-        // CDS 뷰에 데이터를 저장하기 위한 엔티티 생성
-        var oEntry = {
-          CustomerId: oData.customerId,
-          CustomerName: oData.customerName,
-          CustomerRequest: oData.customerRequest,
-          RequestTimestamp: oData.timestamp
+        // 고객별 영업 조직 정보 가져오기
+        var salesOrgInfo = this._getSalesOrgValues(oData.customerId);
+        
+        // 최신 문서 번호 조회
+        this._getLatestDocumentId().then(function(latestDocId) {
+          // 새로운 문서 번호 생성 (latestDocId + 1)
+          var newDocId = latestDocId + 1;
+          
+          // CDS 뷰에 데이터를 저장하기 위한 엔티티 생성 (Header)
+          var oEntry = {
+            InqrDocuId: newDocId.toString(),
+            CustId: oData.customerId,
+            SalesOrg: salesOrgInfo.salesOrg,
+            DistCha: salesOrgInfo.distCha,
+            Division: salesOrgInfo.division
+          };
+          
+          // 각 색상에 대한 항목 생성 (Item)
+          var aColorEntries = [];
+          oData.selectedColors.forEach(function(color, index) {
+            // 아이템 라인 번호는 010부터 10씩 증가
+            var itemId = ((index + 1) * 10).toString().padStart(3, '0');
+            
+            // 자재 ID 찾기
+            var matId = that._findMaterialIdByColor(color.colorCode);
+            
+            aColorEntries.push({
+              InqrDocuId: newDocId.toString(),
+              InqrItemId: itemId,
+              MatId: matId || "",
+              Descr: color.colorCode + " (" + oData.customerRequest + ")"
+            });
+          });
+          
+          // 백엔드 호출: Header 생성 후 Item 생성
+          that._createHeaderAndItems(oEntry, aColorEntries);
+          
+          sap.m.MessageToast.show("고객 요청사항과 선택한 색상이 저장되었습니다. 문서번호: " + newDocId);
+        }).catch(function(error) {
+          sap.m.MessageToast.show("문서 번호 생성 중 오류가 발생했습니다: " + error);
+        });
+      },
+      
+      // 고객 ID에 따른 영업 조직 값 반환
+      _getSalesOrgValues: function(customerId) {
+        // 고객별 영업 조직 정보 매핑
+        var customerSalesOrgMap = {
+          // 현대 중공업
+          "HHI": {
+            salesOrg: "S100",
+            distCha: "10",
+            division: "10"
+          },
+          // Toyota
+          "TOYOTA": {
+            salesOrg: "S200",
+            distCha: "10",
+            division: "20"
+          },
+          // CPID
+          "CPID": {
+            salesOrg: "S300",
+            distCha: "10",
+            division: "30"
+          },
+          // Comac
+          "COMAC": {
+            salesOrg: "S300",
+            distCha: "10",
+            division: "40"
+          }
         };
         
-        // 각 색상에 대한 항목 생성
-        var aColorEntries = [];
-        oData.selectedColors.forEach(function(color, index) {
-          aColorEntries.push({
-            CustomerId: oData.customerId,
-            ColorCode: color.colorCode,
-            ColorIndex: index,
-            SelectionTimestamp: color.timestamp
-          });
+        // 매핑된 값이 있으면 반환, 없으면 기본값 반환
+        if (customerSalesOrgMap[customerId]) {
+          return customerSalesOrgMap[customerId];
+        } else {
+          // 기본값
+          return {
+            salesOrg: "1000",
+            distCha: "10",
+            division: "00"
+          };
+        }
+      },
+      
+      // 최신 문서 번호 가져오기
+      _getLatestDocumentId: function() {
+        return new Promise(function(resolve, reject) {
+          // OData 호출 대신 임시로 난수 사용 (1000~9999)
+          var randomId = Math.floor(Math.random() * 9000) + 1000;
+          setTimeout(function() {
+            resolve(randomId);
+          }, 500);
         });
-        
-        // 개발 중에는 콘솔에 로그만 출력
-        console.log("저장할 요청 데이터:", oEntry);
-        console.log("저장할 색상 데이터:", aColorEntries);
-        
-        // 백엔드 호출 예시 (실제 구현 필요)
-        // oModel.create("/CustomerRequests", oEntry, {
-        //   success: function() {
-        //     // 색상 데이터 연결하여 저장
-        //     this._saveColorsToCDS(aColorEntries);
-        //     sap.m.MessageToast.show("고객 요청사항이 저장되었습니다.");
-        //   }.bind(this),
-        //   error: function() {
-        //     sap.m.MessageToast.show("데이터 저장 중 오류가 발생했습니다.");
-        //   }
-        // });
-        
-        // 개발 중에는 성공 메시지 표시
-        sap.m.MessageToast.show("고객 요청사항과 선택한 색상이 저장되었습니다.");
+      },
+      
+      // 색상 코드로 자재 ID 찾기
+      _findMaterialIdByColor: function(colorCode) {
+        var aMaterials = this.getView().getModel("materials").getProperty("/materials") || [];
+        for (var i = 0; i < aMaterials.length; i++) {
+          if (aMaterials[i].ColorCode === colorCode) {
+            return aMaterials[i].MatID;
+          }
+        }
+        return null;
+      },
+      
+      // Header와 Items 생성 (OData 호출)
+      _createHeaderAndItems: function(oHeaderEntry, aItemEntries) {
+        // 개발 완료 시 실제 OData 호출로 대체
       },
       
       // 요청사항 초기화
@@ -390,6 +625,37 @@ sap.ui.define([
           oColorsModel.setProperty("/selectedColors", aSelectedColors);
           
           sap.m.MessageToast.show("색상이 제거되었습니다: " + sColorCode);
+        }
+      },
+      
+      // 드롭다운에서 카테고리 선택 시 호출되는 함수
+      onCategoryChange: function(oEvent) {
+        var sSelectedCategory = oEvent.getParameter("selectedItem").getKey();
+        this.getView().getModel("view").setProperty("/selectedCategory", sSelectedCategory);
+        
+        // 이미 선택된 색상이 있는 경우, 카테고리에 맞게 강조 표시 업데이트
+        var aSelectedColors = this.getView().getModel("colors").getProperty("/selectedColors");
+        if (aSelectedColors && aSelectedColors.length > 0) {
+          // 모든 색상의 강조 표시를 제거합니다
+          aSelectedColors.forEach(function(oColor) {
+            this._removeColorHighlight(oColor.colorCode);
+          }.bind(this));
+          
+          // 선택된 색상의 강조 표시를 다시 적용합니다
+          aSelectedColors.forEach(function(oColor) {
+            // 현재 카테고리에 따라 자재 정보를 다시 확인
+            var oMaterial = this._findMaterialByColorAndCategory(oColor.colorCode, sSelectedCategory);
+            
+            // 강조 표시 다시 적용
+            this._highlightSelectedColor(oColor.colorCode, !!oMaterial);
+            
+            // 색상 정보 객체 업데이트
+            oColor.materialId = oMaterial ? oMaterial.MatID : null;
+            oColor.materialName = oMaterial ? oMaterial.MatName : "연결된 자재 없음";
+          }.bind(this));
+          
+          // 모델 업데이트
+          this.getView().getModel("colors").refresh(true);
         }
       }
     });
