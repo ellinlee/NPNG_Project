@@ -6,7 +6,7 @@
     <Dialog
         id="dialog_Dialog_saveConfirm"
         title="문의서 저장 확인"
-        contentWidth="500px"
+        contentWidth="600px"
         class="sapUiContentPadding">
         
         <VBox id="dialog_VBox_content" class="sapUiSmallMargin">
@@ -26,13 +26,13 @@
                 </VBox>
             </Panel>
             
-            <!-- 요청사항 -->
-            <Panel id="dialog_Panel_request" headerText="문의 내용" class="sapUiSmallMarginBottom">
+            <!-- 공통 문의사항 -->
+            <Panel id="dialog_Panel_request" headerText="공통 문의 내용" class="sapUiSmallMarginBottom">
                 <Text id="dialog_Text_request" text="{/CustomerRequest}" />
             </Panel>
             
             <!-- 선택된 색상 목록 -->
-            <Panel id="dialog_Panel_colors" headerText="선택된 색상 ({colors>/selectedColors/length}개)" class="sapUiSmallMarginBottom">
+            <Panel id="dialog_Panel_colors" headerText="선택된 색상 및 개별 문의사항 ({colors>/selectedColors/length}개)" class="sapUiSmallMarginBottom">
                 <List
                     id="dialog_List_colors"
                     items="{colors>/selectedColors}"
@@ -40,15 +40,19 @@
                     showSeparators="Inner">
                     
                     <CustomListItem>
-                        <HBox alignItems="Center" justifyContent="SpaceBetween">
-                            <!-- 색상 샘플 -->
+                        <VBox width="100%" class="sapUiTinyMargin">
                             <HBox alignItems="Center">
+                                <!-- 색상 샘플 -->
                                 <core:HTML content="&lt;div style='width: 40px; height: 40px; min-width: 40px; min-height: 40px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
-                                <VBox class="sapUiTinyMarginBegin">
-                                    <Text text="{colors>colorCode}" />
-                                </VBox>
+                                <Text text="{colors>colorCode}" class="sapUiTinyMarginBegin" />
                             </HBox>
-                        </HBox>
+                            
+                            <!-- 색상별 문의사항 표시 -->
+                            <VBox width="100%" class="sapUiTinyMarginTop" visible="{= ${colors>description} ? true : false}">
+                                <Label text="개별 문의사항:" class="sapUiTinyMarginBottom" />
+                                <Text text="{colors>description}" class="sapUiTinyMarginBegin" />
+                            </VBox>
+                        </VBox>
                     </CustomListItem>
                 </List>
             </Panel>

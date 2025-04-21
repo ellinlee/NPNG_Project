@@ -80,6 +80,8 @@ sap.ui.define([
           ]
         });
         
+        console.log("자재 데이터 초기화 완료:", oMaterialModel.getProperty("/materials"));
+        
         this.getView().setModel(oMaterialModel, "materials");
         
         // 뷰 모델 초기화
@@ -87,6 +89,8 @@ sap.ui.define([
           selectedCategory: "paint1" // 기본 선택된 카테고리는 paint1(건설용)
         });
         this.getView().setModel(oViewModel, "view");
+        
+        console.log("기본 선택 카테고리:", oViewModel.getProperty("/selectedCategory"));
       },
       
       // 색상 코드와 카테고리에 따라 자재 정보 찾기
@@ -94,10 +98,16 @@ sap.ui.define([
         var oMaterialsModel = this.getView().getModel("materials");
         var aMaterials = oMaterialsModel.getProperty("/materials") || [];
         
+        console.log("자재 찾기 - 색상:", sColorCode, "카테고리:", sCategory);
+        console.log("사용 가능한 자재 목록:", aMaterials);
+        
         // 선택된 카테고리와 색상에 맞는 자재 찾기
-        return aMaterials.find(function(oMaterial) {
+        var foundMaterial = aMaterials.find(function(oMaterial) {
           return oMaterial.ColorCode === sColorCode && oMaterial.category === sCategory;
         });
+        
+        console.log("찾은 자재:", foundMaterial || "없음");
+        return foundMaterial;
       },
   
       _onRouteMatched: function (oEvent) {
@@ -181,6 +191,8 @@ sap.ui.define([
         var oColorsModel = this.getView().getModel("colors");
         var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
         
+        console.log("색상 선택:", selectedColor);
+        
         // 현재 선택된 카테고리 가져오기
         var sSelectedCategory = null;
         
@@ -193,11 +205,15 @@ sap.ui.define([
           }
         }
         
+        console.log("선택된 카테고리:", sSelectedCategory);
+        
         // 선택된 카테고리와 색상에 따라 자재 정보 찾기
         var oMaterial = null;
         if (sSelectedCategory) {
           oMaterial = this._findMaterialByColorAndCategory(selectedColor, sSelectedCategory);
         }
+        
+        console.log("찾은 자재 정보:", oMaterial);
         
         // 선택된 색상 정보 객체 생성
         var colorInfo = {
@@ -206,8 +222,11 @@ sap.ui.define([
           timestamp: new Date().toISOString(),
           colorStyle: "background-color: " + selectedColor + ";",
           materialId: oMaterial ? oMaterial.MatID : null,
-          materialName: oMaterial ? oMaterial.MatName : "연결된 자재 없음"
+          materialName: oMaterial ? oMaterial.MatName : "연결된 자재 없음",
+          description: "" // 색상별 문의사항 필드 추가
         };
+        
+        console.log("생성된 색상 정보:", colorInfo);
         
         // 이미 선택된 색상인지 확인
         var existingIndex = this._findColorIndex(aSelectedColors, selectedColor);
@@ -498,15 +517,31 @@ sap.ui.define([
         var sCustomerId = oModel.getProperty("/SelectedCustomer/CustomerID");
         var sCustomerName = oModel.getProperty("/SelectedCustomer/CustomerName");
         
+        // 디버깅: 저장 전 색상 정보 확인
+        console.log("저장 전 색상 정보:", aSelectedColors);
+        console.log("색상별 material ID 확인:", aSelectedColors.map(function(color) {
+          return {
+            colorCode: color.colorCode,
+            materialId: color.materialId || "없음",
+            description: color.description || "없음"
+          };
+        }));
+        
         // 다이얼로그 닫기
         this._oSaveConfirmDialog.close();
         
         // UI 초기화 실행
         this._resetAfterSave();
         
+        // 선택된 색상이 없는 경우 처리
+        if (!aSelectedColors || aSelectedColors.length === 0) {
+          sap.m.MessageToast.show("선택된 색상이 없습니다. 색상을 선택한 후 저장해주세요.");
+          return;
+        }
+        
         // materialId가 있는 색상이 하나라도 있는지 확인
-        var aValidItems = aSelectedColors.filter(function(oItem) {
-          return oItem.materialId;
+        var aValidItems = aSelectedColors.filter(function(item) {
+          return item.materialId; // materialId가 있는 항목
         });
         
         // 요청사항과 선택된 색상 정보를 저장할 데이터 객체
@@ -518,16 +553,13 @@ sap.ui.define([
           timestamp: new Date().toISOString()
         };
         
-        // 요청사항을 클래스 변수에 저장 (아이템 저장할 때 사용)
-        this._customerRequest = sCustomerRequest;
-        
         // ZDCT_SD040에서 최신 문서번호 가져오기
         this._getLatestDocumentNumber().then(function(sDocumentNumber) {
           // 다음 문서번호 생성
           var newDocNumber = that._generateNextDocumentNumber(sDocumentNumber);
           
+          // material ID 연결된 색상이 없는 경우, 저장 시늉만 하고 UI는 초기화
           if (aValidItems.length === 0) {
-            // 유효한 아이템이 없는 경우에도 문서번호를 생성하고 성공 메시지 표시
             sap.m.MessageToast.show("문의서 " + newDocNumber + " 저장되었습니다.");
             return;
           }
@@ -535,10 +567,10 @@ sap.ui.define([
           // 저장할 문서 번호 기억
           that._documentNumber = newDocNumber;
           
-          // 사용자에게 저장 시작 알림
-          sap.m.MessageToast.show("문의서 " + newDocNumber + " 저장되었습니다.");
+          // 비지 인디케이터 표시 - 저장 중임을 알림
+          that.getView().setBusy(true);
           
-          // 데이터 저장 처리
+          // 데이터 저장 처리 - 메시지는 모든 아이템이 저장된 후에만 표시
           that._saveDataToBackend(oData, newDocNumber);
           
         }).catch(function(error) {
@@ -673,6 +705,9 @@ sap.ui.define([
         console.log("저장할 데이터:", oData);
         console.log("문서번호:", sDocumentNumber);
         
+        // 저장에 사용할 선택된 색상 정보 저장 (초기화 후에도 사용하기 위함)
+        var aSelectedColors = oData.selectedColors;
+        
         // OData 모델 가져오기
         var oModel = this.getOwnerComponent().getModel();
         
@@ -682,8 +717,10 @@ sap.ui.define([
           return;
         }
         
-        // 뷰를 사용 중 상태로 설정
-        this.getView().setBusy(true);
+        // 뷰가 이미 busy 상태가 아니라면 설정
+        if (!this.getView().getBusy()) {
+          this.getView().setBusy(true);
+        }
         
         // 현재 날짜와 시간
         var oNow = new Date();
@@ -735,7 +772,7 @@ sap.ui.define([
             console.log("헤더 데이터 저장 성공");
             
             // 3. 아이템 데이터 저장 - 성공 메시지는 아이템 저장 후에 표시
-            that._saveItemData(sDocumentNumber);
+            that._saveItemData(sDocumentNumber, aSelectedColors, oData.customerRequest);
           },
           error: function(oError) {
             console.error("헤더 데이터 저장 실패:", oError);
@@ -783,18 +820,27 @@ sap.ui.define([
       /**
        * 문서의 아이템 데이터 저장
        * @param {string} sDocumentNumber - 저장할 문서 번호
+       * @param {Array} aSelectedColors - 저장할 선택된 색상 목록
+       * @param {string} sCustomerRequest - 공통 문의사항
        * @private
        */
-      _saveItemData: function(sDocumentNumber) {
+      _saveItemData: function(sDocumentNumber, aSelectedColors, sCustomerRequest) {
         this._documentNumber = sDocumentNumber;
+        this._customerRequest = sCustomerRequest;
         
-        // 저장할 아이템 목록 가져오기 - colors 모델을 사용
-        var oColorsModel = this.getView().getModel("colors");
-        var aSelectedItems = oColorsModel.getProperty("/selectedColors").filter(function(item) {
+        // 모델에서 데이터를 가져오는 대신 파라미터로 전달받은 색상 목록 사용
+        console.log("저장할 모든 아이템:", aSelectedColors);
+        
+        // material ID가 있는 아이템만 필터링하여 실제 저장
+        var aSelectedItems = aSelectedColors.filter(function(item) {
           return item.materialId; // materialId가 있는 항목만 저장
         });
         
-        console.log("저장할 아이템:", aSelectedItems);
+        console.log("필터링 후 실제 저장할 아이템:", aSelectedItems);
+        console.log("저장 시늉만 하는 아이템:", aSelectedColors.filter(function(item) { 
+          return !item.materialId; 
+        }));
+        
         this._totalItems = aSelectedItems.length;
         this._savedItems = 0;
         
@@ -802,7 +848,7 @@ sap.ui.define([
         if (this._totalItems === 0) {
           // 뷰 busy 상태 해제
           this.getView().setBusy(false);
-          
+          console.log("저장할 아이템이 없습니다.");
           return;
         }
         
@@ -823,7 +869,7 @@ sap.ui.define([
         if (iIndex >= this._currentItems.length) {
           console.log("모든 아이템 저장 완료");
           this.getView().setBusy(false);
-          // 문서번호가 있는 경우에만 성공 메시지 표시
+          // 문서번호가 있는 경우에만 성공 메시지 표시 - 모든 아이템 저장 완료 후에 표시
           if (this._documentNumber) {
             sap.m.MessageToast.show("문의서 " + this._documentNumber + " 저장이 완료되었습니다.");
             // 이미 초기화되었으므로 다시 초기화하지 않음
@@ -835,12 +881,12 @@ sap.ui.define([
         var oModel = this.getOwnerComponent().getModel();
         var oNow = new Date();
         
-        // 아이템 데이터 생성
+        // 아이템 데이터 생성 - ItemID를 1씩 증가하도록 수정
         var oItemData = {
           InqrDocuId: this._documentNumber,
-          InqrItemId: (iIndex + 10).toString().padStart(6, '0'), // 00010, 00020, ...
+          InqrItemId: (iIndex + 1).toString().padStart(6, '0'), // 000001, 000002, ... (1씩 증가)
           MatId: oItem.materialId || "",
-          Descr: this._customerRequest || "", // 고객 요청사항 사용
+          Descr: oItem.description || this._customerRequest || "", // 색상별 문의사항 우선, 없으면 공통 문의사항 사용
           CreatedBy: "", // 현재 SAP 사용자 또는 시스템 ID
           CreatedDate: this._formatSAPDate(oNow), // 현재 날짜 - SAP 형식으로 변환
           CreatedTime: this._formatTime(oNow), // 현재 시간
@@ -994,6 +1040,17 @@ sap.ui.define([
           // 모델 업데이트
           this.getView().getModel("colors").refresh(true);
         }
+      },
+      
+      // 색상별 설명 변경 처리
+      onColorDescriptionChange: function(oEvent) {
+        var sValue = oEvent.getParameter("value");
+        var oSource = oEvent.getSource();
+        var sPath = oSource.getBindingContext("colors").getPath();
+        
+        // 해당 색상 항목의 description 속성 업데이트
+        var oColorsModel = this.getView().getModel("colors");
+        oColorsModel.setProperty(sPath + "/description", sValue);
       }
     });
   });

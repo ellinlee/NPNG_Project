@@ -6,7 +6,7 @@
     <Dialog
         id="dialog_Dialog_selectedColors"
         title="선택한 색상 목록"
-        contentWidth="300px"
+        contentWidth="500px"
         class="sapUiContentPadding">
         
         <List
@@ -17,15 +17,28 @@
             items="{colors>/selectedColors}">
             
             <CustomListItem id="dialog_ListItem_selectedColors" class="selectedColorsListItem">
-                <HBox id="dialog_HBox_colorItem" alignItems="Center" justifyContent="SpaceBetween" width="50%">
-                    <!-- 색상 샘플 표시 (HTML 태그로 구현) -->
-                    <core:HTML id="dialog_HTML_colorSample" content="&lt;div style='width: 60px; height: 60px; min-width: 60px; min-height: 60px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
-                    
-                    <!-- 색상 정보 -->
-                    <VBox id="dialog_VBox_colorInfo" class="sapUiTinyMarginBegin" width="100%">
-                        <Title id="dialog_Title_colorCode" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
-                    </VBox>
-                </HBox>
+                <layout:Grid defaultSpan="XL12 L12 M12 S12" class="sapUiSmallMargin">
+                    <layout:content>
+                        <HBox id="dialog_HBox_colorItem" alignItems="Center" width="100%">
+                            <!-- 색상 샘플 표시 (HTML 태그로 구현) -->
+                            <core:HTML id="dialog_HTML_colorSample" content="&lt;div style='width: 60px; height: 60px; min-width: 60px; min-height: 60px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
+                            
+                            <!-- 색상 정보 -->
+                            <VBox id="dialog_VBox_colorInfo" class="sapUiTinyMarginBegin" width="100%">
+                                <Title id="dialog_Title_colorCode" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
+                            </VBox>
+                        </HBox>
+                        
+                        <!-- 색상별 문의사항 입력 필드 -->
+                        <VBox id="dialog_VBox_colorRequest" width="100%" class="sapUiTinyMarginTop">
+                            <Label id="dialog_Label_colorRequest" text="색상별 문의사항" required="true" />
+                            <TextArea id="dialog_TextArea_colorRequest" width="100%" rows="2" 
+                                     value="{colors>description}" 
+                                     placeholder="이 색상에 대한 문의사항을 입력하세요"
+                                     liveChange="onColorDescriptionChange" />
+                        </VBox>
+                    </layout:content>
+                </layout:Grid>
             </CustomListItem>
             
         </List>
