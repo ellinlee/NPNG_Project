@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZDCSD_GW_001_SRV" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="ZDCT_SD040" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="InqrDocuId"/>
+                </Key>
+                <Property Name="InqrDocuId" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="문의서 번호" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="CustId" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="고객 ID" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="SalesOrg" Type="Edm.String" Nullable="false" MaxLength="4" sap:unicode="false" sap:label="판매조직" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="DistCha" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="유통경로" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Division" Type="Edm.String" Nullable="false" MaxLength="2" sap:unicode="false" sap:label="제품계열" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="CreatedBy" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="생성자" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="CreatedDate" Type="Edm.DateTime" Nullable="false" Precision="7" sap:unicode="false" sap:label="생성일자" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="CreatedTime" Type="Edm.Time" Nullable="false" Precision="0" sap:unicode="false" sap:label="생성시간" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ChangedBy" Type="Edm.String" Nullable="false" MaxLength="12" sap:unicode="false" sap:label="변경자" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ChangedDate" Type="Edm.DateTime" Nullable="false" Precision="7" sap:unicode="false" sap:label="변경일자" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ChangedTime" Type="Edm.Time" Nullable="false" Precision="0" sap:unicode="false" sap:label="변경시간" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <NavigationProperty Name="zdct_sd041set" Relationship="ZDCSD_GW_001_SRV.InHeaderToItems" FromRole="FromRole_InHeaderToItems" ToRole="ToRole_InHeaderToItems"/>
+            </EntityType>
+            <EntityType Name="ZDCT_SD041" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="InqrItemId"/>
+                    <PropertyRef Name="InqrDocuId"/>
+                </Key>
+                <Property Name="InqrItemId" Type="Edm.String" Nullable="false" MaxLength="6" sap:unicode="false" sap:label="아이템 라인 번호" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="InqrDocuId" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="문의서 번호" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Descr" Type="Edm.String" Nullable="false" MaxLength="255" sap:unicode="false" sap:label="설명" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="MatId" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false" sap:label="자재번호" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <Association Name="InHeaderToItems" sap:content-version="1">
+                <End Type="ZDCSD_GW_001_SRV.ZDCT_SD040" Multiplicity="1" Role="FromRole_InHeaderToItems"/>
+                <End Type="ZDCSD_GW_001_SRV.ZDCT_SD041" Multiplicity="*" Role="ToRole_InHeaderToItems"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_InHeaderToItems">
+                        <PropertyRef Name="InqrDocuId"/>
+                    </Principal>
+                    <Dependent Role="ToRole_InHeaderToItems">
+                        <PropertyRef Name="InqrDocuId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="ZDCSD_GW_001_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="ZDCT_SD040Set" EntityType="ZDCSD_GW_001_SRV.ZDCT_SD040" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:addressable="false" sap:content-version="1"/>
+                <EntitySet Name="ZDCT_SD041Set" EntityType="ZDCSD_GW_001_SRV.ZDCT_SD041" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:addressable="false" sap:content-version="1"/>
+                <AssociationSet Name="InHeaderToItemsSet" Association="ZDCSD_GW_001_SRV.InHeaderToItems" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="ZDCT_SD040Set" Role="FromRole_InHeaderToItems"/>
+                    <End EntitySet="ZDCT_SD041Set" Role="ToRole_InHeaderToItems"/>
+                </AssociationSet>
+            </EntityContainer>
+            <Annotation Term="Core.SchemaVersion" String="1.0.0" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <atom:link rel="self" href="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/sap/ZDCSD_GW_001_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/sap/ZDCSD_GW_001_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

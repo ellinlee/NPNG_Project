@@ -1,0 +1,39 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+    
+    <Dialog
+        id="dialog_Dialog_selectedColors"
+        title="선택한 색상 목록"
+        contentWidth="300px"
+        class="sapUiContentPadding">
+        
+        <List
+            id="dialog_List_selectedColors"
+            mode="Delete"
+            delete="onRemoveSelectedColor"
+            noDataText="선택한 색상이 없습니다"
+            items="{colors>/selectedColors}">
+            
+            <CustomListItem id="dialog_ListItem_selectedColors" class="selectedColorsListItem">
+                <HBox id="dialog_HBox_colorItem" alignItems="Center" justifyContent="SpaceBetween" width="50%">
+                    <!-- 색상 샘플 표시 (HTML 태그로 구현) -->
+                    <core:HTML id="dialog_HTML_colorSample" content="&lt;div style='width: 60px; height: 60px; min-width: 60px; min-height: 60px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
+                    
+                    <!-- 색상 정보 -->
+                    <VBox id="dialog_VBox_colorInfo" class="sapUiTinyMarginBegin" width="100%">
+                        <Title id="dialog_Title_colorCode" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
+                    </VBox>
+                </HBox>
+            </CustomListItem>
+            
+        </List>
+        
+        <beginButton>
+            <Button id="dialog_Button_close" text="확인" press="onCloseSelectedColorsDialog" />
+        </beginButton>
+        
+    </Dialog>
+    
+</core:FragmentDefinition> 
