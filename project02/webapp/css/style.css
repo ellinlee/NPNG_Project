@@ -1,0 +1,447 @@
+/* Enter your custom styles here */
+.outerBox {
+    height: 83vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("../images/문의서_배경.jpg");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .bigText {
+    font-size: 36px;
+    font-weight: 600;
+    color: #fffdfd;
+    font-family: "Nanum Gothic";
+    margin-bottom: 1rem;
+  }
+  
+  .medium1Text {
+    font-size: 25px;
+    font-weight: 300;
+    color: rgb(126, 177, 227);
+    font-style: "Nanum Gothic";
+  }
+  
+  .medium2Text {
+    font-size: 20px;
+    font-weight: 200;
+    color: rgb(154, 191, 227);
+    font-style: "Nanum Gothic";
+  }
+  
+  .inlineGroup {
+    gap: 10px; /* 라벨과 인풋 사이 간격 */
+    margin-top: 2rem;
+  }
+  
+  .inputLabel {
+    font-size: 1rem;
+    color: #eee;
+  }
+  
+  .inputField {
+    width: 200px;
+  }
+  
+  .selectLabel {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    color: #68b4f1;  
+  }
+  
+  .selectText {
+    margin-right: 32px;
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-left:0.5rem;
+  }
+  
+  .selectGroup {
+    margin-bottom: 20px;
+  }
+
+  .displayFlex{
+    margin-bottom: 10px;
+  }
+  
+  
+  .selectBox {
+    height: 40vh;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: end;
+    background-image: url("../images/문의서_배경.jpg");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .select{
+    margin-right: 32px;
+    margin-left:0.5rem;
+  }
+  
+  .colorImage {
+    margin: 6px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+  }
+  
+  .colorImage:hover {
+    border: 2px solid #666;
+  }
+  
+  .disabledImage {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  
+  /* 불필요한 colorBox 관련 스타일 제거 */
+  .disabledColor {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  
+  .noText {
+    font-size: 0;
+    padding: 0;
+  }
+  
+  .round {
+    border-radius: 50%;
+  }
+  
+  /* 색상 그리드 스타일 */
+  .colorGrid {
+      padding: 15px !important;
+      margin: 0 !important;
+      width: 100%;
+      background-color: #ffffff;
+      overflow: hidden !important;
+  }
+  
+  /* 색상 버튼 플렉스 박스 스타일 */
+  .colorFlexBox {
+      padding: 5px !important;
+      margin: 0 !important;
+      width: 100%;
+      display: block !important;
+      font-size: 0 !important; /* 인라인 블록 요소 사이 간격 제거 */
+      overflow: hidden !important;
+  }
+  
+  /* 색상 버튼 래핑 div 스타일 */
+  .colorFlexBox > div {
+      margin: 0 !important;
+      padding: 2px !important;
+  }
+  
+  /* 색상 버튼 컨테이너 스타일 */
+  .colorButtonContainer {
+      padding: 0 !important;
+      padding-bottom: 10px !important;
+      width: 12.5% !important; /* 정확히 8개씩 */
+      max-width: 12.5% !important;
+      box-sizing: border-box !important;
+      display: inline-block !important;
+      vertical-align: top !important;
+      height: 90px !important; /* 버튼 + 텍스트 + 여백 */
+  }
+  
+  /* 색상 버튼 공통 스타일 */
+  .colorButton {
+      height: 60px !important;
+      width: 100% !important;
+      margin-top: 5px !important;
+      margin-bottom: 5px !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: 0 !important;
+      transition: all 0.2s ease;
+      padding: 0 !important;
+  }
+  
+  .colorButton:hover {
+      transform: scale(1.01);
+      box-shadow: 0px 0.1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .colorButton:active {
+      transform: scale(0.98);
+  }
+  
+  .noText {
+      color: rgba(0, 0, 0, 0);
+  }
+  
+  /* 색상 배경 클래스 */
+  /* 그레이스케일 */
+  .bg-FFFFFF { background-color: #FFFFFF; }
+  .bg-F5F5F5 { background-color: #F5F5F5; }
+  .bg-E0E0E0 { background-color: #E0E0E0; }
+  .bg-BDBDBD { background-color: #BDBDBD; }
+  .bg-9E9E9E { background-color: #9E9E9E; }
+  .bg-616161 { background-color: #616161; }
+  .bg-424242 { background-color: #424242; }
+  .bg-212121 { background-color: #212121; }
+  
+  /* 레드 계열 */
+  .bg-FFEBEE { background-color: #FFEBEE; }
+  .bg-FFCDD2 { background-color: #FFCDD2; }
+  .bg-EF9A9A { background-color: #EF9A9A; }
+  .bg-E57373 { background-color: #E57373; }
+  .bg-EF5350 { background-color: #EF5350; }
+  .bg-F44336 { background-color: #F44336; }
+  .bg-E53935 { background-color: #E53935; }
+  .bg-C62828 { background-color: #C62828; }
+  
+  /* 핑크/퍼플 계열 */
+  .bg-FCE4EC { background-color: #FCE4EC; }
+  .bg-F8BBD0 { background-color: #F8BBD0; }
+  .bg-EC407A { background-color: #EC407A; }
+  .bg-E91E63 { background-color: #E91E63; }
+  .bg-D81B60 { background-color: #D81B60; }
+  .bg-C2185B { background-color: #C2185B; }
+  .bg-AD1457 { background-color: #AD1457; }
+  .bg-880E4F { background-color: #880E4F; }
+  
+  /* 블루/그레이 계열 */
+  .bg-F3E5F5 { background-color: #F3E5F5; }
+  .bg-E1BEE7 { background-color: #E1BEE7; }
+  .bg-AB47BC { background-color: #AB47BC; }
+  .bg-9C27B0 { background-color: #9C27B0; }
+  .bg-8E24AA { background-color: #8E24AA; }
+  .bg-7B1FA2 { background-color: #7B1FA2; }
+  .bg-6A1B9A { background-color: #6A1B9A; }
+  .bg-4A148C { background-color: #4A148C; }
+  
+  /* 블루/민트 계열 */
+  .bg-E3F2FD { background-color: #E3F2FD; }
+  .bg-BBDEFB { background-color: #BBDEFB; }
+  .bg-42A5F5 { background-color: #42A5F5; }
+  .bg-2196F3 { background-color: #2196F3; }
+  .bg-1E88E5 { background-color: #1E88E5; }
+  .bg-1976D2 { background-color: #1976D2; }
+  .bg-1565C0 { background-color: #1565C0; }
+  .bg-0D47A1 { background-color: #0D47A1; }
+  
+  /* 세이지/그린 계열 */
+  .bg-E0F7FA { background-color: #E0F7FA; }
+  .bg-B2EBF2 { background-color: #B2EBF2; }
+  .bg-26C6DA { background-color: #26C6DA; }
+  .bg-00BCD4 { background-color: #00BCD4; }
+  .bg-00ACC1 { background-color: #00ACC1; }
+  .bg-0097A7 { background-color: #0097A7; }
+  .bg-00838F { background-color: #00838F; }
+  .bg-006064 { background-color: #006064; }
+  
+  /* 브라운/골드 계열 */
+  .bg-E8F5E9 { background-color: #E8F5E9; }
+  .bg-C8E6C9 { background-color: #C8E6C9; }
+  .bg-66BB6A { background-color: #66BB6A; }
+  .bg-4CAF50 { background-color: #4CAF50; }
+  .bg-43A047 { background-color: #43A047; }
+  .bg-388E3C { background-color: #388E3C; }
+  .bg-2E7D32 { background-color: #2E7D32; }
+  .bg-1B5E20 { background-color: #1B5E20; }
+  
+  /* 코랄/오렌지 계열 */
+  .bg-FFF8E1 { background-color: #FFF8E1; }
+  .bg-FFECB3 { background-color: #FFECB3; }
+  .bg-FFD54F { background-color: #FFD54F; }
+  .bg-FFC107 { background-color: #FFC107; }
+  .bg-FF9800 { background-color: #FF9800; }
+  .bg-F57C00 { background-color: #F57C00; }
+  .bg-E65100 { background-color: #E65100; }
+  .bg-795548 { background-color: #795548; }
+  
+  .sapMPageHeader::before {
+      background: none !important;
+  }
+  
+  
+  .sapMScrollCont {
+      overflow: visible !important;
+  }
+  
+  .inlineLabel {
+      padding-right: 10px;
+  }
+  
+  .noText {
+      color: rgba(0, 0, 0, 0);
+  }
+  
+  /* 색상 버튼 컨테이너 스타일 */
+  .colorButtonContainer {
+      margin: 0 !important;
+      padding: 0 !important;
+      padding-bottom: 10px !important;
+      width: 12.5% !important; /* 정확히 8개씩 */
+      max-width: 12.5% !important;
+      box-sizing: border-box !important;
+      display: inline-block !important;
+      vertical-align: top !important;
+      height: 85px !important; /* 버튼 + 텍스트 + 여백 */
+  }
+  
+  /* 색상 버튼 컨테이너 내부 버튼 스타일 */
+  .colorButtonContainer .colorButton {
+      min-height: 60px !important;
+      min-width: 60px !important;
+      height: 60px !important;
+      width: 100% !important;
+      margin-top: 5px !important;
+      margin-bottom: 3px !important;
+      padding: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+  }
+  
+  /* 색상 텍스트 스타일 */
+  .colorText {
+      font-size: 0.6rem;
+      margin: 0 !important;
+      padding: 0 !important;
+      height: 15px !important;
+      line-height: 1.2 !important;
+      text-align: center;
+      color: #090909;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
+  
+  /* 검색 결과 강조 표시 스타일 */
+  .searchMatch {
+      transform: scale(1.05);
+      transition: transform 0.2s ease;
+      z-index: 1;
+  }
+  
+  .searchMatch .colorButton {
+      box-shadow: 0 0 5px 2px rgba(33, 150, 243, 0.5) !important;
+      border: 1px solid #2196F3 !important;
+  }
+  
+  /* 선택된 색상 강조 표시 스타일 */
+  .selectedColor {
+      transform: scale(1.1);
+      transition: transform 0.2s ease;
+      z-index: 2;
+  }
+  
+  .selectedColor .colorButton {
+      box-shadow: 0 0 5px 2px rgba(33, 150, 243, 0.7) !important;
+      border: 2px solid #2196F3 !important;
+  }
+  
+  /* 자재가 연결된 색상 + 선택된 색상 스타일 */
+  .materialColor.selectedColor {
+      transform: scale(1.15);
+      z-index: 3;
+  }
+  
+  .materialColor.selectedColor .colorButton {
+      box-shadow: 0 0 8px 3px rgba(33, 150, 243, 0.7) !important;
+      border: 2px solid #2196F3 !important;
+  }
+  
+  /* 자재가 없는 색상 + 선택된 색상 스타일 */
+  .noMaterialColor.selectedColor {
+      transform: scale(1.15);
+      z-index: 3;
+  }
+  
+  .noMaterialColor.selectedColor .colorButton {
+      box-shadow: 0 0 8px 3px rgba(255, 152, 0, 0.7) !important;
+      border: 2px solid #FF9800 !important;
+  }
+  
+  /* 색상 검색 필드 스타일 */
+  .colorSearchField {
+      margin-bottom: 10px;
+  }
+  
+  
+  /* 고객 요청사항 영역 스타일 */
+  .customerRequestArea {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+  }
+  
+  .customerRequestTitle {
+      color: #008cff;
+      font-weight: bold;
+  }
+  
+  .sapMTextArea.customerRequestInput .sapMInputBaseInner {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #020000;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .sapMTextArea.customerRequestInput .sapMInputBaseInner:focus {
+      border-color: #68b4f1;
+  }
+  
+  /* 선택된 색상 다이얼로그 스타일 */
+  .colorSample {
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+      min-width: 60px !important;
+      min-height: 60px !important;
+      display: block !important;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+  }
+  
+  .colorSample[data-background-color] {
+      background-color: attr(data-background-color) !important;
+  }
+  
+  .colorSample:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* 다이얼로그 리스트 항목 스타일 */
+  .selectedColorsListItem {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e5e5e5;
+  }
+  
+  .selectedColorsListItem .colorSample {
+      background-color: attr(data-color);
+      min-width: 60px !important;
+      min-height: 60px !important;
+      flex: 0 0 60px;
+  }
+  
+.infoText {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+}
+  
+.requestBox {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.requestInput{
+  margin-top: 10px;
+  margin-bottom: 5px;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+}

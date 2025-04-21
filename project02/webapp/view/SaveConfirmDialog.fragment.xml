@@ -1,0 +1,66 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout">
+    
+    <Dialog
+        id="dialog_Dialog_saveConfirm"
+        title="문의서 저장 확인"
+        contentWidth="500px"
+        class="sapUiContentPadding">
+        
+        <VBox id="dialog_VBox_content" class="sapUiSmallMargin">
+            <Title id="dialog_Title_header" text="다음 내용으로 문의서를 저장하시겠습니까?" level="H3" class="sapUiSmallMarginBottom" />
+            
+            <!-- 고객 정보 -->
+            <Panel id="dialog_Panel_customer" headerText="고객 정보" class="sapUiSmallMarginBottom">
+                <VBox>
+                    <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                        <Label id="dialog_Label_customerId" text="고객 코드:" class="sapUiSmallMarginEnd" width="100px" />
+                        <Text id="dialog_Text_customerId" text="{/SelectedCustomer/CustomerID}" />
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label id="dialog_Label_customerName" text="기업명:" class="sapUiSmallMarginEnd" width="100px" />
+                        <Text id="dialog_Text_customerName" text="{/SelectedCustomer/CustomerName}" />
+                    </HBox>
+                </VBox>
+            </Panel>
+            
+            <!-- 요청사항 -->
+            <Panel id="dialog_Panel_request" headerText="문의 내용" class="sapUiSmallMarginBottom">
+                <Text id="dialog_Text_request" text="{/CustomerRequest}" />
+            </Panel>
+            
+            <!-- 선택된 색상 목록 -->
+            <Panel id="dialog_Panel_colors" headerText="선택된 색상 ({colors>/selectedColors/length}개)" class="sapUiSmallMarginBottom">
+                <List
+                    id="dialog_List_colors"
+                    items="{colors>/selectedColors}"
+                    noDataText="선택된 색상이 없습니다"
+                    showSeparators="Inner">
+                    
+                    <CustomListItem>
+                        <HBox alignItems="Center" justifyContent="SpaceBetween">
+                            <!-- 색상 샘플 -->
+                            <HBox alignItems="Center">
+                                <core:HTML content="&lt;div style='width: 40px; height: 40px; min-width: 40px; min-height: 40px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
+                                <VBox class="sapUiTinyMarginBegin">
+                                    <Text text="{colors>colorCode}" />
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </CustomListItem>
+                </List>
+            </Panel>
+        </VBox>
+        
+        <beginButton>
+            <Button id="dialog_Button_save" text="저장" icon="sap-icon://save" type="Emphasized" press="onConfirmSave" />
+        </beginButton>
+        
+        <endButton>
+            <Button id="dialog_Button_cancel" text="취소" icon="sap-icon://decline" press="onCancelSave" />
+        </endButton>
+    </Dialog>
+    
+</core:FragmentDefinition> 
