@@ -969,7 +969,7 @@ sap.ui.define(
         // 아이템 데이터 생성 - ItemID를 1씩 증가하도록 수정
         var oItemData = {
           InqrDocuId: this._documentNumber,
-          InqrItemId: (iIndex + 1).toString().padStart(6, "0"), // 000001, 000002, ... (1씩 증가)
+          InqrItemId: ((iIndex + 1) * 10).toString().padStart(5, "0"), // (10, 20, 30... 증가)
           MatId: oItem.materialId || "",
           Descr: oItem.description || this._customerRequest || "", // 색상별 문의사항 우선, 없으면 공통 문의사항 사용
           CreatedBy: "", // 현재 SAP 사용자 또는 시스템 ID
