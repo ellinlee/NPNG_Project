@@ -966,7 +966,7 @@ sap.ui.define(
         var oModel = this.getOwnerComponent().getModel();
         var oNow = new Date();
 
-        // 아이템 데이터 생성 - ItemID를 1씩 증가하도록 수정
+        // 아이템 데이터 생성 
         var oItemData = {
           InqrDocuId: this._documentNumber,
           InqrItemId: ((iIndex + 1) * 10).toString().padStart(5, "0"), // (10, 20, 30... 증가)
