@@ -1,534 +1,1139 @@
 <mvc:View xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    xmlns:core="sap.ui.core" controllerName="sync.dc.sd.project02.controller.Select">
-    <Page id="select_Page" title="{i18n>title}">
-        <Panel id="select_Panel" height="100%" width="100%">
-            <VBox id="select_VBox" alignContent="End" alignItems="End" direction="Column" class="selectBox">
-                <FlexBox 
-                  id="select_FlexBox_custInfo"
-                  direction="Row"
-                  class="selectGroup"
-                  alignItems="Center"
-                  justifyContent="SpaceBetween"
-                
-                  renderType="Div">
+    xmlns:core="sap.ui.core"
+    controllerName="sync.dc.sd.project02.controller.Select">
+    <Page id="select_Page"
+        title="{i18n>title}">
+        <Panel id="select_Panel"
+            height="100%"
+            width="100%">
+            <VBox id="select_VBox"
+                alignContent="End"
+                alignItems="End"
+                direction="Column"
+                class="selectBox">
+                <FlexBox id="select_FlexBox_custInfo"
+                    direction="Row"
+                    class="selectGroup"
+                    alignItems="Center"
+                    justifyContent="SpaceBetween"
+                    renderType="Div">
 
-                  <!-- 고객코드 -->
-                  <FlexBox id="select_FlexBox_custId" direction="Row" alignItems="Center" alignContent="Center" class="displayFlex" justifyContent="SpaceBetween">
-                    <Label id="select_Label_custId" text="{i18n>cust_id}" class="selectLabel" />
-                    <Text id="select_Text_customerId" text="{/SelectedCustomer/CustomerID}" class="selectText" />
-                  </FlexBox>
+                    <!-- 고객코드 -->
+                    <FlexBox id="select_FlexBox_custId"
+                        direction="Row"
+                        alignItems="Center"
+                        alignContent="Center"
+                        class="displayFlex"
+                        justifyContent="SpaceBetween">
+                        <Label id="select_Label_custId"
+                            text="{i18n>cust_id}"
+                            class="selectLabel" />
+                        <Text id="select_Text_customerId"
+                            text="{/SelectedCustomer/CustomerID}"
+                            class="selectText" />
+                    </FlexBox>
 
-                  <!-- 기업명 -->
-                  <FlexBox id="select_FlexBox_custName" direction="Row" alignItems="Center" alignContent="Center" class="displayFlex" justifyContent="SpaceBetween">
-                    <Label id="select_Label_custName" text="기업명" class="selectLabel" />
-                    <Text id="select_Text_customerName" text="{/SelectedCustomer/CustomerName}" class="selectText" />
-                  </FlexBox>
+                    <!-- 기업명 -->
+                    <FlexBox id="select_FlexBox_custName"
+                        direction="Row"
+                        alignItems="Center"
+                        alignContent="Center"
+                        class="displayFlex"
+                        justifyContent="SpaceBetween">
+                        <Label id="select_Label_custName"
+                            text="기업명"
+                            class="selectLabel" />
+                        <Text id="select_Text_customerName"
+                            text="{/SelectedCustomer/CustomerName}"
+                            class="selectText" />
+                    </FlexBox>
 
                 </FlexBox>
-                  <!-- 페인트 선택 -->
-                  <FlexBox id="select_FlexBox_paint" direction="Row" alignItems="Center" class="selectGroup">
-                    <Label id="select_Label_paint" text="페인트 용도" class="selectLabel" />
-                    <Select id="select_Select_category" class="select" width="auto" change="onCategoryChange">
-                      <items>
-                        <core:Item id="select_Item_paint1" key="paint1" text="{i18n>construct}" />
-                        <core:Item id="select_Item_paint2" key="paint2" text="{i18n>car}" />
-                        <core:Item id="select_Item_paint3" key="paint3" text="{i18n>boat}" />
-                        <core:Item id="select_Item_paint4" key="paint4" text="{i18n>plane}" />
-                      </items>
+                <!-- 페인트 선택 -->
+                <FlexBox id="select_FlexBox_paint"
+                    direction="Row"
+                    alignItems="Center"
+                    class="selectGroup">
+                    <Label id="select_Label_paint"
+                        text="페인트 용도"
+                        class="selectLabel" />
+                    <Select id="select_Select_category"
+                        class="select"
+                        width="auto"
+                        change="onCategoryChange">
+                        <items>
+                            <core:Item id="select_Item_paint1"
+                                key="paint1"
+                                text="{i18n>construct}" />
+                            <core:Item id="select_Item_paint2"
+                                key="paint2"
+                                text="{i18n>car}" />
+                            <core:Item id="select_Item_paint3"
+                                key="paint3"
+                                text="{i18n>boat}" />
+                            <core:Item id="select_Item_paint4"
+                                key="paint4"
+                                text="{i18n>plane}" />
+                        </items>
                     </Select>
-                     <FlexBox id="select_FlexBox_search" alignItems="Center" justifyContent="Center" class="select" width="100%">
-                   <SearchField id="select_SearchField_color" placeholder="색상 코드 검색 (예: #FFFFFF)" width="270px" search="onColorSearch" liveChange="onColorLiveSearch" />
-                   <Button id="select_Button_searchReset" icon="sap-icon://reset" tooltip="검색 초기화" press="onColorSearchReset" class="sapUiTinyMarginBegin" />
-                </FlexBox>
+                    <FlexBox id="select_FlexBox_search"
+                        alignItems="Center"
+                        justifyContent="Center"
+                        class="select"
+                        width="100%">
+                        <SearchField id="select_SearchField_color"
+                            placeholder="색상 코드 검색 (예: #FFFFFF)"
+                            width="270px"
+                            search="onColorSearch"
+                            liveChange="onColorLiveSearch" />
+                        <Button id="select_Button_searchReset"
+                            icon="sap-icon://reset"
+                            tooltip="검색 초기화"
+                            press="onColorSearchReset"
+                            class="sapUiTinyMarginBegin" />
+                    </FlexBox>
                 </FlexBox>
             </VBox>
-            <VBox id="select_VBox_info" class="colorGrid">
-                <Text id="select_Text_info" text="최소 주문 단위는 10000L입니다. 200L단위로 주문 가능합니다." class="infoText"/>
-            </VBox> 
-            <VBox id="select_VBox_colorGrid" class="colorGrid">
-                <Title id="select_Title_colorGrid" text="Palette" titleStyle="H3"/>
-                
-                <HBox id="select_HBox_colorContainer" class="colorFlexBox" width="100%">
+            <VBox id="select_VBox_info"
+                class="colorGrid">
+                <Text id="select_Text_info"
+                    text="최소 주문 단위는 10000L입니다. 200L단위로 주문 가능합니다."
+                    class="infoText"/>
+            </VBox>
+            <VBox id="select_VBox_colorGrid"
+                class="colorGrid">
+                <Title id="select_Title_colorGrid"
+                    text="Palette"
+                    titleStyle="H3"/>
+
+                <HBox id="select_HBox_colorContainer"
+                    class="colorFlexBox"
+                    width="100%">
                     <!-- 1행: 그레이스케일 -->
-                    <VBox id="select_VBox_colorContainer1" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color1" text="" press="onColorSelected" class="colorButton noText bg-FFFFFF"
-                                type="Unstyled" customData:color="#FFFFFF" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode1" text="#FFFFFF" class="colorText" />
+                    <VBox id="select_VBox_colorContainer1"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color1"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFFFFF"
+                            type="Unstyled"
+                            customData:color="#FFFFFF"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode1"
+                            text="#FFFFFF"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer2" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color2" text="" press="onColorSelected" class="colorButton noText bg-F5F5F5"
-                                type="Unstyled" customData:color="#F5F5F5" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode2" text="#F5F5F5" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer2"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color2"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-F5F5F5"
+                            type="Unstyled"
+                            customData:color="#F5F5F5"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode2"
+                            text="#F5F5F5"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer3" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color3" text="" press="onColorSelected" class="colorButton noText bg-E0E0E0"
-                                type="Unstyled" customData:color="#E0E0E0" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode3" text="#E0E0E0" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer3"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color3"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E0E0E0"
+                            type="Unstyled"
+                            customData:color="#E0E0E0"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode3"
+                            text="#E0E0E0"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer4" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color4" text="" press="onColorSelected" class="colorButton noText bg-BDBDBD"
-                                type="Unstyled" customData:color="#BDBDBD" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode4" text="#BDBDBD" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer4"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color4"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-BDBDBD"
+                            type="Unstyled"
+                            customData:color="#BDBDBD"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode4"
+                            text="#BDBDBD"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer5" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color5" text="" press="onColorSelected" class="colorButton noText bg-9E9E9E"
-                                type="Unstyled" customData:color="#9E9E9E" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode5" text="#9E9E9E" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer5"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color5"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-9E9E9E"
+                            type="Unstyled"
+                            customData:color="#9E9E9E"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode5"
+                            text="#9E9E9E"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer6" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color6" text="" press="onColorSelected" class="colorButton noText bg-616161"
-                                type="Unstyled" customData:color="#616161" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode6" text="#616161" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer6"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color6"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-616161"
+                            type="Unstyled"
+                            customData:color="#616161"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode6"
+                            text="#616161"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer7" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color7" text="" press="onColorSelected" class="colorButton noText bg-424242"
-                                type="Unstyled" customData:color="#424242" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode7" text="#424242" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer7"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color7"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-424242"
+                            type="Unstyled"
+                            customData:color="#424242"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode7"
+                            text="#424242"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer8" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color8" text="" press="onColorSelected" class="colorButton noText bg-212121"
-                                type="Unstyled" customData:color="#212121" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode8" text="#212121" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer8"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color8"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-212121"
+                            type="Unstyled"
+                            customData:color="#212121"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode8"
+                            text="#212121"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 2행: 레드 계열 -->
-                    <VBox id="select_VBox_colorContainer9" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color9" text="" press="onColorSelected" class="colorButton noText bg-FFEBEE"
-                                type="Unstyled" customData:color="#FFEBEE" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode9" text="#FFEBEE" class="colorText" />
+                    <VBox id="select_VBox_colorContainer9"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color9"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFEBEE"
+                            type="Unstyled"
+                            customData:color="#FFEBEE"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode9"
+                            text="#FFEBEE"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer10" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color10" text="" press="onColorSelected" class="colorButton noText bg-FFCDD2"
-                                type="Unstyled" customData:color="#FFCDD2" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode10" text="#FFCDD2" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer10"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color10"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFCDD2"
+                            type="Unstyled"
+                            customData:color="#FFCDD2"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode10"
+                            text="#FFCDD2"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer11" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color11" text="" press="onColorSelected" class="colorButton noText bg-EF9A9A"
-                                type="Unstyled" customData:color="#EF9A9A" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode11" text="#EF9A9A" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer11"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color11"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-EF9A9A"
+                            type="Unstyled"
+                            customData:color="#EF9A9A"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode11"
+                            text="#EF9A9A"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer12" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color12" text="" press="onColorSelected" class="colorButton noText bg-E57373"
-                                type="Unstyled" customData:color="#E57373" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode12" text="#E57373" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer12"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color12"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E57373"
+                            type="Unstyled"
+                            customData:color="#E57373"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode12"
+                            text="#E57373"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer13" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color13" text="" press="onColorSelected" class="colorButton noText bg-EF5350"
-                                type="Unstyled" customData:color="#EF5350" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode13" text="#EF5350" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer13"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color13"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-EF5350"
+                            type="Unstyled"
+                            customData:color="#EF5350"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode13"
+                            text="#EF5350"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer14" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color14" text="" press="onColorSelected" class="colorButton noText bg-F44336"
-                                type="Unstyled" customData:color="#F44336" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode14" text="#F44336" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer14"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color14"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-F44336"
+                            type="Unstyled"
+                            customData:color="#F44336"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode14"
+                            text="#F44336"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer15" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color15" text="" press="onColorSelected" class="colorButton noText bg-E53935"
-                                type="Unstyled" customData:color="#E53935" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode15" text="#E53935" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer15"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color15"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E53935"
+                            type="Unstyled"
+                            customData:color="#E53935"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode15"
+                            text="#E53935"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer16" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color16" text="" press="onColorSelected" class="colorButton noText bg-C62828"
-                                type="Unstyled" customData:color="#C62828" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode16" text="#C62828" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer16"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color16"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-C62828"
+                            type="Unstyled"
+                            customData:color="#C62828"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode16"
+                            text="#C62828"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 3행: 핑크/퍼플 계열 -->
-                    <VBox id="select_VBox_colorContainer17" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color17" text="" press="onColorSelected" class="colorButton noText bg-FCE4EC"
-                                type="Unstyled" customData:color="#FCE4EC" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode17" text="#FCE4EC" class="colorText" />
+                    <VBox id="select_VBox_colorContainer17"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color17"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FCE4EC"
+                            type="Unstyled"
+                            customData:color="#FCE4EC"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode17"
+                            text="#FCE4EC"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer18" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color18" text="" press="onColorSelected" class="colorButton noText bg-F8BBD0"
-                                type="Unstyled" customData:color="#F8BBD0" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode18" text="#F8BBD0" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer18"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color18"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-F8BBD0"
+                            type="Unstyled"
+                            customData:color="#F8BBD0"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode18"
+                            text="#F8BBD0"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer19" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color19" text="" press="onColorSelected" class="colorButton noText bg-EC407A"
-                                type="Unstyled" customData:color="#EC407A" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode19" text="#EC407A" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer19"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color19"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-EC407A"
+                            type="Unstyled"
+                            customData:color="#EC407A"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode19"
+                            text="#EC407A"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer20" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color20" text="" press="onColorSelected" class="colorButton noText bg-E91E63"
-                                type="Unstyled" customData:color="#E91E63" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode20" text="#E91E63" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer20"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color20"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E91E63"
+                            type="Unstyled"
+                            customData:color="#E91E63"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode20"
+                            text="#E91E63"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer21" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color21" text="" press="onColorSelected" class="colorButton noText bg-D81B60"
-                                type="Unstyled" customData:color="#D81B60" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode21" text="#D81B60" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer21"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color21"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-D81B60"
+                            type="Unstyled"
+                            customData:color="#D81B60"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode21"
+                            text="#D81B60"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer22" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color22" text="" press="onColorSelected" class="colorButton noText bg-C2185B"
-                                type="Unstyled" customData:color="#C2185B" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode22" text="#C2185B" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer22"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color22"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-C2185B"
+                            type="Unstyled"
+                            customData:color="#C2185B"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode22"
+                            text="#C2185B"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer23" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color23" text="" press="onColorSelected" class="colorButton noText bg-AD1457"
-                                type="Unstyled" customData:color="#AD1457" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode23" text="#AD1457" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer23"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color23"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-AD1457"
+                            type="Unstyled"
+                            customData:color="#AD1457"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode23"
+                            text="#AD1457"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer24" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color24" text="" press="onColorSelected" class="colorButton noText bg-880E4F"
-                                type="Unstyled" customData:color="#880E4F" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode24" text="#880E4F" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer24"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color24"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-880E4F"
+                            type="Unstyled"
+                            customData:color="#880E4F"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode24"
+                            text="#880E4F"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 4행: 퍼플/딥퍼플 계열 -->
-                    <VBox id="select_VBox_colorContainer25" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color25" text="" press="onColorSelected" class="colorButton noText bg-F3E5F5"
-                                type="Unstyled" customData:color="#F3E5F5" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode25" text="#F3E5F5" class="colorText" />
+                    <VBox id="select_VBox_colorContainer25"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color25"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-F3E5F5"
+                            type="Unstyled"
+                            customData:color="#F3E5F5"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode25"
+                            text="#F3E5F5"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer26" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color26" text="" press="onColorSelected" class="colorButton noText bg-E1BEE7"
-                                type="Unstyled" customData:color="#E1BEE7" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode26" text="#E1BEE7" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer26"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color26"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E1BEE7"
+                            type="Unstyled"
+                            customData:color="#E1BEE7"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode26"
+                            text="#E1BEE7"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer27" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color27" text="" press="onColorSelected" class="colorButton noText bg-AB47BC"
-                                type="Unstyled" customData:color="#AB47BC" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode27" text="#AB47BC" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer27"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color27"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-AB47BC"
+                            type="Unstyled"
+                            customData:color="#AB47BC"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode27"
+                            text="#AB47BC"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer28" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color28" text="" press="onColorSelected" class="colorButton noText bg-9C27B0"
-                                type="Unstyled" customData:color="#9C27B0" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode28" text="#9C27B0" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer28"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color28"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-9C27B0"
+                            type="Unstyled"
+                            customData:color="#9C27B0"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode28"
+                            text="#9C27B0"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer29" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color29" text="" press="onColorSelected" class="colorButton noText bg-8E24AA"
-                                type="Unstyled" customData:color="#8E24AA" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode29" text="#8E24AA" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer29"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color29"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-8E24AA"
+                            type="Unstyled"
+                            customData:color="#8E24AA"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode29"
+                            text="#8E24AA"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer30" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color30" text="" press="onColorSelected" class="colorButton noText bg-7B1FA2"
-                                type="Unstyled" customData:color="#7B1FA2" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode30" text="#7B1FA2" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer30"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color30"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-7B1FA2"
+                            type="Unstyled"
+                            customData:color="#7B1FA2"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode30"
+                            text="#7B1FA2"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer31" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color31" text="" press="onColorSelected" class="colorButton noText bg-6A1B9A"
-                                type="Unstyled" customData:color="#6A1B9A" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode31" text="#6A1B9A" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer31"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color31"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-6A1B9A"
+                            type="Unstyled"
+                            customData:color="#6A1B9A"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode31"
+                            text="#6A1B9A"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer32" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color32" text="" press="onColorSelected" class="colorButton noText bg-4A148C"
-                                type="Unstyled" customData:color="#4A148C" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode32" text="#4A148C" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer32"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color32"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-4A148C"
+                            type="Unstyled"
+                            customData:color="#4A148C"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode32"
+                            text="#4A148C"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 5행: 블루/인디고 계열 -->
-                    <VBox id="select_VBox_colorContainer33" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color33" text="" press="onColorSelected" class="colorButton noText bg-E3F2FD"
-                                type="Unstyled" customData:color="#E3F2FD" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode33" text="#E3F2FD" class="colorText" />
+                    <VBox id="select_VBox_colorContainer33"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color33"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E3F2FD"
+                            type="Unstyled"
+                            customData:color="#E3F2FD"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode33"
+                            text="#E3F2FD"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer34" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color34" text="" press="onColorSelected" class="colorButton noText bg-BBDEFB"
-                                type="Unstyled" customData:color="#BBDEFB" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode34" text="#BBDEFB" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer34"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color34"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-BBDEFB"
+                            type="Unstyled"
+                            customData:color="#BBDEFB"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode34"
+                            text="#BBDEFB"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer35" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color35" text="" press="onColorSelected" class="colorButton noText bg-42A5F5"
-                                type="Unstyled" customData:color="#42A5F5" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode35" text="#42A5F5" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer35"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color35"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-42A5F5"
+                            type="Unstyled"
+                            customData:color="#42A5F5"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode35"
+                            text="#42A5F5"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer36" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color36" text="" press="onColorSelected" class="colorButton noText bg-2196F3"
-                                type="Unstyled" customData:color="#2196F3" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode36" text="#2196F3" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer36"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color36"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-2196F3"
+                            type="Unstyled"
+                            customData:color="#2196F3"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode36"
+                            text="#2196F3"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer37" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color37" text="" press="onColorSelected" class="colorButton noText bg-1E88E5"
-                                type="Unstyled" customData:color="#1E88E5" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode37" text="#1E88E5" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer37"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color37"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-1E88E5"
+                            type="Unstyled"
+                            customData:color="#1E88E5"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode37"
+                            text="#1E88E5"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer38" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color38" text="" press="onColorSelected" class="colorButton noText bg-1976D2"
-                                type="Unstyled" customData:color="#1976D2" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode38" text="#1976D2" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer38"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color38"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-1976D2"
+                            type="Unstyled"
+                            customData:color="#1976D2"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode38"
+                            text="#1976D2"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer39" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color39" text="" press="onColorSelected" class="colorButton noText bg-1565C0"
-                                type="Unstyled" customData:color="#1565C0" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode39" text="#1565C0" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer39"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color39"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-1565C0"
+                            type="Unstyled"
+                            customData:color="#1565C0"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode39"
+                            text="#1565C0"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer40" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color40" text="" press="onColorSelected" class="colorButton noText bg-0D47A1"
-                                type="Unstyled" customData:color="#0D47A1" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode40" text="#0D47A1" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer40"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color40"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-0D47A1"
+                            type="Unstyled"
+                            customData:color="#0D47A1"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode40"
+                            text="#0D47A1"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 6행: 청록색/틸 계열 -->
-                    <VBox id="select_VBox_colorContainer41" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color41" text="" press="onColorSelected" class="colorButton noText bg-E0F7FA"
-                                type="Unstyled" customData:color="#E0F7FA" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode41" text="#E0F7FA" class="colorText" />
+                    <VBox id="select_VBox_colorContainer41"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color41"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E0F7FA"
+                            type="Unstyled"
+                            customData:color="#E0F7FA"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode41"
+                            text="#E0F7FA"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer42" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color42" text="" press="onColorSelected" class="colorButton noText bg-B2EBF2"
-                                type="Unstyled" customData:color="#B2EBF2" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode42" text="#B2EBF2" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer42"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color42"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-B2EBF2"
+                            type="Unstyled"
+                            customData:color="#B2EBF2"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode42"
+                            text="#B2EBF2"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer43" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color43" text="" press="onColorSelected" class="colorButton noText bg-26C6DA"
-                                type="Unstyled" customData:color="#26C6DA" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode43" text="#26C6DA" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer43"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color43"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-26C6DA"
+                            type="Unstyled"
+                            customData:color="#26C6DA"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode43"
+                            text="#26C6DA"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer44" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color44" text="" press="onColorSelected" class="colorButton noText bg-00BCD4"
-                                type="Unstyled" customData:color="#00BCD4" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode44" text="#00BCD4" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer44"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color44"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-00BCD4"
+                            type="Unstyled"
+                            customData:color="#00BCD4"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode44"
+                            text="#00BCD4"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer45" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color45" text="" press="onColorSelected" class="colorButton noText bg-00ACC1"
-                                type="Unstyled" customData:color="#00ACC1" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode45" text="#00ACC1" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer45"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color45"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-00ACC1"
+                            type="Unstyled"
+                            customData:color="#00ACC1"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode45"
+                            text="#00ACC1"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer46" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color46" text="" press="onColorSelected" class="colorButton noText bg-0097A7"
-                                type="Unstyled" customData:color="#0097A7" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode46" text="#0097A7" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer46"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color46"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-0097A7"
+                            type="Unstyled"
+                            customData:color="#0097A7"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode46"
+                            text="#0097A7"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer47" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color47" text="" press="onColorSelected" class="colorButton noText bg-00838F"
-                                type="Unstyled" customData:color="#00838F" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode47" text="#00838F" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer47"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color47"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-00838F"
+                            type="Unstyled"
+                            customData:color="#00838F"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode47"
+                            text="#00838F"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer48" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color48" text="" press="onColorSelected" class="colorButton noText bg-006064"
-                                type="Unstyled" customData:color="#006064" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode48" text="#006064" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer48"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color48"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-006064"
+                            type="Unstyled"
+                            customData:color="#006064"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode48"
+                            text="#006064"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 7행: 그린 계열 -->
-                    <VBox id="select_VBox_colorContainer49" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color49" text="" press="onColorSelected" class="colorButton noText bg-E8F5E9"
-                                type="Unstyled" customData:color="#E8F5E9" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode49" text="#E8F5E9" class="colorText" />
+                    <VBox id="select_VBox_colorContainer49"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color49"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E8F5E9"
+                            type="Unstyled"
+                            customData:color="#E8F5E9"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode49"
+                            text="#E8F5E9"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer50" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color50" text="" press="onColorSelected" class="colorButton noText bg-C8E6C9"
-                                type="Unstyled" customData:color="#C8E6C9" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode50" text="#C8E6C9" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer50"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color50"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-C8E6C9"
+                            type="Unstyled"
+                            customData:color="#C8E6C9"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode50"
+                            text="#C8E6C9"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer51" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color51" text="" press="onColorSelected" class="colorButton noText bg-66BB6A"
-                                type="Unstyled" customData:color="#66BB6A" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode51" text="#66BB6A" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer51"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color51"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-66BB6A"
+                            type="Unstyled"
+                            customData:color="#66BB6A"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode51"
+                            text="#66BB6A"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer52" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color52" text="" press="onColorSelected" class="colorButton noText bg-4CAF50"
-                                type="Unstyled" customData:color="#4CAF50" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode52" text="#4CAF50" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer52"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color52"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-4CAF50"
+                            type="Unstyled"
+                            customData:color="#4CAF50"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode52"
+                            text="#4CAF50"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer53" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color53" text="" press="onColorSelected" class="colorButton noText bg-43A047"
-                                type="Unstyled" customData:color="#43A047" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode53" text="#43A047" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer53"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color53"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-43A047"
+                            type="Unstyled"
+                            customData:color="#43A047"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode53"
+                            text="#43A047"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer54" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color54" text="" press="onColorSelected" class="colorButton noText bg-388E3C"
-                                type="Unstyled" customData:color="#388E3C" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode54" text="#388E3C" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer54"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color54"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-388E3C"
+                            type="Unstyled"
+                            customData:color="#388E3C"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode54"
+                            text="#388E3C"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer55" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color55" text="" press="onColorSelected" class="colorButton noText bg-2E7D32"
-                                type="Unstyled" customData:color="#2E7D32" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode55" text="#2E7D32" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer55"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color55"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-2E7D32"
+                            type="Unstyled"
+                            customData:color="#2E7D32"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode55"
+                            text="#2E7D32"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer56" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color56" text="" press="onColorSelected" class="colorButton noText bg-1B5E20"
-                                type="Unstyled" customData:color="#1B5E20" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode56" text="#1B5E20" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer56"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color56"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-1B5E20"
+                            type="Unstyled"
+                            customData:color="#1B5E20"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode56"
+                            text="#1B5E20"
+                            class="colorText" />
                     </VBox>
-                    
+
                     <!-- 8행: 앰버/오렌지 계열 -->
-                    <VBox id="select_VBox_colorContainer57" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color57" text="" press="onColorSelected" class="colorButton noText bg-FFF8E1"
-                                type="Unstyled" customData:color="#FFF8E1" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode57" text="#FFF8E1" class="colorText" />
+                    <VBox id="select_VBox_colorContainer57"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color57"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFF8E1"
+                            type="Unstyled"
+                            customData:color="#FFF8E1"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode57"
+                            text="#FFF8E1"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer58" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color58" text="" press="onColorSelected" class="colorButton noText bg-FFECB3"
-                                type="Unstyled" customData:color="#FFECB3" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode58" text="#FFECB3" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer58"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color58"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFECB3"
+                            type="Unstyled"
+                            customData:color="#FFECB3"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode58"
+                            text="#FFECB3"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer59" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color59" text="" press="onColorSelected" class="colorButton noText bg-FFD54F"
-                                type="Unstyled" customData:color="#FFD54F" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode59" text="#FFD54F" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer59"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color59"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFD54F"
+                            type="Unstyled"
+                            customData:color="#FFD54F"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode59"
+                            text="#FFD54F"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer60" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color60" text="" press="onColorSelected" class="colorButton noText bg-FFC107"
-                                type="Unstyled" customData:color="#FFC107" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode60" text="#FFC107" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer60"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color60"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FFC107"
+                            type="Unstyled"
+                            customData:color="#FFC107"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode60"
+                            text="#FFC107"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer61" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color61" text="" press="onColorSelected" class="colorButton noText bg-FF9800"
-                                type="Unstyled" customData:color="#FF9800" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode61" text="#FF9800" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer61"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color61"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-FF9800"
+                            type="Unstyled"
+                            customData:color="#FF9800"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode61"
+                            text="#FF9800"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer62" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color62" text="" press="onColorSelected" class="colorButton noText bg-F57C00"
-                                type="Unstyled" customData:color="#F57C00" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode62" text="#F57C00" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer62"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color62"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-F57C00"
+                            type="Unstyled"
+                            customData:color="#F57C00"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode62"
+                            text="#F57C00"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer63" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color63" text="" press="onColorSelected" class="colorButton noText bg-E65100"
-                                type="Unstyled" customData:color="#E65100" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode63" text="#E65100" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer63"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color63"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-E65100"
+                            type="Unstyled"
+                            customData:color="#E65100"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode63"
+                            text="#E65100"
+                            class="colorText" />
                     </VBox>
-                    
-                    <VBox id="select_VBox_colorContainer64" alignItems="Center" class="colorButtonContainer">
-                        <Button id="select_Button_color64" text="" press="onColorSelected" class="colorButton noText bg-795548"
-                                type="Unstyled" customData:color="#795548" 
-                                xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
-                        <Text id="select_Text_colorCode64" text="#795548" class="colorText" />
+
+                    <VBox id="select_VBox_colorContainer64"
+                        alignItems="Center"
+                        class="colorButtonContainer">
+                        <Button id="select_Button_color64"
+                            text=""
+                            press="onColorSelected"
+                            class="colorButton noText bg-795548"
+                            type="Unstyled"
+                            customData:color="#795548"
+                            xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" />
+                        <Text id="select_Text_colorCode64"
+                            text="#795548"
+                            class="colorText" />
                     </VBox>
                 </HBox>
             </VBox>
-            
-            <!-- 구분선 추가 -->
-            <Toolbar id="select_Toolbar_divider" class="sapUiMediumMarginTop" height="1px" design="Solid" />
-            
-            <!-- 선택한 색상 보기 버튼 (공통 문의사항 위로 이동) -->
-            <FlexBox id="select_FlexBox_colorButton" alignItems="End" justifyContent="End" width="100%" class="sapUiMediumMarginTop">
-                <Button id="select_Button_showColors" text="선택한 색상 보기" icon="sap-icon://palette" press="onShowSelectedColors" width="auto" />
+
+            <!-- 구분선 -->
+            <Toolbar id="select_Toolbar_divider"
+                class="sapUiMediumMarginTop"
+                height="1px"
+                design="Solid" />
+
+            <!-- 선택한 색상 보기 버튼 -->
+            <FlexBox id="select_FlexBox_colorButton"
+                alignItems="End"
+                justifyContent="End"
+                width="100%"
+                class="sapUiMediumMarginTop">
+                <Button id="select_Button_showColors"
+                    text="선택한 색상 보기"
+                    icon="sap-icon://palette"
+                    press="onShowSelectedColors"
+                    width="auto" />
             </FlexBox>
-            
+
             <!-- 공통 문의사항 입력 영역 -->
-            <FlexBox id="select_FlexBox_request" direction="Column" class="sapUiMediumMarginTop">
-                <Label id="select_Label_request" text="문의내역" required="true" />
-                <TextArea id="select_TextArea_request" width="100%" rows="4" placeholder="공통 문의 내용을 입력하세요" 
-                         value="{/CustomerRequest}" liveChange="onCustomerRequestChange" />
+            <FlexBox id="select_FlexBox_request"
+                direction="Column"
+                class="sapUiMediumMarginTop">
+                <Label id="select_Label_request"
+                    text="문의내역"
+                    required="true" />
+                <TextArea id="select_TextArea_request"
+                    width="100%"
+                    rows="4"
+                    placeholder="공통 문의 내용을 입력해주세요. 계약 기간을 입력해야 견적 생성이 가능합니다. ex. 2025.04.01~2026.05.01"
+                    value="{/CustomerRequest}"
+                    liveChange="onCustomerRequestChange" />
             </FlexBox>
 
             <!-- 버튼 그룹 영역 (하단에 배치) -->
-            <FlexBox id="select_FlexBox_buttons" direction="Column" alignItems="End" class="sapUiMediumMarginTop" width="100%">
+            <FlexBox id="select_FlexBox_buttons"
+                direction="Column"
+                alignItems="End"
+                class="sapUiMediumMarginTop"
+                width="100%">
                 <!-- 저장/초기화 버튼 그룹 -->
-                <FlexBox id="select_FlexBox_actionButtons" width="100%" justifyContent="End">
-                    <Button id="select_Button_reset" text="초기화" icon="sap-icon://refresh" press="onResetCustomerRequest" class="sapUiSmallMarginEnd" />
-                    <Button id="select_Button_save" text="저장" icon="sap-icon://save" type="Emphasized" press="onSaveCustomerRequest" />
+                <FlexBox id="select_FlexBox_actionButtons"
+                    width="100%"
+                    justifyContent="End">
+                    <Button id="select_Button_reset"
+                        text="초기화"
+                        icon="sap-icon://refresh"
+                        press="onResetCustomerRequest"
+                        class="sapUiSmallMarginEnd" />
+                    <Button id="select_Button_save"
+                        text="저장"
+                        icon="sap-icon://save"
+                        type="Emphasized"
+                        press="onSaveCustomerRequest" />
                 </FlexBox>
             </FlexBox>
         </Panel>

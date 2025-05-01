@@ -66,16 +66,16 @@ sap.ui.define(
             },
             {
               MatID: "3000000001",
-              MatName: "자동차용 실보보 페인트(완)",
+              MatName: "자동차용 실버 페인트(완)",
               category: "paint2", // 자동차용 - paint2와 매핑
               ColorCode: "#616161", // 회색
             },
-            {
-              MatID: "3000000002",
-              MatName: "자동차용 친환경 실버 페인트(완)",
-              category: "paint2", // 자동차용 - paint2와 매핑
-              ColorCode: "#616161", // 회색
-            },
+            // {
+            //   MatID: "3000000002",
+            //   MatName: "자동차용 친환경 실버 페인트(완)",
+            //   category: "paint2", // 자동차용 - paint2와 매핑
+            //   ColorCode: "#616161", // 회색
+            // },
             {
               MatID: "3000000003",
               MatName: "조선용 빨강 페인트(완)",
@@ -966,7 +966,7 @@ sap.ui.define(
         var oModel = this.getOwnerComponent().getModel();
         var oNow = new Date();
 
-        // 아이템 데이터 생성 
+        // 아이템 데이터 생성
         var oItemData = {
           InqrDocuId: this._documentNumber,
           InqrItemId: ((iIndex + 1) * 10).toString().padStart(5, "0"), // (10, 20, 30... 증가)
