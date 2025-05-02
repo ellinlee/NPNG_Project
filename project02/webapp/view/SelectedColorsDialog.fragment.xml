@@ -4,47 +4,82 @@
     xmlns:layout="sap.ui.layout">
     
     <Dialog
-        id="dialog_Dialog_selectedColors"
-        title="선택한 색상 목록"
+        id="selectedColorsDialog"
+        title="선택된 색상 목록"
         contentWidth="500px"
         class="sapUiContentPadding">
         
-        <List
-            id="dialog_List_selectedColors"
-            mode="Delete"
-            delete="onRemoveSelectedColor"
-            noDataText="선택한 색상이 없습니다"
-            items="{colors>/selectedColors}">
-            
-            <CustomListItem id="dialog_ListItem_selectedColors" class="selectedColorsListItem">
-                <layout:Grid defaultSpan="XL12 L12 M12 S12" class="sapUiSmallMargin">
-                    <layout:content>
-                        <HBox id="dialog_HBox_colorItem" alignItems="Center" width="100%">
-                            <!-- 색상 샘플 표시 (HTML 태그로 구현) -->
-                            <core:HTML id="dialog_HTML_colorSample" content="&lt;div style='width: 60px; height: 60px; min-width: 60px; min-height: 60px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
+        <content>
+            <List
+                id="selectedColorsList"
+                mode="Delete"
+                delete="onRemoveSelectedColor"
+                noDataText="선택한 색상이 없습니다"
+                items="{colors>/selectedColors}">
+                
+                <CustomListItem id="dialog_ListItem_selectedColors" class="selectedColorsListItem">
+                    <layout:Grid defaultSpan="XL12 L12 M12 S12" class="sapUiSmallMargin">
+                        <layout:content>
+                            <HBox id="dialog_HBox_colorItem" alignItems="Center" width="100%">
+                                <!-- 색상 샘플 표시 (HTML 태그로 구현) -->
+                                <core:HTML id="dialog_HTML_colorSample" content="&lt;div style='width: 60px; height: 60px; min-width: 60px; min-height: 60px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
+                                
+                                <!-- 색상 정보 -->
+                                <VBox id="dialog_VBox_colorInfo" class="sapUiTinyMarginBegin" width="100%">
+                                    <Title id="dialog_Title_colorCode" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
+                                    <Text text="{colors>materialId}" class="sapUiTinyMarginTop" />
+                                </VBox>
+                            </HBox>
                             
-                            <!-- 색상 정보 -->
-                            <VBox id="dialog_VBox_colorInfo" class="sapUiTinyMarginBegin" width="100%">
-                                <Title id="dialog_Title_colorCode" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
+                            <!-- 수량 입력 필드 -->
+                            <VBox id="dialog_VBox_quantity" width="100%" class="sapUiTinyMarginTop">
+                                <Label id="dialog_Label_quantity" text="월 주문 수량 (L)" required="true" />
+                                <Input id="dialog_Input_quantity" 
+                                       type="Number" 
+                                       value="{colors>quantity}" 
+                                       placeholder="10,000L 이상, 200L 단위로 입력"
+                                       change="onQuantityChange" />
                             </VBox>
-                        </HBox>
-                        
-                        <!-- 색상별 문의사항 입력 필드 -->
-                        <VBox id="dialog_VBox_colorRequest" width="100%" class="sapUiTinyMarginTop">
-                            <Label id="dialog_Label_colorRequest" text="색상별 문의사항" required="true" />
-                            <TextArea id="dialog_TextArea_colorRequest" width="100%" rows="2" 
-                                     value="{colors>description}" 
-                                     placeholder="이 색상에 대한 문의사항을 입력하세요"
-                                     liveChange="onColorDescriptionChange" />
-                        </VBox>
-                    </layout:content>
-                </layout:Grid>
-            </CustomListItem>
-            
-        </List>
+                            
+                            <!-- 아이템별 계약 기간 -->
+                            <VBox id="dialog_VBox_itemValidDate" width="100%" class="sapUiTinyMarginTop">
+                                <Label id="dialog_Label_itemValidDate" text="계약 기간" required="true" />
+                                <HBox>
+                                    <DatePicker
+                                        id="dialog_DatePicker_itemValidFrom"
+                                        value="{colors>itemValidFrom}"
+                                        placeholder="시작일"
+                                        change="onItemValidFromChange"
+                                        displayFormat="yyyy-MM-dd"
+                                        valueFormat="yyyy-MM-dd"
+                                        class="sapUiSmallMarginEnd" />
+                                    <DatePicker
+                                        id="dialog_DatePicker_itemValidTo"
+                                        value="{colors>itemValidTo}"
+                                        placeholder="종료일"
+                                        change="onItemValidToChange"
+                                        displayFormat="yyyy-MM-dd"
+                                        valueFormat="yyyy-MM-dd" />
+                                </HBox>
+                            </VBox>
+                            
+                            <!-- 색상별 문의사항 입력 필드 -->
+                            <VBox id="dialog_VBox_colorRequest" width="100%" class="sapUiTinyMarginTop">
+                                <Label id="dialog_Label_colorRequest" text="색상별 문의사항"/>
+                                <TextArea id="dialog_TextArea_colorRequest" width="100%" rows="2" 
+                                         value="{colors>description}" 
+                                         placeholder="이 색상에 대한 문의사항을 입력하세요"
+                                         liveChange="onColorDescriptionChange" />
+                            </VBox>
+                        </layout:content>
+                    </layout:Grid>
+                </CustomListItem>
+                
+            </List>
+        </content>
         
         <beginButton>
-            <Button id="dialog_Button_close" text="확인" press="onCloseSelectedColorsDialog" />
+            <Button id="dialog_Button_close" text="닫기" press="onCloseSelectedColorsDialog" />
         </beginButton>
         
     </Dialog>
