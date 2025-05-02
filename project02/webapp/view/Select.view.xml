@@ -1078,64 +1078,104 @@
                             class="colorText" />
                     </VBox>
                 </HBox>
+
+                        <!-- 선택한 색상 보기 버튼 -->
+        <FlexBox id="select_FlexBox_colorButton"
+        alignItems="End"
+        justifyContent="End"
+        width="100%"
+        class="sapUiMediumMarginTop">
+        <Button id="select_Button_showColors"
+            text="선택한 색상 보기"
+            icon="sap-icon://palette"
+            press="onShowSelectedColors"
+            width="auto" />
+    </FlexBox>
+                  <!-- 구분선 -->
+            <Toolbar id="select_Toolbar_divider"
+            class="sapUiMediumMarginTop"
+            height="1px"
+            design="Solid" />
+
+
+
+        <!-- 유효기간 입력 영역 -->
+        <FlexBox id="select_FlexBox_validDate"
+            direction="Column"
+            alignContent="Center"
+            class="sapUiMediumMarginTop">
+            <Label id="select_Label_validDate"
+                text="계약 기간"
+                required="true" />
+            <HBox class="displayFlex">
+                <DatePicker id="select_DatePicker_validFrom_new" 
+                    placeholder="시작일" 
+                    class="select" 
+                    displayFormat="yyyy-MM-dd"
+                    change="onValidFromChange"
+                    width="150px"/>
+                <Label text=" ~ " class="selectLabel" alignContent="Center"/>
+                <DatePicker id="select_DatePicker_validTo_new" 
+                    placeholder="종료일" 
+                    class="select" 
+                    displayFormat="yyyy-MM-dd"
+                    change="onValidToChange"
+                    width="150px"/>
+            </HBox>
+        </FlexBox>
+
+        <!-- 월별 납품 희망일 입력 영역 -->
+        <FlexBox id="select_FlexBox_deliveryDay"
+            direction="Column"
+            class="sapUiMediumMarginTop">
+            <Label id="select_Label_deliveryDay"
+                text="매달 납품받고 싶은 날짜(예: 1, 10, 15 등)" />
+            <Input id="input_deliveryDay"
+                value="{/DeliveryDay}"
+                placeholder="1, 10, 15 등 원하는 날짜를 입력하세요"
+                width="200px"
+                liveChange="onDeliveryDayChange" />
+        </FlexBox>
+
+        <!-- 공통 문의사항 입력 영역 -->
+        <FlexBox id="select_FlexBox_request"
+            direction="Column"
+            class="sapUiMediumMarginTop">
+            <Label id="select_Label_request"
+                text="문의내역" />
+            <TextArea id="select_TextArea_request"
+                width="100%"
+                rows="4"
+                placeholder="문의 사항을 작성해주세요."
+                value="{/CustomerRequest}"
+                liveChange="onCustomerRequestChange" />
+        </FlexBox>
+
+        <!-- 버튼 그룹 영역 (하단에 배치) -->
+        <FlexBox id="select_FlexBox_buttons"
+            direction="Column"
+            alignItems="End"
+            class="sapUiMediumMarginTop"
+            width="100%">
+            <!-- 저장/초기화 버튼 그룹 -->
+            <FlexBox id="select_FlexBox_actionButtons"
+                width="100%"
+                justifyContent="End">
+                <Button id="select_Button_reset"
+                    text="초기화"
+                    icon="sap-icon://refresh"
+                    press="onResetCustomerRequest"
+                    class="sapUiSmallMarginEnd" />
+                <Button id="select_Button_save"
+                    text="저장"
+                    icon="sap-icon://save"
+                    type="Emphasized"
+                    press="onSaveCustomerRequest" />
+            </FlexBox>
+        </FlexBox>
             </VBox>
 
-            <!-- 구분선 -->
-            <Toolbar id="select_Toolbar_divider"
-                class="sapUiMediumMarginTop"
-                height="1px"
-                design="Solid" />
-
-            <!-- 선택한 색상 보기 버튼 -->
-            <FlexBox id="select_FlexBox_colorButton"
-                alignItems="End"
-                justifyContent="End"
-                width="100%"
-                class="sapUiMediumMarginTop">
-                <Button id="select_Button_showColors"
-                    text="선택한 색상 보기"
-                    icon="sap-icon://palette"
-                    press="onShowSelectedColors"
-                    width="auto" />
-            </FlexBox>
-
-            <!-- 공통 문의사항 입력 영역 -->
-            <FlexBox id="select_FlexBox_request"
-                direction="Column"
-                class="sapUiMediumMarginTop">
-                <Label id="select_Label_request"
-                    text="문의내역"
-                    required="true" />
-                <TextArea id="select_TextArea_request"
-                    width="100%"
-                    rows="4"
-                    placeholder="공통 문의 내용을 입력해주세요. 계약 기간을 입력해야 견적 생성이 가능합니다. ex. 2025.04.01~2026.05.01"
-                    value="{/CustomerRequest}"
-                    liveChange="onCustomerRequestChange" />
-            </FlexBox>
-
-            <!-- 버튼 그룹 영역 (하단에 배치) -->
-            <FlexBox id="select_FlexBox_buttons"
-                direction="Column"
-                alignItems="End"
-                class="sapUiMediumMarginTop"
-                width="100%">
-                <!-- 저장/초기화 버튼 그룹 -->
-                <FlexBox id="select_FlexBox_actionButtons"
-                    width="100%"
-                    justifyContent="End">
-                    <Button id="select_Button_reset"
-                        text="초기화"
-                        icon="sap-icon://refresh"
-                        press="onResetCustomerRequest"
-                        class="sapUiSmallMarginEnd" />
-                    <Button id="select_Button_save"
-                        text="저장"
-                        icon="sap-icon://save"
-                        type="Emphasized"
-                        press="onSaveCustomerRequest" />
-                </FlexBox>
-            </FlexBox>
+          
         </Panel>
     </Page>
 </mvc:View>

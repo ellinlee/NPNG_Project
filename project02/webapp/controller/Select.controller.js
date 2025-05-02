@@ -51,74 +51,78 @@ sap.ui.define(
 
         // 자재 ID 매핑 데이터 초기화
         this._initMaterialData();
+
+        // 유효기간 모델 초기화
+        var oValidDateModel = new JSONModel({
+          validFrom: null,
+          validTo: null
+        });
+        this.getView().setModel(oValidDateModel, "validDate");
       },
 
       _initMaterialData: function () {
-        // 자재 ID와 색상 코드 매핑 테이블 (1:1 매핑)
-        var oMaterialModel = new JSONModel({
-          // 자재 목록
-          materials: [
-            {
-              MatID: "3000000000",
-              MatName: "건설용 연노랑 페인트(완)",
-              category: "paint1", // 건설용 - paint1과 매핑
-              ColorCode: "#FFECB3", // 연노랑
-            },
-            {
-              MatID: "3000000001",
-              MatName: "자동차용 실버 페인트(완)",
-              category: "paint2", // 자동차용 - paint2와 매핑
-              ColorCode: "#616161", // 회색
-            },
-            // {
-            //   MatID: "3000000002",
-            //   MatName: "자동차용 친환경 실버 페인트(완)",
-            //   category: "paint2", // 자동차용 - paint2와 매핑
-            //   ColorCode: "#616161", // 회색
-            // },
-            {
-              MatID: "3000000003",
-              MatName: "조선용 빨강 페인트(완)",
-              category: "paint3", // 조선용 - paint3와 매핑
-              ColorCode: "#E53935",
-            },
-            {
-              MatID: "3000000004",
-              MatName: "항공용 회색 페인트(완)",
-              category: "paint4", // 항공용 - paint4와 매핑
-              ColorCode: "#9E9E9E",
-            },
-          ],
+        var that = this;
+        var oModel = this.getOwnerComponent().getModel();
+
+        oModel.read("/ZDCT_MM010Set", {
+          success: function(oData) {
+            var oMaterialModel = new JSONModel({
+              materials: oData.results.map(function(item) {
+                var colorMatch = item.MatNm.match(/\(#([0-9A-Fa-f]{6})\)/);
+                var colorCode = colorMatch ? "#" + colorMatch[1] : null;
+                
+                return {
+                  MatID: item.MatId,
+                  MatName: item.MatNm,
+                  category: item.MatTy,
+                  ColorCode: colorCode
+                };
+              })
+            });
+
+            that.getView().setModel(oMaterialModel, "materials");
+
+            var oViewModel = new JSONModel({
+              selectedCategory: "paint1"
+            });
+            that.getView().setModel(oViewModel, "view");
+
+            var availableColors = {};
+            oData.results.forEach(function(item) {
+              var colorMatch = item.MatNm.match(/\(#([0-9A-Fa-f]{6})\)/);
+              if (colorMatch) {
+                var colorCode = "#" + colorMatch[1];
+                availableColors[colorCode] = {
+                  code: colorCode,
+                  materialId: item.MatId
+                };
+              }
+            });
+
+            var oColorContainer = that.byId("select_HBox_colorContainer");
+            var aColorButtons = oColorContainer.getItems();
+            
+            aColorButtons.forEach(function(oVBox) {
+              var oButton = oVBox.getItems()[0];
+              var sColorCode = oButton.data("color");
+              
+              var colorInfo = availableColors[sColorCode];
+              if (colorInfo) {
+                oButton.addStyleClass("materialColor");
+                oButton.data("materialId", colorInfo.materialId);
+              }
+            });
+          },
+          error: function(oError) {
+            sap.m.MessageToast.show("자재 데이터를 불러오는 중 오류가 발생했습니다.");
+          }
         });
-
-        console.log(
-          "자재 데이터 초기화 완료:",
-          oMaterialModel.getProperty("/materials")
-        );
-
-        this.getView().setModel(oMaterialModel, "materials");
-
-        // 뷰 모델 초기화
-        var oViewModel = new JSONModel({
-          selectedCategory: "paint1", // 기본 선택된 카테고리는 paint1(건설용)
-        });
-        this.getView().setModel(oViewModel, "view");
-
-        console.log(
-          "기본 선택 카테고리:",
-          oViewModel.getProperty("/selectedCategory")
-        );
       },
 
-      // 색상 코드와 카테고리에 따라 자재 정보 찾기
       _findMaterialByColorAndCategory: function (sColorCode, sCategory) {
         var oMaterialsModel = this.getView().getModel("materials");
         var aMaterials = oMaterialsModel.getProperty("/materials") || [];
 
-        console.log("자재 찾기 - 색상:", sColorCode, "카테고리:", sCategory);
-        console.log("사용 가능한 자재 목록:", aMaterials);
-
-        // 선택된 카테고리와 색상에 맞는 자재 찾기
         var foundMaterial = aMaterials.find(function (oMaterial) {
           return (
             oMaterial.ColorCode === sColorCode &&
@@ -126,7 +130,6 @@ sap.ui.define(
           );
         });
 
-        console.log("찾은 자재:", foundMaterial || "없음");
         return foundMaterial;
       },
 
@@ -134,25 +137,19 @@ sap.ui.define(
         var oArgs = oEvent.getParameter("arguments");
         var sCustomerName = decodeURIComponent(oArgs.customerName);
 
-        // 컴포넌트에서 선택된 고객 정보를 가져옴
         var oComponent = this.getOwnerComponent();
-        var oSelectedCustomerModel = oComponent.getModel(
-          "selectedCustomerModel"
-        );
+        var oSelectedCustomerModel = oComponent.getModel("selectedCustomerModel");
 
-        // 컴포넌트 모델에서 고객 정보 확인
         if (
           oSelectedCustomerModel &&
           oSelectedCustomerModel.getData() &&
           oSelectedCustomerModel.getData().SelectedCustomer
         ) {
-          // 선택된 고객 정보를 가져와 현재 뷰의 모델로 설정
           var oViewModel = new sap.ui.model.json.JSONModel(
             oSelectedCustomerModel.getData()
           );
           this.getView().setModel(oViewModel);
         } else {
-          // 1. 로컬 스토리지에서 복원 시도
           var customerData = null;
           try {
             var storedCustomer = localStorage.getItem("selectedCustomer");
@@ -163,9 +160,7 @@ sap.ui.define(
             console.error("로컬 스토리지에서 고객 정보 복원 실패:", e);
           }
 
-          // 2. 로컬 스토리지에서 복원 실패 시 URL에서 가져온 고객명으로 목록에서 검색
           if (!customerData && sCustomerName) {
-            // 고객 데이터 생성
             var customersList = [
               { CustomerID: "5000000000", CustomerName: "현대 중공업" },
               { CustomerID: "6000000000", CustomerName: "TOYOTA" },
@@ -173,7 +168,6 @@ sap.ui.define(
               { CustomerID: "7000000001", CustomerName: "COMAC" },
             ];
 
-            // 고객명으로 검색
             var foundCustomer = customersList.find(function (customer) {
               return customer.CustomerName === sCustomerName;
             });
@@ -181,7 +175,6 @@ sap.ui.define(
             if (foundCustomer) {
               customerData = foundCustomer;
 
-              // 로컬 스토리지에 저장
               try {
                 localStorage.setItem(
                   "selectedCustomer",
@@ -193,13 +186,11 @@ sap.ui.define(
             }
           }
 
-          // 복원된 데이터로 모델 생성 및 설정
           if (customerData) {
             var oBackupModel = new sap.ui.model.json.JSONModel({
               SelectedCustomer: customerData,
             });
 
-            // 뷰 및 컴포넌트에 모델 설정
             this.getView().setModel(oBackupModel);
             oComponent.setModel(oBackupModel, "selectedCustomerModel");
           } else {
@@ -207,7 +198,6 @@ sap.ui.define(
           }
         }
 
-        // 색상 정보 초기화를 위해 색상 모델 재설정
         var oColorsModel = new sap.ui.model.json.JSONModel({
           selectedColors: [],
         });
@@ -215,87 +205,42 @@ sap.ui.define(
       },
 
       onColorSelected: function (oEvent) {
-        var selectedColor = oEvent.getSource().data("color");
+        var oButton = oEvent.getSource();
+        var sColorCode = oButton.data("color");
+        var sMaterialId = oButton.data("materialId");
         var oColorsModel = this.getView().getModel("colors");
         var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
 
-        console.log("색상 선택:", selectedColor);
-
         // 현재 선택된 카테고리 가져오기
-        var sSelectedCategory = null;
-
-        // 드롭다운에서 선택된 카테고리 가져오기
-        var oSelect = this.byId("select_Select_category");
-        if (oSelect) {
-          var oSelectedItem = oSelect.getSelectedItem();
-          if (oSelectedItem) {
-            sSelectedCategory = oSelectedItem.getKey();
-          }
-        }
-
-        console.log("선택된 카테고리:", sSelectedCategory);
-
-        // 선택된 카테고리와 색상에 따라 자재 정보 찾기
-        var oMaterial = null;
-        if (sSelectedCategory) {
-          oMaterial = this._findMaterialByColorAndCategory(
-            selectedColor,
-            sSelectedCategory
-          );
-        }
-
-        console.log("찾은 자재 정보:", oMaterial);
+        var sSelectedCategory = this.getView().getModel("view").getProperty("/selectedCategory");
 
         // 선택된 색상 정보 객체 생성
         var colorInfo = {
-          colorCode: selectedColor,
-          colorName: this._getColorName(selectedColor),
+          colorCode: sColorCode,
+          colorName: this._getColorName(sColorCode),
           timestamp: new Date().toISOString(),
-          colorStyle: "background-color: " + selectedColor + ";",
-          materialId: oMaterial ? oMaterial.MatID : null,
-          materialName: oMaterial ? oMaterial.MatName : "연결된 자재 없음",
-          description: "", // 색상별 문의사항 필드 추가
+          colorStyle: "background-color: " + sColorCode + ";",
+          materialId: sMaterialId,
+          description: ""
         };
 
-        console.log("생성된 색상 정보:", colorInfo);
-
         // 이미 선택된 색상인지 확인
-        var existingIndex = this._findColorIndex(
-          aSelectedColors,
-          selectedColor
-        );
+        var existingIndex = this._findColorIndex(aSelectedColors, sColorCode);
 
         if (existingIndex !== -1) {
           // 이미 선택된 색상이면 제거
           aSelectedColors.splice(existingIndex, 1);
-          // 색상의 하이라이트 제거
-          this._removeColorHighlight(selectedColor);
-          sap.m.MessageToast.show(
-            "색상이 선택 해제되었습니다: " + selectedColor
-          );
+          this._removeColorHighlight(sColorCode);
+          sap.m.MessageToast.show("색상이 선택 해제되었습니다: " + sColorCode);
         } else {
           // 새로운 색상 선택 추가
           aSelectedColors.push(colorInfo);
-
-          // 선택된 카테고리에 해당하는 색상인지에 따라 다른 스타일로 하이라이트
-          if (oMaterial) {
-            this._highlightSelectedColor(selectedColor, true); // 자재 연결된 색상
-          } else {
-            this._highlightSelectedColor(selectedColor, false); // 자재 연결 안된 색상
-          }
-
-          var message = "색상이 선택되었습니다: " + selectedColor;
-          sap.m.MessageToast.show(message);
+          this._highlightSelectedColor(sColorCode, !!sMaterialId);
+          sap.m.MessageToast.show("색상이 선택되었습니다: " + sColorCode);
         }
 
         // 모델 업데이트
         oColorsModel.setProperty("/selectedColors", aSelectedColors);
-
-        // 기존 모델에도 현재 선택된 색상 기록
-        var oModel = this.getView().getModel();
-        if (oModel) {
-          oModel.setProperty("/SelectedColor", selectedColor);
-        }
       },
 
       // 색상 코드로 색상 인덱스 찾기
@@ -311,25 +256,6 @@ sap.ui.define(
       // 색상 코드로 색상 이름 찾기
       _getColorName: function (colorCode) {
         return colorCode;
-      },
-
-      /**
-       * 타임스탬프를 사용자 친화적인 형식으로 포맷합니다.
-       * @param {string} timestamp ISO 형식의 타임스탬프
-       * @returns {string} 포맷된 날짜/시간 문자열
-       * @private
-       */
-      _formatTimestamp: function (timestamp) {
-        if (!timestamp) return "";
-
-        var date = new Date(timestamp);
-        var year = date.getFullYear();
-        var month = (date.getMonth() + 1).toString().padStart(2, "0");
-        var day = date.getDate().toString().padStart(2, "0");
-        var hours = date.getHours().toString().padStart(2, "0");
-        var minutes = date.getMinutes().toString().padStart(2, "0");
-
-        return year + "-" + month + "-" + day + " " + hours + ":" + minutes;
       },
 
       onColorSearch: function (oEvent) {
@@ -414,6 +340,34 @@ sap.ui.define(
         });
       },
 
+      // 색상 강조 표시 제거
+      _removeColorHighlight: function (selectedColor) {
+        var aColors = this.byId("select_HBox_colorContainer").getItems();
+
+        aColors.forEach(function (oColorContainer) {
+          var oColorButton = oColorContainer.getItems()[0];
+          if (oColorButton.data("color") === selectedColor) {
+            oColorContainer.removeStyleClass("selectedColor");
+            oColorContainer.removeStyleClass("materialColor");
+            oColorContainer.removeStyleClass("noMaterialColor");
+          }
+        });
+      },
+
+      // 타임스탬프 포맷팅
+      _formatTimestamp: function (sTimestamp) {
+        if (!sTimestamp) return "";
+        
+        var oDate = new Date(sTimestamp);
+        var sYear = oDate.getFullYear();
+        var sMonth = (oDate.getMonth() + 1).toString().padStart(2, "0");
+        var sDay = oDate.getDate().toString().padStart(2, "0");
+        var sHours = oDate.getHours().toString().padStart(2, "0");
+        var sMinutes = oDate.getMinutes().toString().padStart(2, "0");
+        
+        return sYear + "-" + sMonth + "-" + sDay + " " + sHours + ":" + sMinutes;
+      },
+
       // 선택된 색상 목록 표시
       onShowSelectedColors: function () {
         var oColorsModel = this.getView().getModel("colors");
@@ -428,8 +382,11 @@ sap.ui.define(
         aSelectedColors.forEach(
           function (color, index) {
             color.index = index;
-            // 타임스탬프 포맷팅
             color.formattedTimestamp = this._formatTimestamp(color.timestamp);
+            // 수량 초기화
+            if (!color.quantity) {
+              color.quantity = "";
+            }
           }.bind(this)
         );
 
@@ -445,6 +402,42 @@ sap.ui.define(
         }
 
         this._oSelectedColorsDialog.open();
+      },
+
+      // 수량 변경 처리
+      onQuantityChange: function(oEvent) {
+        var sValue = oEvent.getParameter("value");
+        var oSource = oEvent.getSource();
+        var sPath = oSource.getBindingContext("colors").getPath();
+        var oColorsModel = this.getView().getModel("colors");
+        
+        // 수량이 비어있는 경우
+        if (!sValue) {
+          oColorsModel.setProperty(sPath + "/quantity", "");
+          return;
+        }
+        
+        // 숫자로 변환
+        var iQuantity = parseInt(sValue);
+        
+        // 최소 주문량 체크
+        if (iQuantity < 10000) {
+          sap.m.MessageToast.show("최소 주문량은 10,000L 입니다.");
+          oSource.setValue("");
+          oColorsModel.setProperty(sPath + "/quantity", "");
+          return;
+        }
+        
+        // 200L 단위 체크
+        if (iQuantity % 200 !== 0) {
+          sap.m.MessageToast.show("주문량은 200L 단위로 입력해주세요.");
+          oSource.setValue("");
+          oColorsModel.setProperty(sPath + "/quantity", "");
+          return;
+        }
+        
+        // 유효한 수량인 경우 저장
+        oColorsModel.setProperty(sPath + "/quantity", iQuantity);
       },
 
       // 선택된 색상 제거
@@ -465,20 +458,6 @@ sap.ui.define(
         oColorsModel.setProperty("/selectedColors", aSelectedColors);
 
         sap.m.MessageToast.show("색상이 제거되었습니다: " + removedColor);
-      },
-
-      // 색상 강조 표시 제거
-      _removeColorHighlight: function (selectedColor) {
-        var aColors = this.byId("select_HBox_colorContainer").getItems();
-
-        aColors.forEach(function (oColorContainer) {
-          var oColorButton = oColorContainer.getItems()[0];
-          if (oColorButton.data("color") === selectedColor) {
-            oColorContainer.removeStyleClass("selectedColor");
-            oColorContainer.removeStyleClass("materialColor");
-            oColorContainer.removeStyleClass("noMaterialColor");
-          }
-        });
       },
 
       // 다이얼로그 닫기
@@ -504,15 +483,79 @@ sap.ui.define(
         var oColorsModel = this.getView().getModel("colors");
         var sCustomerRequest = oModel.getProperty("/CustomerRequest");
         var aSelectedColors = oColorsModel.getProperty("/selectedColors");
+        var oValidDateModel = this.getView().getModel("validDate");
+        var oValidFrom = oValidDateModel.getProperty("/validFrom");
+        var oValidTo = oValidDateModel.getProperty("/validTo");
 
-        // 요청사항이나 색상이 선택되지 않은 경우 알림
-        if (!sCustomerRequest) {
-          sap.m.MessageToast.show("요청사항을 입력해주세요.");
+        // 납품 희망일 유효성 검사
+        var sDeliveryDay = oModel.getProperty("/DeliveryDay");
+        if (sDeliveryDay) {
+          var aDays = sDeliveryDay.split(",").map(function(day) {
+            return day.trim();
+          });
+          var isValid = aDays.every(function(day) {
+            var n = Number(day);
+            return (
+              /^\d+$/.test(day) && // 정수
+              n >= 1 && n <= 31 && // 1~31
+              Number.isInteger(n)
+            );
+          });
+          var hasDuplicate = (new Set(aDays)).size !== aDays.length;
+          if (!isValid || hasDuplicate) {
+            sap.m.MessageToast.show("납품 희망일은 1~31 사이의 정수만, 중복 없이 입력하세요.");
+            try {
+              this.byId("input_deliveryDay").setValue("");
+            } catch (e) {
+              oModel.setProperty("/DeliveryDay", "");
+            }
+            return;
+          }
+        }
+
+        // 계약기간 필수값 체크
+        if (!oValidFrom || !oValidTo) {
+          sap.m.MessageToast.show("계약기간을 입력해주세요.");
           return;
         }
 
+        // 색상이 선택되지 않은 경우 알림
         if (!aSelectedColors || aSelectedColors.length === 0) {
           sap.m.MessageToast.show("하나 이상의 색상을 선택해주세요.");
+          return;
+        }
+
+        // 아이템별 필수값 체크
+        var aMissingItems = [];
+        aSelectedColors.forEach(function(oColor, iIndex) {
+          var sMissingFields = [];
+          
+          if (!oColor.quantity) {
+            sMissingFields.push("주문 수량");
+          }
+          
+          if (!oColor.itemValidFrom) {
+            sMissingFields.push("계약 시작일");
+          }
+          
+          if (!oColor.itemValidTo) {
+            sMissingFields.push("계약 종료일");
+          }
+          
+          if (sMissingFields.length > 0) {
+            aMissingItems.push({
+              colorCode: oColor.colorCode,
+              missingFields: sMissingFields
+            });
+          }
+        });
+
+        if (aMissingItems.length > 0) {
+          var sMessage = "다음 색상의 필수 정보가 누락되었습니다:\n";
+          aMissingItems.forEach(function(oItem) {
+            sMessage += "\n- " + oItem.colorCode + ": " + oItem.missingFields.join(", ");
+          });
+          sap.m.MessageToast.show(sMessage);
           return;
         }
 
@@ -582,6 +625,11 @@ sap.ui.define(
 
         // UI 초기화 실행
         this._resetAfterSave();
+
+        // 전체 계약 기간 초기화
+        var oValidDateModel = this.getView().getModel("validDate");
+        oValidDateModel.setProperty("/validFrom", null);
+        oValidDateModel.setProperty("/validTo", null);
 
         // 선택된 색상이 없는 경우 처리
         if (!aSelectedColors || aSelectedColors.length === 0) {
@@ -796,6 +844,11 @@ sap.ui.define(
         // 현재 날짜와 시간
         var oNow = new Date();
 
+        // 유효기간 가져오기
+        var oValidDateModel = this.getView().getModel("validDate");
+        var oValidFrom = oValidDateModel.getProperty("/validFrom");
+        var oValidTo = oValidDateModel.getProperty("/validTo");
+
         // 1. 헤더 데이터 생성
         var oHeaderData = {
           InqrDocuId: sDocumentNumber,
@@ -803,6 +856,8 @@ sap.ui.define(
           SalesOrg: "S100",
           DistCha: "10",
           Division: "10",
+          ValidFrom: this._formatSAPDate(oValidFrom),
+          ValidTo: this._formatSAPDate(oValidTo),
           Descr: oData.customerRequest,
           CreatedBy: "", // 현재 SAP 사용자 또는 시스템 ID
           CreatedDate: this._formatSAPDate(oNow), // 현재 날짜 - SAP 형식으로 변환
@@ -876,6 +931,7 @@ sap.ui.define(
        * @private
        */
       _formatSAPDate: function (oDate) {
+        if (!oDate) return null;
         return "/Date(" + oDate.getTime() + ")/";
       },
 
@@ -900,102 +956,93 @@ sap.ui.define(
        * @param {string} sCustomerRequest - 공통 문의사항
        * @private
        */
-      _saveItemData: function (
-        sDocumentNumber,
-        aSelectedColors,
-        sCustomerRequest
-      ) {
-        this._documentNumber = sDocumentNumber;
-        this._customerRequest = sCustomerRequest;
+      _saveItemData: function (sDocumentNumber, aSelectedColors, sCustomerRequest) {
+        var that = this;
+        var oModel = this.getOwnerComponent().getModel();
+        var oMaterialsModel = this.getView().getModel("materials");
+        var aMaterials = oMaterialsModel.getProperty("/materials") || [];
+        var now = new Date();
 
-        // 모델에서 데이터를 가져오는 대신 파라미터로 전달받은 색상 목록 사용
-        console.log("저장할 모든 아이템:", aSelectedColors);
+        // 날짜 포맷 함수
+        function toODataDate(date) {
+          if (!date) return null;
+          if (typeof date === "string") date = new Date(date);
+          return date.toISOString().split("T")[0] + "T00:00:00";
+        }
+        // 시간 포맷 함수
+        function toODataTime(date) {
+          if (!date) return null;
+          return "PT" + date.getHours() + "H" + date.getMinutes() + "M" + date.getSeconds() + "S";
+        }
 
-        // material ID가 있는 아이템만 필터링하여 실제 저장
-        var aSelectedItems = aSelectedColors.filter(function (item) {
-          return item.materialId; // materialId가 있는 항목만 저장
-        });
+        // 선택된 색상에 해당하는 자재 찾기 및 OData 구조에 맞게 매핑
+        var aItemsToSave = aSelectedColors.map(function(oColor, iIndex) {
+          // 자재명에서 색상 코드 추출
+          var colorMatch = oColor.colorCode.match(/#([0-9A-Fa-f]{6})/);
+          if (!colorMatch) return null;
 
-        console.log("필터링 후 실제 저장할 아이템:", aSelectedItems);
-        console.log(
-          "저장 시늉만 하는 아이템:",
-          aSelectedColors.filter(function (item) {
-            return !item.materialId;
-          })
-        );
+          // 해당 색상 코드를 가진 자재 찾기
+          var oMaterial = aMaterials.find(function(oMat) {
+            var matColorMatch = oMat.MatName.match(/\(#([0-9A-Fa-f]{6})\)/);
+            return matColorMatch && "#" + matColorMatch[1] === oColor.colorCode;
+          });
 
-        this._totalItems = aSelectedItems.length;
-        this._savedItems = 0;
+          if (!oMaterial) return null;
 
-        // 아이템이 없는 경우
-        if (this._totalItems === 0) {
-          // 뷰 busy 상태 해제
+          return {
+            InqrDocuId: sDocumentNumber,
+            InqrItemId: ((iIndex + 1) * 10).toString().padStart(6, "0"),
+            MatId: oMaterial.MatID,
+            Uom: "L",
+            Qty: Number(oColor.quantity).toFixed(3),
+            ValidFrom: toODataDate(oColor.itemValidFrom),
+            ValidTo: toODataDate(oColor.itemValidTo),
+            Descr: oColor.description || sCustomerRequest || "",
+            CreatedBy: "FIORI",
+            CreatedDate: toODataDate(now),
+            CreatedTime: toODataTime(now),
+            ChangedBy: "FIORI",
+            ChangedDate: toODataDate(now),
+            ChangedTime: toODataTime(now)
+          };
+        }).filter(function(item) { return item !== null; });
+
+        if (aItemsToSave.length === 0) {
           this.getView().setBusy(false);
-          console.log("저장할 아이템이 없습니다.");
+          sap.m.MessageToast.show("저장할 자재가 없습니다.");
           return;
         }
 
-        // 재귀적으로 아이템 저장
-        this._currentItems = aSelectedItems;
+        // 아이템 저장 시작
+        this._totalItems = aItemsToSave.length;
+        this._savedItems = 0;
+        this._currentItems = aItemsToSave;
         this._saveNextItem(0);
       },
 
-      /**
-       * 다음 아이템 저장 (재귀 호출)
-       * @param {int} iIndex - 현재 저장할 아이템 인덱스
-       * @private
-       */
       _saveNextItem: function (iIndex) {
         var that = this;
 
-        // 모든 아이템을 저장한 경우
         if (iIndex >= this._currentItems.length) {
           console.log("모든 아이템 저장 완료");
           this.getView().setBusy(false);
-          // 문서번호가 있는 경우에만 성공 메시지 표시 - 모든 아이템 저장 완료 후에 표시
           if (this._documentNumber) {
-            sap.m.MessageToast.show(
-              "문의서 " + this._documentNumber + " 저장이 완료되었습니다."
-            );
-            // 이미 초기화되었으므로 다시 초기화하지 않음
+            sap.m.MessageToast.show("문의서 " + this._documentNumber + " 저장이 완료되었습니다.");
           }
           return;
         }
 
         var oItem = this._currentItems[iIndex];
         var oModel = this.getOwnerComponent().getModel();
-        var oNow = new Date();
 
-        // 아이템 데이터 생성
-        var oItemData = {
-          InqrDocuId: this._documentNumber,
-          InqrItemId: ((iIndex + 1) * 10).toString().padStart(5, "0"), // (10, 20, 30... 증가)
-          MatId: oItem.materialId || "",
-          Descr: oItem.description || this._customerRequest || "", // 색상별 문의사항 우선, 없으면 공통 문의사항 사용
-          CreatedBy: "", // 현재 SAP 사용자 또는 시스템 ID
-          CreatedDate: this._formatSAPDate(oNow), // 현재 날짜 - SAP 형식으로 변환
-          CreatedTime: this._formatTime(oNow), // 현재 시간
-          ChangedBy: "", // 현재 SAP 사용자 또는 시스템 ID
-          ChangedDate: this._formatSAPDate(oNow), // 현재 날짜 - SAP 형식으로 변환
-          ChangedTime: this._formatTime(oNow), // 현재 시간
-        };
-
-        console.log("저장할 아이템 데이터:", oItemData);
-
-        // 아이템 데이터 저장
-        oModel.create("/ZDCT_SD041Set", oItemData, {
-          success: function () {
+        oModel.create("/ZDCT_SD041Set", oItem, {
+          success: function() {
             console.log("아이템 데이터 저장 성공:", iIndex + 1);
             that._savedItems++;
-
-            // 다음 아이템 저장 - 마지막 항목에서만 성공 메시지 표시
             that._saveNextItem(iIndex + 1);
-            // 성공 메시지는 모든 항목 저장 후 한 번만 표시하도록 수정함
           },
-          error: function (oError) {
+          error: function(oError) {
             console.error("아이템 데이터 저장 실패:", oError);
-
-            // 상세 오류 정보 출력
             if (oError.responseText) {
               try {
                 var errorDetails = JSON.parse(oError.responseText);
@@ -1004,10 +1051,8 @@ sap.ui.define(
                 console.error("오류 응답:", oError.responseText);
               }
             }
-
-            // 계속해서 다음 아이템 저장 시도
             that._saveNextItem(iIndex + 1);
-          },
+          }
         });
       },
 
@@ -1041,18 +1086,6 @@ sap.ui.define(
         oColorsModel.setProperty("/selectedColors", []);
       },
 
-      // 색상 코드로 자재 ID 찾기
-      _findMaterialIdByColor: function (colorCode) {
-        var aMaterials =
-          this.getView().getModel("materials").getProperty("/materials") || [];
-        for (var i = 0; i < aMaterials.length; i++) {
-          if (aMaterials[i].ColorCode === colorCode) {
-            return aMaterials[i].MatID;
-          }
-        }
-        return null;
-      },
-
       // 요청사항 초기화
       onResetCustomerRequest: function () {
         // 입력 필드 초기화
@@ -1079,28 +1112,6 @@ sap.ui.define(
         sap.m.MessageToast.show("요청사항과 선택된 색상이 초기화되었습니다.");
       },
 
-      // 다이얼로그에서 색상 제거
-      onRemoveColorFromDialog: function (oEvent) {
-        var oButton = oEvent.getSource();
-        var sColorCode = oButton.data("colorCode");
-        var oColorsModel = this.getView().getModel("colors");
-        var aSelectedColors = oColorsModel.getProperty("/selectedColors");
-
-        // 색상 목록에서 해당 색상 찾기
-        var nIndex = this._findColorIndex(aSelectedColors, sColorCode);
-
-        if (nIndex !== -1) {
-          // 색상의 하이라이트 제거
-          this._removeColorHighlight(sColorCode);
-
-          // 색상 목록에서 제거
-          aSelectedColors.splice(nIndex, 1);
-          oColorsModel.setProperty("/selectedColors", aSelectedColors);
-
-          sap.m.MessageToast.show("색상이 제거되었습니다: " + sColorCode);
-        }
-      },
-
       // 드롭다운에서 카테고리 선택 시 호출되는 함수
       onCategoryChange: function (oEvent) {
         var sSelectedCategory = oEvent.getParameter("selectedItem").getKey();
@@ -1108,40 +1119,32 @@ sap.ui.define(
           .getModel("view")
           .setProperty("/selectedCategory", sSelectedCategory);
 
-        // 이미 선택된 색상이 있는 경우, 카테고리에 맞게 강조 표시 업데이트
-        var aSelectedColors = this.getView()
-          .getModel("colors")
-          .getProperty("/selectedColors");
-        if (aSelectedColors && aSelectedColors.length > 0) {
-          // 모든 색상의 강조 표시를 제거합니다
+        // 선택된 색상과 수량 데이터 초기화
+        var oColorsModel = this.getView().getModel("colors");
+        var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
+        
+        // 선택된 색상이 있는 경우에만 초기화
+        if (aSelectedColors.length > 0) {
+          // 모든 선택된 색상의 하이라이트 제거
           aSelectedColors.forEach(
             function (oColor) {
               this._removeColorHighlight(oColor.colorCode);
             }.bind(this)
           );
 
-          // 선택된 색상의 강조 표시를 다시 적용합니다
-          aSelectedColors.forEach(
-            function (oColor) {
-              // 현재 카테고리에 따라 자재 정보를 다시 확인
-              var oMaterial = this._findMaterialByColorAndCategory(
-                oColor.colorCode,
-                sSelectedCategory
-              );
-
-              // 강조 표시 다시 적용
-              this._highlightSelectedColor(oColor.colorCode, !!oMaterial);
-
-              // 색상 정보 객체 업데이트
-              oColor.materialId = oMaterial ? oMaterial.MatID : null;
-              oColor.materialName = oMaterial
-                ? oMaterial.MatName
-                : "연결된 자재 없음";
-            }.bind(this)
-          );
-
-          // 모델 업데이트
-          this.getView().getModel("colors").refresh(true);
+          // 선택된 색상 배열 초기화
+          oColorsModel.setProperty("/selectedColors", []);
+          
+          // 전체 계약 기간 초기화
+          var oValidDateModel = this.getView().getModel("validDate");
+          oValidDateModel.setProperty("/validFrom", null);
+          oValidDateModel.setProperty("/validTo", null);
+          
+          // DatePicker 값 초기화
+          this.byId("select_DatePicker_validFrom_new").setValue(null);
+          this.byId("select_DatePicker_validTo_new").setValue(null);
+          
+          sap.m.MessageToast.show("카테고리가 변경되어 모든 입력 데이터가 초기화되었습니다.");
         }
       },
 
@@ -1154,6 +1157,265 @@ sap.ui.define(
         // 해당 색상 항목의 description 속성 업데이트
         var oColorsModel = this.getView().getModel("colors");
         oColorsModel.setProperty(sPath + "/description", sValue);
+      },
+
+      // 유효기간 시작일 변경 처리
+      onValidFromChange: function(oEvent) {
+        var oDate = oEvent.getParameter("value");
+        var oValidDateModel = this.getView().getModel("validDate");
+        
+        // 현재 날짜
+        var oCurrentDate = new Date();
+        oCurrentDate.setHours(0, 0, 0, 0);
+        
+        // 최소 시작일 계산 (현재로부터 2개월 후)
+        var oMinDate = new Date();
+        oMinDate.setMonth(oMinDate.getMonth() + 2);
+        oMinDate.setHours(0, 0, 0, 0);
+        
+        if (oDate) {
+          // Date 객체로 변환
+          if (typeof oDate === 'string') {
+            oDate = new Date(oDate);
+          }
+          
+          // 날짜 비교를 위해 시간 정보 제거
+          oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
+          
+          // 과거 날짜 체크
+          if (oDate < oCurrentDate) {
+            sap.m.MessageToast.show("과거 날짜는 입력할 수 없습니다.");
+            oEvent.getSource().setValue(null);
+            oValidDateModel.setProperty("/validFrom", null);
+            return;
+          }
+          
+          // 2개월 이후 체크
+          if (oDate < oMinDate) {
+            sap.m.MessageToast.show("계약 시작일은 최소 2개월 이후로 설정해야 합니다.");
+            oEvent.getSource().setValue(null);
+            oValidDateModel.setProperty("/validFrom", null);
+            return;
+          }
+        }
+        
+        oValidDateModel.setProperty("/validFrom", oDate);
+        
+        // 종료일이 시작일보다 이전이면 종료일 초기화
+        var oValidTo = oValidDateModel.getProperty("/validTo");
+        if (oValidTo) {
+          if (typeof oValidTo === 'string') {
+            oValidTo = new Date(oValidTo);
+          }
+          oValidTo = new Date(oValidTo.getFullYear(), oValidTo.getMonth(), oValidTo.getDate());
+          
+          if (oValidTo < oDate) {
+            this.byId("select_DatePicker_validTo_new").setValue(null);
+            oValidDateModel.setProperty("/validTo", null);
+          }
+        }
+      },
+
+      // 유효기간 종료일 변경 처리
+      onValidToChange: function(oEvent) {
+        var oDate = oEvent.getParameter("value");
+        var oValidDateModel = this.getView().getModel("validDate");
+        var oValidFrom = oValidDateModel.getProperty("/validFrom");
+        
+        // 현재 날짜
+        var oCurrentDate = new Date();
+        oCurrentDate.setHours(0, 0, 0, 0);
+        
+        if (oDate) {
+          // Date 객체로 변환
+          if (typeof oDate === 'string') {
+            oDate = new Date(oDate);
+          }
+          
+          // 날짜 비교를 위해 시간 정보 제거
+          oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
+          
+          // 과거 날짜 체크
+          if (oDate < oCurrentDate) {
+            sap.m.MessageToast.show("과거 날짜는 입력할 수 없습니다.");
+            oEvent.getSource().setValue(null);
+            oValidDateModel.setProperty("/validTo", null);
+            return;
+          }
+          
+          if (oValidFrom) {
+            if (typeof oValidFrom === 'string') {
+              oValidFrom = new Date(oValidFrom);
+            }
+            oValidFrom = new Date(oValidFrom.getFullYear(), oValidFrom.getMonth(), oValidFrom.getDate());
+            
+            if (oDate < oValidFrom) {
+              sap.m.MessageToast.show("계약 종료일은 시작일보다 이후여야 합니다.");
+              oEvent.getSource().setValue(null);
+              oValidDateModel.setProperty("/validTo", null);
+              return;
+            }
+          }
+        }
+        
+        oValidDateModel.setProperty("/validTo", oDate);
+      },
+
+      // 아이템별 계약 시작일 변경 처리
+      onItemValidFromChange: function(oEvent) {
+        var oDate = oEvent.getParameter("value");
+        var oSource = oEvent.getSource();
+        var sPath = oSource.getBindingContext("colors").getPath();
+        var oColorsModel = this.getView().getModel("colors");
+        var oValidDateModel = this.getView().getModel("validDate");
+        
+        // 전체 계약 기간 체크
+        var oGlobalValidFrom = oValidDateModel.getProperty("/validFrom");
+        var oGlobalValidTo = oValidDateModel.getProperty("/validTo");
+        
+        if (!oGlobalValidFrom || !oGlobalValidTo) {
+          sap.m.MessageToast.show("먼저 전체 계약 기간을 입력해주세요.");
+          oSource.setValue(null);
+          oColorsModel.setProperty(sPath + "/itemValidFrom", null);
+          return;
+        }
+        
+        // 현재 날짜
+        var oCurrentDate = new Date();
+        oCurrentDate.setHours(0, 0, 0, 0);
+        
+        if (oDate) {
+          // DatePicker에서 value는 Date 객체로 들어옴, 혹시 문자열이면 변환
+          if (typeof oDate === 'string') {
+            oDate = new Date(oDate);
+          }
+          if (!(oDate instanceof Date) || isNaN(oDate)) {
+            oColorsModel.setProperty(sPath + "/itemValidFrom", null);
+            return;
+          }
+          // 날짜 비교를 위해 시간 정보 제거
+          oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
+          // 과거 날짜 체크
+          if (oDate < oCurrentDate) {
+            sap.m.MessageToast.show("과거 날짜는 입력할 수 없습니다.");
+            oSource.setValue(null);
+            oColorsModel.setProperty(sPath + "/itemValidFrom", null);
+            return;
+          }
+          // 전체 계약 기간 체크
+          if (oDate < oGlobalValidFrom || oDate > oGlobalValidTo) {
+            sap.m.MessageToast.show("아이템 계약 시작일은 전체 계약 기간 내에 있어야 합니다.");
+            oSource.setValue(null);
+            oColorsModel.setProperty(sPath + "/itemValidFrom", null);
+            return;
+          }
+          // 종료일이 시작일보다 이전이면 종료일 초기화
+          var oItemValidTo = oColorsModel.getProperty(sPath + "/itemValidTo");
+          if (oItemValidTo) {
+            if (typeof oItemValidTo === 'string') {
+              oItemValidTo = new Date(oItemValidTo);
+            }
+            oItemValidTo = new Date(oItemValidTo.getFullYear(), oItemValidTo.getMonth(), oItemValidTo.getDate());
+            if (oItemValidTo < oDate) {
+              oColorsModel.setProperty(sPath + "/itemValidTo", null);
+            }
+          }
+        }
+        // 반드시 Date 객체로 저장
+        oColorsModel.setProperty(sPath + "/itemValidFrom", oDate instanceof Date ? oDate : null);
+      },
+
+      // 아이템별 계약 종료일 변경 처리
+      onItemValidToChange: function(oEvent) {
+        var oDate = oEvent.getParameter("value");
+        var oSource = oEvent.getSource();
+        var sPath = oSource.getBindingContext("colors").getPath();
+        var oColorsModel = this.getView().getModel("colors");
+        var oValidDateModel = this.getView().getModel("validDate");
+        
+        // 전체 계약 기간 체크
+        var oGlobalValidFrom = oValidDateModel.getProperty("/validFrom");
+        var oGlobalValidTo = oValidDateModel.getProperty("/validTo");
+        
+        if (!oGlobalValidFrom || !oGlobalValidTo) {
+          sap.m.MessageToast.show("먼저 전체 계약 기간을 입력해주세요.");
+          oSource.setValue(null);
+          oColorsModel.setProperty(sPath + "/itemValidTo", null);
+          return;
+        }
+        
+        // 현재 날짜
+        var oCurrentDate = new Date();
+        oCurrentDate.setHours(0, 0, 0, 0);
+        
+        if (oDate) {
+          // DatePicker에서 value는 Date 객체로 들어옴, 혹시 문자열이면 변환
+          if (typeof oDate === 'string') {
+            oDate = new Date(oDate);
+          }
+          if (!(oDate instanceof Date) || isNaN(oDate)) {
+            oColorsModel.setProperty(sPath + "/itemValidTo", null);
+            return;
+          }
+          // 날짜 비교를 위해 시간 정보 제거
+          oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
+          // 과거 날짜 체크
+          if (oDate < oCurrentDate) {
+            sap.m.MessageToast.show("과거 날짜는 입력할 수 없습니다.");
+            oSource.setValue(null);
+            oColorsModel.setProperty(sPath + "/itemValidTo", null);
+            return;
+          }
+          // 전체 계약 기간 체크
+          if (oDate < oGlobalValidFrom || oDate > oGlobalValidTo) {
+            sap.m.MessageToast.show("아이템 계약 종료일은 전체 계약 기간 내에 있어야 합니다.");
+            oSource.setValue(null);
+            oColorsModel.setProperty(sPath + "/itemValidTo", null);
+            return;
+          }
+          // 시작일 체크
+          var oItemValidFrom = oColorsModel.getProperty(sPath + "/itemValidFrom");
+          if (oItemValidFrom) {
+            if (typeof oItemValidFrom === 'string') {
+              oItemValidFrom = new Date(oItemValidFrom);
+            }
+            oItemValidFrom = new Date(oItemValidFrom.getFullYear(), oItemValidFrom.getMonth(), oItemValidFrom.getDate());
+            if (oDate < oItemValidFrom) {
+              sap.m.MessageToast.show("계약 종료일은 시작일보다 이후여야 합니다.");
+              oSource.setValue(null);
+              oColorsModel.setProperty(sPath + "/itemValidTo", null);
+              return;
+            }
+          }
+        }
+        // 반드시 Date 객체로 저장
+        oColorsModel.setProperty(sPath + "/itemValidTo", oDate instanceof Date ? oDate : null);
+      },
+
+      onDeliveryDayChange: function(oEvent) {
+        var sValue = oEvent.getParameter("value");
+        var oInput = oEvent.getSource();
+        var oModel = this.getView().getModel();
+
+        if (sValue) {
+          var aDays = sValue.split(",").map(function(day) {
+            return day.trim();
+          });
+          var isValid = aDays.every(function(day) {
+            var n = Number(day);
+            return (
+              /^\d+$/.test(day) && // 정수
+              n >= 1 && n <= 31 && // 1~31
+              Number.isInteger(n)
+            );
+          });
+          var hasDuplicate = (new Set(aDays)).size !== aDays.length;
+          if (!isValid || hasDuplicate) {
+            sap.m.MessageToast.show("납품 희망일은 1~31 사이의 정수만, 중복 없이 입력하세요.");
+            oInput.setValue("");
+            oModel.setProperty("/DeliveryDay", "");
+          }
+        }
       },
     });
   }
