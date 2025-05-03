@@ -48,6 +48,13 @@
                     </HBox>
                 </Panel>
 
+                <!-- 희망 납품일 정보  -->
+                <Panel id="panel_deliveryDayInfo" headerText="희망 납품일 정보" class="sapUiMediumMarginTop">
+                    <VBox class="sapUiSmallMargin">
+                        <Text text="{/DeliveryDay}" />
+                    </VBox>
+                </Panel>
+
                 <!-- 전체 문의 내역 -->
                 <Panel id="dialog_Panel_request" headerText="공통 문의 내용" class="sapUiSmallMarginBottom">
                     <Text id="dialog_Text_request" text="{/CustomerRequest}" />
