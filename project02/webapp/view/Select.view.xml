@@ -1129,12 +1129,15 @@
             direction="Column"
             class="sapUiMediumMarginTop">
             <Label id="select_Label_deliveryDay"
-                text="매달 납품받고 싶은 날짜(예: 1, 10, 15 등)" />
-            <Input id="input_deliveryDay"
+                text="매달 납품받고 싶은 날짜(1~31)"
+				required="true" />
+            <Input
+                id="input_deliveryDay"
                 value="{/DeliveryDay}"
-                placeholder="1, 10, 15 등 원하는 날짜를 입력하세요"
-                width="200px"
-                liveChange="onDeliveryDayChange" />
+                placeholder="예: 15"
+                change="onDeliveryDayInputChange"
+                width="120px"
+            />
         </FlexBox>
 
         <!-- 공통 문의사항 입력 영역 -->
@@ -1166,11 +1169,17 @@
                     icon="sap-icon://refresh"
                     press="onResetCustomerRequest"
                     class="sapUiSmallMarginEnd" />
+                <Button id="btnCheckContractAvailable"
+                    text="계약 체결 가능 여부 확인"
+                    icon="sap-icon://inspect"
+                    press="onCheckContractAvailable"
+                    class="sapUiSmallMarginEnd" />
                 <Button id="select_Button_save"
                     text="저장"
                     icon="sap-icon://save"
                     type="Emphasized"
-                    press="onSaveCustomerRequest" />
+                    press="onSaveCustomerRequest"
+                    enabled="{/isContractCheckPassed}" />
             </FlexBox>
         </FlexBox>
             </VBox>
