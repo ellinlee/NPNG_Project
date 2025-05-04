@@ -1,0 +1,33 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog id="contractGuideDialog" title="문의 기반 계약 주문 프로세스 안내" draggable="true" resizable="true" contentWidth="500px">
+    <VBox class="sapUiSmallMargin">
+      <Text text="계약 기간 설정" class="contractGuideTitle"/>
+      <Text text="- 납품을 원하는 전체 계약 기간을 입력합니다."/>
+      <Text text="- 계약 기간 중 납기 희망일이 단 한 번뿐이라면, 계약 시작일과 종료일을 동일하게 설정해 주세요."/>
+      <Toolbar height="10px"/>
+      <Text text="희망 납기일 입력" class="contractGuideTitle"/>
+      <Text text="- 매월 납품을 원하는 날짜를 희망 납기일로 입력합니다."/>
+      <Text text="- 이 날짜를 기준으로 월별 주문이 자동으로 나뉘게 됩니다."/>
+      <Toolbar height="10px"/>
+      <Text text="색상 선택 및 보기" class="contractGuideTitle"/>
+      <Text text="- 계약하고자 하는 색상을 다중 선택한 후 [선택한 색상 보기] 버튼을 눌러 주세요."/>
+      <Text text="- 선택한 색상별로 월별 수량과 해당 계약 시작/종료일을 지정할 수 있는 화면이 표시됩니다."/>
+      <Toolbar height="10px"/>
+      <Text text="계약 조건 확인" class="contractGuideTitle"/>
+      <Text text="- 입력한 조건이 유효한지 확인하기 위해 [계약 체결 여부 확인] 버튼을 꼭 눌러 주세요."/>
+      <Text text="- 계약 기간 및 희망 납기일, 색상별 수량 입력이 누락되지 않았는지 자동으로 체크됩니다."/>
+      <Toolbar height="10px"/>
+      <Text text="문의 저장" class="contractGuideTitle"/>
+      <Text text="- 모든 조건 입력 및 확인이 완료되면 [저장] 버튼을 눌러 문의서를 등록합니다."/>
+      <Text text="- 저장된 문의는 계약 생성 시 기반 데이터로 활용됩니다."/>
+      <Toolbar height="10px"/>
+      <Text text="참고사항" class="contractGuideTitle"/>
+      <Text text="- 색상은 동시에 여러 개 선택 가능하며, 각각의 색상에 대해 서로 다른 계약 조건 및 수량을 입력할 수 있습니다."/>
+      <Text text="- 납기일과 계약기간이 논리적으로 맞지 않으면 저장이 제한될 수 있습니다."/>
+      <Text text="- 계약 여부 확인을 누르지 않으면 저장이 불가능합니다."/>
+    </VBox>
+    <endButton>
+      <Button text="닫기" press="onCloseContractGuideDialog"/>
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition> 
