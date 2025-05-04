@@ -50,9 +50,7 @@
 
                 <!-- 희망 납품일 정보  -->
                 <Panel id="panel_deliveryDayInfo" headerText="희망 납품일 정보" class="sapUiMediumMarginTop">
-                    <VBox class="sapUiSmallMargin">
-                        <Text text="{/DeliveryDay}" />
-                    </VBox>
+                    <Text text="{= '매월 ' + ${/DeliveryDay} + '일'}" />   
                 </Panel>
 
                 <!-- 전체 문의 내역 -->

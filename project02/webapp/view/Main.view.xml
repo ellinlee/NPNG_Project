@@ -33,7 +33,8 @@
                         class="inputLabel" />
                     <Input id="main_Input_customerName"
                         placeholder="{i18n>placeholderCustomer}"
-                        class="inputField" />
+                        class="inputField"
+                        submit=".onEnterPress" />
                     <Button id="main_Button_submit"
                         text="조회"
                         icon="sap-icon://search"
