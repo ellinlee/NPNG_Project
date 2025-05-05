@@ -714,17 +714,17 @@ sap.ui.define(
             break;
           case "6000000000": // TOYOTA
             oHeaderData.SalesOrg = "S200";
-            oHeaderData.DistCha = "10";
+            oHeaderData.DistCha = "20";
             oHeaderData.Division = "20";
             break;
           case "7000000000": // CPID
             oHeaderData.SalesOrg = "S300";
-            oHeaderData.DistCha = "10";
+            oHeaderData.DistCha = "20";
             oHeaderData.Division = "30";
             break;
           case "7000000001": // COMAC
             oHeaderData.SalesOrg = "S300";
-            oHeaderData.DistCha = "10";
+            oHeaderData.DistCha = "20";
             oHeaderData.Division = "40";
             break;
         }
