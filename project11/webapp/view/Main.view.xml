@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mvc:View
+  controllerName="sync.dc.sd.project11.controller.Main"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:layout="sap.ui.layout.form">
+
+  <!-- 메인 페이지: 문의서 리스트 -->
+  <Page
+    id="page"
+    title="[SD] 문의서 조회"
+    showNavButton="true"
+    navButtonPress=".onNavBack">
+
+    <subHeader>
+      <Toolbar>
+        <SearchField
+          id="searchField"
+          width="40%"
+          placeholder="문의서번호, 자재코드, 고객ID 입력"
+          showSearchButton="true"
+          search=".onSearchPress" />
+        <ToolbarSpacer/>
+        <Button icon="sap-icon://search"  text="조회"   press=".onSearchPress"/>
+        <Button icon="sap-icon://refresh" text="초기화" press=".onReset"/>
+        <Button icon="sap-icon://hint"    text="안내"   press=".onShowInfo"/>
+      </Toolbar>
+    </subHeader>
+
+    <content>
+      <Table
+        id="inquiryTable"
+        inset="false"
+        headerText="문의서 현황"
+        growing="true"
+        growingScrollToLoad="true"
+        mode="SingleSelectMaster"
+        selectionChange=".onSelect"
+        items="{path:'/ZDCC_InquiryForm', templateShareable:true}">
+        <columns>
+          <Column><Text text="문의서번호"/></Column>
+          <Column><Text text="고객 ID"/></Column>
+          <Column><Text text="고객명"/></Column>
+          <Column><Text text="자재 ID"/></Column>
+          <Column><Text text="설명"/></Column>
+          <Column><Text text="국가"/></Column>
+        </columns>
+        <items>
+          <ColumnListItem type="Active" press=".onSelect">
+            <cells>
+              <Text text="{inqr_docu_id}"/>
+              <Text text="{cust_id}"/>
+              <Text text="{cust_name}"/>
+              <Text text="{mat_id}"/>
+              <Text text="{hdescr}"/>
+              <HBox alignItems="Center">
+                <Text
+                  text="{path:'sales_org',formatter:'.countryFormatter'}"
+                  class="sapUiTinyMarginEnd"/>
+                <Image
+                  src="{path:'sales_org',formatter:'.flagIconFormatter'}"
+                  decorative="false"
+                  width="1.5rem"
+                  height="1rem"/>
+              </HBox>
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+    </content>
+  </Page>
+
+   <!-- 상세 팝업 -->
+  <Dialog
+    id="detailDialog"
+    title="문의서 상세 정보"
+    stretch="false"
+    contentWidth="50%"
+    afterClose=".onDialogClose">
+
+    <content>
+      <VBox class="sapUiResponsiveMargin sapUiSmallMarginTop">
+        <!-- 기본 정보 -->
+        <Panel
+          headerText="문의서 기본 정보"
+          expandable="false"
+          class="sapUiSmallMarginBottom">
+          <layout:SimpleForm
+            editable="false"
+            layout="ResponsiveGridLayout"
+            labelSpanL="3" labelSpanM="3"
+            columnsL="1" columnsM="2">
+
+            <Label text="문의서번호"/>
+            <Text text="{selectedModel>/inqr_docu_id}"/>
+            <Label text="고객명"/>
+            <Text text="{selectedModel>/cust_name}"/>
+            <Label text="판매조직"/>
+            <Text
+              text="{
+                parts:[
+                  {path:'selectedModel>/sales_org'},
+                  {value:'salesOrg.'}
+                ],
+                formatter:'.domainText'
+              }"/>
+            <Label text="희망 계약기간"/>
+            <HBox>
+              <Text text="{path:'selectedModel>/valid_from', type:'sap.ui.model.type.Date', formatOptions:{pattern:'yyyy.MM.dd'}}"/>
+              <Text text=" ~ "/>
+              <Text text="{path:'selectedModel>/valid_to', type:'sap.ui.model.type.Date', formatOptions:{pattern:'yyyy.MM.dd'}}"/>
+            </HBox>
+          </layout:SimpleForm>
+        </Panel>
+
+        <!-- 자재 색상 -->
+        <Panel headerText="자재 색상" expandable="false">
+          <HBox items="{selectedModel>/items}">
+            <items>
+               <core:HTML content="{path:'selectedModel>mat_id', formatter:'.buildColorSwatch'}"/>
+            </items>
+          </HBox>
+        </Panel>
+
+        <!-- 자재 리스트 -->
+        <Text text="자재 리스트" class="sapMTitle sapUiSmallMarginTop"/>
+        <Table
+          id="itemTable"
+          items="{selectedModel>/items}"
+          growing="true"
+          growingScrollToLoad="true"
+          class="sapUiSmallMarginTop">
+          <columns>
+            <Column><Text text="라인번호"/></Column>
+            <Column><Text text="자재 ID"/></Column>
+            <Column><Text text="수량"/></Column>
+            <Column><Text text="단위"/></Column>
+            <Column><Text text="자재 설명"/></Column>
+            <Column><Text text="등록일자"/></Column>
+          </columns>
+          <items>
+            <ColumnListItem>
+              <cells>
+                <Text text="{selectedModel>inqr_item_id}"/>
+                <Text text="{selectedModel>mat_id}"/>
+                <Text text="{
+                  path:'selectedModel>qty',
+                  type:'sap.ui.model.type.Float',
+                  formatOptions:{minFractionDigits:0,maxFractionDigits:0}
+                }"/>
+                <Text text="L" textAlign="Center"/>
+                <Text text="{selectedModel>idescr}"/>
+                <Text text="{
+                  path:'selectedModel>changed_date',
+                  type:'sap.ui.model.type.Date',
+                  formatOptions:{pattern:'yyyy.MM.dd'}
+                }"/>
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+      </VBox>
+    </content>
+
+    <beginButton>
+      <Button text="닫기" press=".onDialogClose"/>
+    </beginButton>
+  </Dialog>
+</mvc:View>

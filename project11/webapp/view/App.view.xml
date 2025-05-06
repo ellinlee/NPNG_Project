@@ -1,0 +1,7 @@
+<mvc:View controllerName="sync.dc.sd.project11.controller.App"
+    displayBlock="true"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <App id="app">
+    </App>
+</mvc:View>
