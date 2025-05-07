@@ -13,22 +13,58 @@
     showNavButton="true"
     navButtonPress=".onNavBack">
 
-    <subHeader>
-      <Toolbar>
-        <SearchField
-          id="searchField"
-          width="40%"
-          placeholder="문의서번호, 자재코드, 고객ID 입력"
-          showSearchButton="true"
-          search=".onSearchPress" />
-        <ToolbarSpacer/>
-        <Button icon="sap-icon://search"  text="조회"   press=".onSearchPress"/>
-        <Button icon="sap-icon://refresh" text="초기화" press=".onReset"/>
-        <Button icon="sap-icon://hint"    text="안내"   press=".onShowInfo"/>
-      </Toolbar>
-    </subHeader>
-
     <content>
+    <VBox class="sapUiSmallMarginTop" alignItems="Center">
+      <!-- 조회 조건 Panel -->
+      <Panel headerText="조회 조건" expandable="false" class="sapUiSmallMargin"  width="1200px">
+        <layout:SimpleForm
+          editable="true"
+          layout="ResponsiveGridLayout"
+          columnsL="3"
+          labelSpanL="3"
+          class="sapUiSmallMarginBottom"
+          >
+
+          <Label text="문의서번호"/>
+          <Input id="inqrIdInput" placeholder="예: SD10000001" maxLength="10"/>
+
+          <Label text="고객 ID"/>
+          <Input id="custIdInput" placeholder="예: 500000000" maxLength="10"/>
+
+          <Label text="고객명"/>
+          <Input id="custNameInput" placeholder="예: 현대 중공업"/>
+
+          <Label text="자재 ID"/>
+          <Input id="matIdInput" placeholder="예: 3000000001" maxLength="10"/>
+
+          <Label text="국가"/>
+          <ComboBox id="salesOrgInput" placeholder="선택하세요">
+            <items>
+              <core:Item key="" text="전체"/>
+              <core:Item key="S100" text="한국"/>
+              <core:Item key="S200" text="일본"/>
+              <core:Item key="S300" text="중국"/>
+            </items>
+          </ComboBox>
+
+          <Label text="희망계약기간"/>
+          <HBox>
+            <DatePicker id="dateFrom" width="9rem" placeholder="시작일"/>
+            <Text text=" ~ "/>
+            <DatePicker id="dateTo" width="9rem" placeholder="종료일"/>
+          </HBox>
+
+          <Label text=" "/>
+          <HBox>
+            <Button icon="sap-icon://search" text="조회" press=".onSearchPress"/>
+            <Button icon="sap-icon://refresh" text="초기화" press=".onReset" class="sapUiTinyMarginBegin"/>
+            <Button icon="sap-icon://hint" text="안내" press=".onShowInfo" class="sapUiTinyMarginBegin"/>
+          </HBox>
+        </layout:SimpleForm>
+      </Panel>
+      </VBox>
+
+      <!-- 결과 테이블 -->
       <Table
         id="inquiryTable"
         inset="false"
@@ -36,8 +72,7 @@
         growing="true"
         growingScrollToLoad="true"
         mode="SingleSelectMaster"
-        selectionChange=".onSelect"
-        items="{path:'/ZDCC_InquiryForm', templateShareable:true}">
+        selectionChange=".onSelect"> 
         <columns>
           <Column><Text text="문의서번호"/></Column>
           <Column><Text text="고객 ID"/></Column>
@@ -55,23 +90,18 @@
               <Text text="{mat_id}"/>
               <Text text="{hdescr}"/>
               <HBox alignItems="Center">
-                <Text
-                  text="{path:'sales_org',formatter:'.countryFormatter'}"
-                  class="sapUiTinyMarginEnd"/>
-                <Image
-                  src="{path:'sales_org',formatter:'.flagIconFormatter'}"
-                  decorative="false"
-                  width="1.5rem"
-                  height="1rem"/>
+                <Text text="{path:'sales_org',formatter:'.countryFormatter'}" class="sapUiTinyMarginEnd"/>
+                <Image src="{path:'sales_org',formatter:'.flagIconFormatter'}" decorative="false" width="1.5rem" height="1rem"/>
               </HBox>
             </cells>
           </ColumnListItem>
         </items>
       </Table>
+
     </content>
   </Page>
 
-   <!-- 상세 팝업 -->
+  <!-- 상세 팝업 -->
   <Dialog
     id="detailDialog"
     title="문의서 상세 정보"
@@ -81,11 +111,8 @@
 
     <content>
       <VBox class="sapUiResponsiveMargin sapUiSmallMarginTop">
-        <!-- 기본 정보 -->
-        <Panel
-          headerText="문의서 기본 정보"
-          expandable="false"
-          class="sapUiSmallMarginBottom">
+
+        <Panel headerText="문의서 기본 정보" expandable="false" class="sapUiSmallMarginBottom">
           <layout:SimpleForm
             editable="false"
             layout="ResponsiveGridLayout"
@@ -114,16 +141,39 @@
           </layout:SimpleForm>
         </Panel>
 
-        <!-- 자재 색상 -->
-        <Panel headerText="자재 색상" expandable="false">
-          <HBox items="{selectedModel>/items}">
-            <items>
-               <core:HTML content="{path:'selectedModel>mat_id', formatter:'.buildColorSwatch'}"/>
-            </items>
-          </HBox>
-        </Panel>
-
-        <!-- 자재 리스트 -->
+ <Panel headerText="자재 색상" expandable="false">
+            <VBox items="{selectedModel>/items}">
+              <items>
+                <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                  <!-- HTML 스와치 -->
+                  <core:HTML
+                    content="{
+                      path: 'selectedModel>mat_id',
+                      formatter: '.buildColorSwatch'
+                    }"
+                  />
+                  <VBox>
+                    <Text text="{selectedModel>mat_id}" class="sapUiTinyMarginStart"/>
+                    <Text
+                      text="{
+                        path: 'selectedModel>mat_id',
+                        formatter: '.getMaterialName'
+                      }"
+                      class="sapUiTinyMarginStart"
+                    />
+                    <Text
+                      text="{
+                        path: 'selectedModel>mat_id',
+                        formatter: '.getColorByMatID'
+                      }"
+                      class="sapUiTinyMarginStart"
+                    />
+                  </VBox>
+                </HBox>
+              </items>
+            </VBox>
+          </Panel>
+          
         <Text text="자재 리스트" class="sapMTitle sapUiSmallMarginTop"/>
         <Table
           id="itemTable"
