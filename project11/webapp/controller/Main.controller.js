@@ -8,226 +8,191 @@ sap.ui.define([
   "sap/ui/core/HTML"
   ], function (Controller, JSONModel, MessageBox, Filter, FilterOperator, ColorPalettePopover, HTML) {
     "use strict";
-
+  
     return Controller.extend("sync.dc.sd.project11.controller.Main", {
 
       onInit: function () {
-        var oSelected = new JSONModel({});
-        this.getView().setModel(oSelected, "selectedModel");
+        var oSelectedModel = new JSONModel({});
+        this.getView().setModel(oSelectedModel, "selectedModel");
   
+        var oHeaderModel = new JSONModel([]);
+        this.getView().setModel(oHeaderModel, "headerModel");
+  
+        // material.json 로드
         var oMaterialModel = new JSONModel();
-oMaterialModel.loadData(sap.ui.require.toUrl("sync/dc/sd/project11/model/material.json"), null, false);
-this.getView().setModel(oMaterialModel, "materialModel");
+        oMaterialModel.loadData(
+          sap.ui.require.toUrl("sync/dc/sd/project11/model/material.json"),
+          null,
+          false
+        );
+        this.getView().setModel(oMaterialModel, "materialModel");
   
+        // Color
         this._oColorPopover = new ColorPalettePopover({
           showDefaultColor: false,
-          showMoreColors: false,
-          colorSelect: this._onColorSelect.bind(this)
+          showMoreColors : false,
+          colorSelect    : this._onColorSelect.bind(this)
         });
       },
   
       onSearchPress: function () {
         var aFilters = [],
-            sInqrId   = this.byId("inqrIdInput").getValue(),
-            sCustId   = this.byId("custIdInput").getValue(),
-            sCustName = this.byId("custNameInput").getValue(),
-            sMatId    = this.byId("matIdInput").getValue(),
-            sSalesOrg = this.byId("salesOrgInput").getSelectedKey(),
-            oFrom     = this.byId("dateFrom").getDateValue(),
-            oTo       = this.byId("dateTo").getDateValue();
+            sInqr   = this.byId("inqrIdInput").getValue(),
+            sCust   = this.byId("custIdInput").getValue(),
+            sName   = this.byId("custNameInput").getValue(),
+            sMat    = this.byId("matIdInput").getValue(),
+            sOrg    = this.byId("salesOrgInput").getSelectedKey(),
+            dFrom   = this.byId("dateFrom").getDateValue(),
+            dTo     = this.byId("dateTo").getDateValue();
   
-        if (sInqrId) {
-          aFilters.push(new Filter("inqr_docu_id", FilterOperator.EQ, sInqrId));
-        }
-        if (sCustId) {
-          aFilters.push(new Filter("cust_id", FilterOperator.EQ, sCustId));
-        }
-        if (sCustName) {
-          aFilters.push(new Filter("cust_name", FilterOperator.Contains, sCustName));
-        }
-        if (sMatId) {
-          aFilters.push(new Filter("mat_id", FilterOperator.EQ, sMatId)); 
-        }
-        if (sSalesOrg) {
-          aFilters.push(new Filter("sales_org", FilterOperator.EQ, sSalesOrg));
-        }
-        if (oFrom && oTo) {
-          aFilters.push(new Filter("valid_from", FilterOperator.BT, oFrom, oTo));
-        }
-  
-        var oTable = this.byId("inquiryTable");
-        oTable.unbindItems();
-  
-        var oTemplate = new sap.m.ColumnListItem({
-          type: "Active",
-          press: this.onSelect.bind(this),
-          cells: [
-            new sap.m.Text({ text: "{inqr_docu_id}" }),
-            new sap.m.Text({ text: "{cust_id}" }),
-            new sap.m.Text({ text: "{cust_name}" }),
-            new sap.m.Text({ text: "{mat_id}" }),
-            new sap.m.Text({ text: "{hdescr}" }),
-            new sap.m.HBox({
-              alignItems: "Center",
-              items: [
-                new sap.m.Text({
-                  text: {
-                    path: "sales_org",
-                    formatter: this.countryFormatter
-                  },
-                  class: "sapUiTinyMarginEnd"
-                }),
-                new sap.m.Image({
-                  src: {
-                    path: "sales_org",
-                    formatter: this.flagIconFormatter
-                  },
-                  decorative: false,
-                  width: "1.5rem",
-                  height: "1rem"
-                })
-              ]
-            })
-          ]
-        });
-  
-        oTable.bindItems({
-          path: "/ZDCC_InquiryForm",
-          filters: aFilters,
-          template: oTemplate
-        });
-  
-        oTable.getBinding("items").attachEventOnce("dataReceived", function (oEvt) {
-          var a = oEvt.getParameter("data").results;
-          if (!a || !a.length) {
-            MessageBox.information("검색 결과가 없습니다.");
-          }
-        });
-      },
-  
-      onReset: function () {
-        MessageBox.confirm("조회 조건과 결과를 초기화하시겠습니까?", {
-          title: "초기화 확인",
-          actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
-          emphasizedAction: MessageBox.Action.OK,
-          onClose: function (sAction) {
-            if (sAction === MessageBox.Action.OK) {
-              this.byId("inqrIdInput").setValue("");
-              this.byId("custIdInput").setValue("");
-              this.byId("custNameInput").setValue("");
-              this.byId("matIdInput").setValue("");
-              this.byId("salesOrgInput").setSelectedKey("");
-              this.byId("dateFrom").setValue("");
-              this.byId("dateTo").setValue("");
-              this.getView().getModel("selectedModel").setData({});
-              this.byId("inquiryTable").unbindItems();
-            }
-          }.bind(this)
-        });
-      },
-  
-      onShowInfo: function () {
-        MessageBox.information(
-          "조회 조건 안내:\n\n" +
-          "• 문의서번호: 정확히 일치해야 함 (최대 10자)\n" +
-          "• 고객 ID: 정확히 일치해야 함 (최대 10자)\n" +
-          "• 고객명: 일부값만 입력 가능\n" +
-          "• 자재 ID: 정확히 일치해야 함 (최대 10자)\n" +
-          "• 국가: 한국 / 일본 / 중국 선택\n" +
-          "• 희망계약기간: 시작일~종료일 \n\n" +
-          "조회 버튼 클릭 시, 조건에 맞는 문의서 목록이 표시됩니다.\n조건 미입력 시 전체 데이터가 출력됩니다."
-        );
-      },
-  
-      onSelect: function (oEvt) {
-        var sInqrId = oEvt.getParameter("listItem").getBindingContext().getProperty("inqr_docu_id"),
-            oODataModel = this.getView().getModel(),
-            oSelectedModel = this.getView().getModel("selectedModel");
-  
-        oODataModel.read("/ZDCC_InquiryForm", {
-          filters: [new Filter("inqr_docu_id", FilterOperator.EQ, sInqrId)],
-          success: function (oData) {
-            var aItems = oData.results;
-            if (!aItems.length) {
-              MessageBox.warning("해당 문의서의 자재 정보가 없습니다.");
-              return;
-            }
-            oSelectedModel.setData({
-              inqr_docu_id: aItems[0].inqr_docu_id,
-              cust_id: aItems[0].cust_id,
-              cust_name: aItems[0].cust_name,
-              valid_from: aItems[0].valid_from,
-              valid_to: aItems[0].valid_to,
-              sales_org: aItems[0].sales_org,
-              items: aItems
-            });
-            this.byId("detailDialog").open();
-          }.bind(this),
-          error: function () {
-            MessageBox.error("상세 조회 중 오류가 발생했습니다.");
-          }
-        });
-      },
-  
-      onDialogClose: function () {
-        this.byId("detailDialog").close();
-      },
-  
-      countryFormatter: function (s) {
-        return { S100: "한국", S200: "일본", S300: "중국" }[s] || s;
-      },
-  
-      flagIconFormatter: function (s) {
-        return {
-          S100: "https://flagcdn.com/w40/kr.png",
-          S200: "https://flagcdn.com/w40/jp.png",
-          S300: "https://flagcdn.com/w40/cn.png"
-        }[s] || "";
-      },
-  
-      domainText: function (sCode, sPrefix) {
-        if (!sCode) return "";
-        var oBundle = this.getView().getModel("i18n").getResourceBundle();
-        return oBundle.getText(sPrefix + sCode);
-      },
-  
-      unitFormatter: function (sUom) {
-        return sUom ? sUom.charAt(0) : "";
-      },
-  
-      getMaterialName: function (sMatID) {
-        var sKey = String(sMatID);
-        var oMat = this.getView().getModel("materialModel").getProperty("/" + sKey);
-        return oMat ? oMat.name : "이름 없음";
-      },
-      
-      getColorByMatID: function (sMatID) {
-        var sKey = String(sMatID);
-        var oMat = this.getView().getModel("materialModel").getProperty("/" + sKey);
-        return oMat ? oMat.color : "#FFFFFF";
-      },
-  
-      buildColorSwatch: function (sMatID) {
-        var sColor = this.getColorByMatID(sMatID);
-        var sName = this.getMaterialName(sMatID);
-        return "<div title='" + sName + "' style='display:inline-block;width:60px;height:30px;margin:4px;background-color:" +
-          sColor + ";border:1px solid #ccc;border-radius:6px;'></div>";
-      },
-  
-      onColorPress: function (oEvt) {
-        var aItems = this.getView().getModel("selectedModel").getProperty("/items") || [],
-            aColors = aItems.map(function (o) {
-              return this.getColorByMatID(o.mat_id).replace(/^#/, "");
-            }.bind(this));
-        this._oColorPopover.setColors(aColors);
-        this._oColorPopover.setColumns(Math.min(aColors.length, 6));
-        this._oColorPopover.openBy(oEvt.getSource());
-      },
-  
-      _onColorSelect: function (oEvt) {
-        var sColor = "#" + oEvt.getParameter("color");
-        MessageBox.information("선택된 색: " + sColor);
+        if (sInqr) aFilters.push(new Filter("inqr_docu_id", FilterOperator.EQ, sInqr));
+        if (sCust) aFilters.push(new Filter("cust_id",        FilterOperator.EQ, sCust));
+        if (sName) aFilters.push(new Filter("cust_name",      FilterOperator.Contains, sName));
+        if (sMat)  aFilters.push(new Filter("mat_id",         FilterOperator.EQ, sMat));
+        if (sOrg)  aFilters.push(new Filter("sales_org",      FilterOperator.EQ, sOrg));
+
+      if (dFrom && dTo) {
+        aFilters.push(new Filter("valid_from", FilterOperator.BT, dFrom, dTo));
+      } else if (dFrom) {
+        aFilters.push(new Filter("valid_from", FilterOperator.GE, dFrom));
+      } else if (dTo) {
+        aFilters.push(new Filter("valid_from", FilterOperator.LE, dTo));
       }
   
-    });
+      // OData Read
+      this.getView().getModel().read("/ZDCC_InquiryForm", {
+        filters: aFilters,
+        success: function (oData) {
+
+          var oMap = {};
+          oData.results.forEach(function (oRow) {
+            if (!oMap[oRow.inqr_docu_id]) {
+              oMap[oRow.inqr_docu_id] = {
+                inqr_docu_id: oRow.inqr_docu_id,
+                cust_id     : oRow.cust_id,
+                cust_name   : oRow.cust_name,
+                sales_org   : oRow.sales_org,
+                country     : oRow.sales_org,
+                valid_from  : oRow.valid_from,
+                valid_to    : oRow.valid_to,
+                hdescr      : oRow.hdescr,
+                items       : []
+              };
+            }
+            oMap[oRow.inqr_docu_id].items.push({
+              inqr_item_id: oRow.inqr_item_id,
+              mat_id      : oRow.mat_id,
+              ivalid_from : oRow.ivalid_from,
+              ivalid_to   : oRow.ivalid_to,
+              qty         : oRow.qty,
+              idescr      : oRow.idescr
+            });
+          });
+
+
+          this.getView().getModel("headerModel").setData(Object.values(oMap));
+        }.bind(this),
+        error: function () {
+          MessageBox.error("조회 중 오류가 발생했습니다.");
+        }
+      });
+    },
+
+    onReset: function () {
+      MessageBox.confirm("조회 조건과 결과를 초기화하시겠습니까?", {
+        title: "초기화 확인",
+        actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+        emphasizedAction: MessageBox.Action.OK,
+        onClose: function (sAction) {
+          if (sAction === MessageBox.Action.OK) {
+            ["inqrIdInput","custIdInput","custNameInput","matIdInput"]
+              .forEach(function(id){ this.byId(id).setValue(""); }.bind(this));
+            this.byId("salesOrgInput").setSelectedKey("");
+            this.byId("dateFrom").setValue("");
+            this.byId("dateTo").setValue("");
+            this.getView().getModel("headerModel").setData([]);
+            this.getView().getModel("selectedModel").setData({});
+          }
+        }.bind(this)
+      });
+    },
+
+    onShowInfo: function () {
+      MessageBox.information(
+        "ℹ️ 조회 조건 안내\n\n" +
+        "• 문의서번호\n" +
+        "  – 정확히 일치해야 조회됩니다.\n\n" +
+        "• 고객 ID\n" +
+        "  – 정확히 일치해야 조회됩니다.\n\n" +
+        "• 고객명\n" +
+        "  – 일부 단어로도 검색 가능합니다.\n\n" +
+        "• 자재 ID\n" +
+        "  – 정확히 일치해야 조회됩니다.\n\n" +
+        "• 국가\n" +
+        "  – 콤보박스에서 선택하세요.\n\n" +
+        "• 희망계약기간\n" +
+        "  – 시작일만 입력하거나, 시작·종료일 모두 입력할 수 있습니다.\n\n" +
+        "찾고자 하는 조건을 입력한 뒤 “조회” 버튼을 눌러주세요."
+      );
+    },
+
+    onSelect: function (oEvt) {
+      var oCtx = oEvt.getParameter("listItem")
+                     .getBindingContext("headerModel"),
+          oHeader = oCtx.getObject();
+
+      this.getView().getModel("selectedModel").setData(oHeader);
+      this.byId("detailDialog").open();
+    },
+
+    onDialogClose: function () {
+      this.byId("detailDialog").close();
+    },
+
+
+    // 국가
+    countryFormatter: function (s) {
+      return { S100:"한국", S200:"일본", S300:"중국" }[s] || "";
+    },
+    // 팝업 판매조직
+    salesOrgFormatter: function (s) {
+      return {
+        S100:"이노코팅 한국판매지사",
+        S200:"이노코팅 일본판매지사",
+        S300:"이노코팅 중국판매지사"
+      }[s] || s;
+    },
+    // 날짜 범위
+    rangeFormatter: function (dFrom, dTo) {
+      var oDF = sap.ui.core.format.DateFormat.getDateInstance({pattern:"yyyy.MM.dd"});
+      if (dFrom && dTo) return oDF.format(dFrom) + " ~ " + oDF.format(dTo);
+      if (dFrom) return oDF.format(dFrom);
+      if (dTo)   return oDF.format(dTo);
+      return "";
+    },
+    // material.json 조회
+    getMaterialName: function(sMatID){
+      var o = this.getView().getModel("materialModel").getProperty("/"+sMatID);
+      return o?o.name:"";
+    },
+    getColorByMatID: function(sMatID){
+      var o = this.getView().getModel("materialModel").getProperty("/"+sMatID);
+      return o?o.color:"#fff";
+    },
+    buildColorSwatch: function(sMatID){
+      var c=this.getColorByMatID(sMatID), n=this.getMaterialName(sMatID);
+      return "<div title='"+n+"' style='display:inline-block;width:60px;height:30px;"
+           + "background:"+c+";border:1px solid #ccc;border-radius:6px;'></div>";
+    },
+    onColorPress: function(oEvt){
+      var a = this.getView().getModel("selectedModel").getProperty("/items")||[],
+          aC = a.map(function(o){return this.getColorByMatID(o.mat_id).slice(1);}.bind(this));
+      this._oColorPopover.setColors(aC);
+      this._oColorPopover.openBy(oEvt.getSource());
+    },
+    _onColorSelect: function(oEvt){
+      MessageBox.information("선택된 색: #"+oEvt.getParameter("color"));
+    }
+
   });
+});
