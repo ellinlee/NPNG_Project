@@ -77,10 +77,23 @@ sap.ui.define(
                 var colorMatch = item.MatNm.match(/\(#([0-9A-Fa-f]{6})\)/);
                 var colorCode = colorMatch ? "#" + colorMatch[1] : null;
                 
+                // 자재 번호 범위에 따라 카테고리 결정
+                var matId = parseInt(item.MatId);
+                var category;
+                if (matId >= 3000000001 && matId <= 3000000064) {
+                  category = "paint1"; // 건설용
+                } else if (matId >= 3000000065 && matId <= 3000000128) {
+                  category = "paint2"; // 자동차용
+                } else if (matId >= 3000000129 && matId <= 3000000192) {
+                  category = "paint3"; // 조선용
+                } else if (matId >= 3000000193 && matId <= 3000000256) {
+                  category = "paint4"; // 항공용
+                }
+                
                 return {
                   MatID: item.MatId,
                   MatName: item.MatNm,
-                  category: item.MatTy,
+                  category: category || item.MatTy, // 기존 MatTy를 fallback으로 사용
                   ColorCode: colorCode
                 };
               })
@@ -250,6 +263,83 @@ sap.ui.define(
 
         // 저장 버튼 무조건 비활성화
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
+      },
+
+      _openIndustrySelectionDialog: function(sColorCode) {
+        if (!this._oIndustrySelectionDialog) {
+          this._oIndustrySelectionDialog = sap.ui.xmlfragment(
+            "sync.dc.sd.project02.view.IndustrySelectionDialog",
+            this
+          );
+          this.getView().addDependent(this._oIndustrySelectionDialog);
+        }
+
+        var oModel = new JSONModel({
+          colorCode: sColorCode,
+          selectedIndustry: "automotive",
+          industries: [
+            { key: "construction", text: "건설용" },
+            { key: "automotive", text: "자동차용" },
+            { key: "shipbuilding", text: "조선용" },
+            { key: "aerospace", text: "항공용" }
+          ]
+        });
+
+        this._oIndustrySelectionDialog.setModel(oModel);
+        this._oIndustrySelectionDialog.open();
+      },
+
+      onIndustrySelected: function(oEvent) {
+        var sSelectedIndustry = oEvent.getParameter("selectedItem").getKey();
+        var oModel = this._oIndustrySelectionDialog.getModel();
+        var sColorCode = oModel.getProperty("/colorCode");
+        
+        // 산업별 자재 번호 매핑
+        var sMaterialId;
+        switch(sSelectedIndustry) {
+          case "construction":
+            sMaterialId = "3000000257";
+            break;
+          case "automotive":
+            sMaterialId = "3000000258";
+            break;
+          case "shipbuilding":
+            sMaterialId = "3000000259";
+            break;
+          case "aerospace":
+            sMaterialId = "3000000260";
+            break;
+        }
+
+        // 색상 정보 객체 생성
+        var colorInfo = {
+          colorCode: sColorCode,
+          colorName: this._getColorName(sColorCode),
+          timestamp: new Date().toISOString(),
+          colorStyle: "background-color: " + sColorCode + ";",
+          materialId: sMaterialId,
+          description: "",
+          industry: sSelectedIndustry
+        };
+
+        // 선택된 색상 목록에 추가
+        var oColorsModel = this.getView().getModel("colors");
+        var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
+        aSelectedColors.push(colorInfo);
+        oColorsModel.setProperty("/selectedColors", aSelectedColors);
+
+        // 색상 하이라이트
+        this._highlightSelectedColor(sColorCode, true);
+
+        // 다이얼로그 닫기
+        this._oIndustrySelectionDialog.close();
+
+        // 저장 버튼 비활성화
+        this.getView().getModel().setProperty("/isContractCheckPassed", false);
+      },
+
+      onCancelIndustrySelection: function() {
+        this._oIndustrySelectionDialog.close();
       },
 
       // 색상 코드로 색상 인덱스 찾기
@@ -805,6 +895,38 @@ sap.ui.define(
           return "PT" + date.getHours() + "H" + date.getMinutes() + "M" + date.getSeconds() + "S";
         }
 
+        // 산업별 자재 번호 범위 정의
+        var MATERIAL_RANGES = {
+          construction: { start: 3000000001, end: 3000000064 },  // 건설용
+          automotive: { start: 3000000065, end: 3000000128 },    // 자동차용
+          shipbuilding: { start: 3000000129, end: 3000000192 },  // 조선용
+          aerospace: { start: 3000000193, end: 3000000256 }      // 항공용
+        };
+
+        // TOYOTA의 FFD54F 색상에 대한 산업별 자재 매핑
+        function getToyotaFFD54FMaterialId(category) {
+          var range;
+          switch(category) {
+            case "paint1": // 건설용
+              range = MATERIAL_RANGES.construction;
+              break;
+            case "paint2": // 자동차용
+              range = MATERIAL_RANGES.automotive;
+              break;
+            case "paint3": // 조선용
+              range = MATERIAL_RANGES.shipbuilding;
+              break;
+            case "paint4": // 항공용
+              range = MATERIAL_RANGES.aerospace;
+              break;
+            default:
+              return null;
+          }
+
+          // 해당 범위 내에서 적절한 자재 번호 선택
+          return range.start.toString();
+        }
+
         // 선택된 색상에 해당하는 자재 찾기 및 OData 구조에 맞게 매핑
         var aItemsToSave = aSelectedColors.map(function(oColor, iIndex) {
           // 자재명에서 색상 코드 추출
@@ -819,10 +941,67 @@ sap.ui.define(
 
           if (!oMaterial) return null;
 
+          // 현재 선택된 카테고리(산업)에 따라 자재 번호 매핑
+          var sCustomerId = that.getView().getModel().getProperty("/SelectedCustomer/CustomerID");
+          var sSelectedCategory = that.getView().getModel("view").getProperty("/selectedCategory");
+          
+          console.log("현재 선택된 카테고리:", sSelectedCategory);
+          console.log("고객 ID:", sCustomerId);
+          console.log("색상 코드:", oColor.colorCode);
+          console.log("원래 자재 번호:", oMaterial.MatID);
+
+          // 카테고리에 따른 자재 번호 범위 결정
+          var range;
+          switch(sSelectedCategory) {
+            case "paint1": // 건설용
+              range = MATERIAL_RANGES.construction;
+              break;
+            case "paint2": // 자동차용
+              range = MATERIAL_RANGES.automotive;
+              break;
+            case "paint3": // 조선용
+              range = MATERIAL_RANGES.shipbuilding;
+              break;
+            case "paint4": // 항공용
+              range = MATERIAL_RANGES.aerospace;
+              break;
+            default:
+              range = MATERIAL_RANGES.automotive; // 기본값
+          }
+
+          // 원래 자재 번호를 해당 범위 내의 순차적인 번호로 매핑
+          var originalMatId = parseInt(oMaterial.MatID);
+          var baseNumber = 3000000000; // 기본 번호
+          var sequenceNumber = originalMatId - baseNumber; // 1~260 사이의 순서 번호
+          var sMaterialId;
+
+          // TOYOTA의 FFD54F 색상인 경우 카테고리별 대체 자재 매핑
+          if (sCustomerId === "6000000000" && oColor.colorCode === "#FFD54F") {
+            switch(sSelectedCategory) {
+              case "paint1": // 건설용
+                sMaterialId = "3000000257";
+                break;
+              case "paint2": // 자동차용
+                sMaterialId = "3000000258";
+                break;
+              case "paint3": // 조선용
+                sMaterialId = "3000000259";
+                break;
+              case "paint4": // 항공용
+                sMaterialId = "3000000260";
+                break;
+              default:
+                sMaterialId = (range.start + sequenceNumber - 1).toString();
+            }
+          } else {
+            sMaterialId = (range.start + sequenceNumber - 1).toString();
+          }
+          console.log("매핑된 자재 ID:", sMaterialId);
+
           return {
             InqrDocuId: sDocumentNumber,
             InqrItemId: ((iIndex + 1) * 10).toString().padStart(6, "0"),
-            MatId: oMaterial.MatID,
+            MatId: sMaterialId,
             Uom: "L",
             Qty: Number(oColor.quantity).toFixed(3),
             ValidFrom: toODataDate(oColor.itemValidFrom),
