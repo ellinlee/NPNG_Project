@@ -27,7 +27,6 @@
                                 <!-- 색상 정보 -->
                                 <VBox id="dialog_VBox_colorInfo" class="sapUiTinyMarginBegin" width="100%">
                                     <Title id="dialog_Title_colorCode" text="{colors>colorCode}" level="H3" class="sapUiTinyMarginBottom" />
-                                    <Text text="{colors>materialId}" class="sapUiTinyMarginTop" />
                                 </VBox>
                             </HBox>
                             
