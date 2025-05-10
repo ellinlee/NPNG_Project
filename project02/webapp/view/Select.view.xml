@@ -60,7 +60,7 @@
                         class="selectLabel" />
                     <Select id="select_Select_category"
                         class="select"
-                        width="auto"
+                        width="110px"
                         change="onCategoryChange">
                         <items>
                             <core:Item id="select_Item_paint1"
