@@ -83,6 +83,7 @@
         id="inquiryTable"
         inset="false"
         headerText="문의서 현황"
+        noDataText="전체조회를 하고 싶다면 '조회' 버튼을 클릭하세요"
         items="{headerModel>/}" 
         growing="true"
         growingScrollToLoad="true"
@@ -173,6 +174,7 @@
                   formatOptions: {pattern:'yyyy.MM.dd'}
                 }"/>
             </HBox>
+            <Label text="매월 희망 납기일"/><Text text="{selectedModel>/deliv_day}"/>
 
             <Label text="설명"/><Text text="{selectedModel>/hdescr}"/>
           </layout:SimpleForm>
@@ -210,9 +212,9 @@
                       }"/>
                   </HBox>
 
-                  <!-- 자재코드 -->
+                  <!-- 색상코드 -->
                   <HBox class="sapUiSmallMarginBottom">
-                    <Text text="자재코드:" class="sapMTextEmphasized"/>
+                    <Text text="색상코드:" class="sapMTextEmphasized"/>
                     <Text
                       text="{
                         path      : 'selectedModel>mat_id',
