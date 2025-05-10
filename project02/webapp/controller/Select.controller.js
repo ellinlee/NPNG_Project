@@ -491,11 +491,28 @@ sap.ui.define(
           return;
         }
 
-        // 인덱스 정보 추가 및 타임스탬프 포맷팅
+        // 날짜를 yyyy-MM-dd 형식으로 변환하는 함수
+        function formatDateToYYYYMMDD(date) {
+          if (!date) return null;
+          if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
+          var dateObj = (typeof date === 'string') ? new Date(date) : date;
+          var year = dateObj.getFullYear();
+          var month = String(dateObj.getMonth() + 1).padStart(2, '0');
+          var day = String(dateObj.getDate()).padStart(2, '0');
+          return year + '-' + month + '-' + day;
+        }
+
+        // 인덱스 정보 추가 및 날짜 포맷팅
         aSelectedColors.forEach(
           function (color, index) {
             color.index = index;
-            color.formattedTimestamp = this._formatTimestamp(color.timestamp);
+            // 날짜 형식 변환
+            if (color.itemValidFrom) {
+              color.itemValidFrom = formatDateToYYYYMMDD(color.itemValidFrom);
+            }
+            if (color.itemValidTo) {
+              color.itemValidTo = formatDateToYYYYMMDD(color.itemValidTo);
+            }
             // 수량 초기화
             if (!color.quantity) {
               color.quantity = "";
@@ -1278,6 +1295,16 @@ sap.ui.define(
             
             // 날짜 비교를 위해 시간 정보 제거
             oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
+            
+            // 2029년 12월 31일 이후 체크
+            var maxDate = new Date(2029, 11, 31); // 11은 12월을 의미 (월은 0부터 시작)
+            if (oDate > maxDate) {
+              sap.m.MessageToast.show("문의는 2029년 12월 31일까지의 기간만 가능합니다.");
+              oDatePicker.setValue(null);
+              oValidDateModel.setProperty("/validTo", null);
+              this.getView().getModel().setProperty("/isContractCheckPassed", false);
+              return;
+            }
             
             // 과거 날짜 체크
             if (oDate < oCurrentDate) {
@@ -2182,11 +2209,21 @@ sap.ui.define(
         var oValidDateModel = this.getView().getModel("validDate");
         var oGlobalValidFrom = oValidDateModel.getProperty("/validFrom");
         var oGlobalValidTo = oValidDateModel.getProperty("/validTo");
+
         function toDateOnly(d) {
           var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
           date.setHours(0,0,0,0);
           return date;
         }
+
+        function formatDateToYYYYMMDD(date) {
+          if (!date) return null;
+          var year = date.getFullYear();
+          var month = String(date.getMonth() + 1).padStart(2, '0');
+          var day = String(date.getDate()).padStart(2, '0');
+          return year + '-' + month + '-' + day;
+        }
+
         // yyyy-mm-dd 형식 허용
         if (typeof oDate === 'string') {
           // yyyy-mm-dd 형식만 허용
@@ -2200,6 +2237,7 @@ sap.ui.define(
             return;
           }
         }
+
         if (!(oDate instanceof Date) || isNaN(oDate.getTime())) {
           sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
           oSource.setValue(null);
@@ -2207,8 +2245,10 @@ sap.ui.define(
           this.getView().getModel().setProperty("/isContractCheckPassed", false);
           return;
         }
+
         // 날짜만 남기고 시간 00:00:00으로 고정
         oDate = toDateOnly(oDate);
+
         // [기존 로직]
         if (oDate) {
           if (oDate < oGlobalValidFrom) {
@@ -2218,7 +2258,10 @@ sap.ui.define(
             return;
           }
         }
-        oColorsModel.setProperty(sPath + "/itemValidFrom", oDate instanceof Date ? oDate : null);
+
+        // yyyy-MM-dd 형식으로 변환하여 저장
+        var formattedDate = formatDateToYYYYMMDD(oDate);
+        oColorsModel.setProperty(sPath + "/itemValidFrom", formattedDate);
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
       },
 
@@ -2231,11 +2274,21 @@ sap.ui.define(
         var oValidDateModel = this.getView().getModel("validDate");
         var oGlobalValidFrom = oValidDateModel.getProperty("/validFrom");
         var oGlobalValidTo = oValidDateModel.getProperty("/validTo");
+
         function toDateOnly(d) {
           var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
           date.setHours(0,0,0,0);
           return date;
         }
+
+        function formatDateToYYYYMMDD(date) {
+          if (!date) return null;
+          var year = date.getFullYear();
+          var month = String(date.getMonth() + 1).padStart(2, '0');
+          var day = String(date.getDate()).padStart(2, '0');
+          return year + '-' + month + '-' + day;
+        }
+
         // yyyy-mm-dd 형식 허용
         if (typeof oDate === 'string') {
           if (/^\d{4}-\d{2}-\d{2}$/.test(oDate)) {
@@ -2248,6 +2301,7 @@ sap.ui.define(
             return;
           }
         }
+
         if (!(oDate instanceof Date) || isNaN(oDate.getTime())) {
           sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
           oSource.setValue(null);
@@ -2255,8 +2309,10 @@ sap.ui.define(
           this.getView().getModel().setProperty("/isContractCheckPassed", false);
           return;
         }
+
         // 날짜만 남기고 시간 00:00:00으로 고정
         oDate = toDateOnly(oDate);
+
         // [기존 로직]
         if (oDate) {
           try {
@@ -2285,7 +2341,8 @@ sap.ui.define(
                 return;
               }
               if (oDate.getTime() === oItemValidFrom.getTime()) {
-                oColorsModel.setProperty(sPath + "/itemValidTo", oDate instanceof Date ? oDate : null);
+                var formattedDate = formatDateToYYYYMMDD(oDate);
+                oColorsModel.setProperty(sPath + "/itemValidTo", formattedDate);
                 this.getView().getModel().setProperty("/isContractCheckPassed", false);
                 return;
               }
@@ -2306,7 +2363,9 @@ sap.ui.define(
                 return;
               }
             }
-            oColorsModel.setProperty(sPath + "/itemValidTo", oDate instanceof Date ? oDate : null);
+            // yyyy-MM-dd 형식으로 변환하여 저장
+            var formattedDate = formatDateToYYYYMMDD(oDate);
+            oColorsModel.setProperty(sPath + "/itemValidTo", formattedDate);
             this.getView().getModel().setProperty("/isContractCheckPassed", false);
           } catch (error) {
             sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
