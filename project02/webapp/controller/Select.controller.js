@@ -869,7 +869,14 @@ sap.ui.define(
        */
       _formatSAPDate: function (oDate) {
         if (!oDate) return null;
-        return "/Date(" + oDate.getTime() + ")/";
+        // 날짜를 UTC 기준으로 변환하여 시간대 차이 보정
+        var utcDate = new Date(Date.UTC(
+          oDate.getFullYear(),
+          oDate.getMonth(),
+          oDate.getDate(),
+          0, 0, 0, 0
+        ));
+        return "/Date(" + utcDate.getTime() + ")/";
       },
 
       /**

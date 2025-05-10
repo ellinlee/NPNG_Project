@@ -73,7 +73,7 @@
                                     <core:HTML content="&lt;div style='width: 40px; height: 40px; min-width: 40px; min-height: 40px; margin: 8px; border: 1px solid #ccc; border-radius: 4px; {colors>colorStyle}'&gt;&lt;/div&gt;" />
                                     <VBox class="sapUiSmallMarginBegin">
                                         <Text text="{colors>colorCode}" />
-                                        <Text text="{colors>materialId}" />
+                                    
                                     </VBox>
                                 </HBox>
                                 <HBox class="sapUiSmallMarginTop">
