@@ -2,11 +2,12 @@ sap.ui.define([
   "sap/ui/core/mvc/Controller",
   "sap/ui/model/json/JSONModel",
   "sap/m/MessageBox",
+  "sap/m/MessageToast",    
   "sap/ui/model/Filter",
   "sap/ui/model/FilterOperator",
   "sap/m/ColorPalettePopover",
   "sap/ui/core/HTML"
-  ], function (Controller, JSONModel, MessageBox, Filter, FilterOperator, ColorPalettePopover, HTML) {
+  ], function (Controller, JSONModel, MessageBox, MessageToast, Filter, FilterOperator, ColorPalettePopover, HTML) {
     "use strict";
   
     return Controller.extend("sync.dc.sd.project11.controller.Main", {
@@ -76,6 +77,7 @@ sap.ui.define([
                 valid_from  : oRow.valid_from,
                 valid_to    : oRow.valid_to,
                 hdescr      : oRow.hdescr,
+                deliv_day   : oRow.deliv_day,
                 items       : []
               };
             }
@@ -90,8 +92,18 @@ sap.ui.define([
           });
 
 
-          this.getView().getModel("headerModel").setData(Object.values(oMap));
+          var aHeaders = Object.values(oMap);
+          this.getView().getModel("headerModel").setData(aHeaders);
+
+          // 2) 토스트 메시지 (조회 성공 시만!)
+          var iCount = aHeaders.length;
+          if (iCount > 0) {
+            MessageToast.show("✔ " + iCount + "건이 검색되었습니다.");
+          } else {
+            MessageToast.show("조건에 해당하는 데이터가 없습니다.");
+          }
         }.bind(this),
+
         error: function () {
           MessageBox.error("조회 중 오류가 발생했습니다.");
         }
