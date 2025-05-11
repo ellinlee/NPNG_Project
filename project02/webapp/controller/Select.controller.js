@@ -738,6 +738,11 @@ sap.ui.define(
           );
           this.getView().addDependent(this._oSaveConfirmDialog);
         }
+        
+        // view 모델을 다이얼로그에 전달
+        var oViewModel = this.getView().getModel("view");
+        this._oSaveConfirmDialog.setModel(oViewModel, "view");
+        
         this._oSaveConfirmDialog.open();
       },
 

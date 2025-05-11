@@ -11,12 +11,12 @@
         
         <content>
             <VBox>
-                <Text text="선택된 색상 정보를 저장하시겠습니까?" class="sapUiSmallMarginBottom" />
+                <Text text="다음과 같은 문의 내역을 저장하시겠습니까?" class="sapUiSmallMarginBottom" />
 
                 <!-- 고객 정보 -->
                 <Panel id="dialog_Panel_customer" headerText="고객 정보" class="sapUiSmallMarginBottom">
                     <VBox>
-                        <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                        <HBox alignItems="Center" class="sapUiSmallMarginBottom">
                             <Label id="dialog_Label_customerId" text="고객 코드:" class="sapUiSmallMarginEnd" width="100px" />
                             <Text id="dialog_Text_customerId" text="{/SelectedCustomer/CustomerID}" />
                         </HBox>
@@ -53,8 +53,12 @@
                     <Text text="{= '매월 ' + ${/DeliveryDay} + '일'}" />   
                 </Panel>
 
+                <HBox width="100%">
+                    <core:HTML content="&lt;hr style='width:100%;border:0;border-top:1px solid #e0e0e0;margin:8px 0;' /&gt;" />
+                </HBox>
+
                 <!-- 전체 문의 내역 -->
-                <Panel id="dialog_Panel_request" headerText="공통 문의 내용" class="sapUiSmallMarginBottom">
+                <Panel id="dialog_Panel_request" headerText="공통 문의사항" class="sapUiSmallMarginBottom">
                     <Text id="dialog_Text_request" text="{/CustomerRequest}" />
                 </Panel>
 
