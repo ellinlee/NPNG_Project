@@ -64,10 +64,10 @@
                             
                             <!-- 색상별 문의사항 입력 필드 -->
                             <VBox id="dialog_VBox_colorRequest" width="100%" class="sapUiTinyMarginTop">
-                                <Label id="dialog_Label_colorRequest" text="색상별 문의사항"/>
+                                <Label id="dialog_Label_colorRequest" text="색상별 문의 사항"/>
                                 <TextArea id="dialog_TextArea_colorRequest" width="100%" rows="2" 
                                          value="{colors>description}" 
-                                         placeholder="이 색상에 대한 문의사항을 입력하세요"
+                                         placeholder="이 색상에 대한 문의 사항을 입력하세요"
                                          liveChange="onColorDescriptionChange" />
                             </VBox>
                         </layout:content>

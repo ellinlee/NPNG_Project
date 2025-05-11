@@ -1149,7 +1149,7 @@
             direction="Column"
             class="sapUiMediumMarginTop">
             <Label id="select_Label_request"
-                text="문의내역" />
+                text="문의 사항" />
             <TextArea id="select_TextArea_request"
                 width="100%"
                 rows="4"
