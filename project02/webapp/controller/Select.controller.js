@@ -15,6 +15,14 @@ sap.ui.define(
           .getRoute("RouteSelect")
           .attachPatternMatched(this._onRouteMatched, this);
 
+        // 고객별 카테고리 매핑 정의
+        this._customerCategoryMap = {
+          "5000000000": "paint3", // 현대 중공업 - 조선용
+          "6000000000": "paint2", // TOYOTA - 자동차용
+          "7000000000": "paint1", // CPID - 건설용
+          "7000000001": "paint4"  // COMAC - 항공용
+        };
+
         // 새로고침 여부 확인 (로컬 스토리지를 사용)
         try {
           var refreshState = sessionStorage.getItem("pageRefreshed");
@@ -101,8 +109,9 @@ sap.ui.define(
 
             that.getView().setModel(oMaterialModel, "materials");
 
+            // 기본 카테고리 설정 제거
             var oViewModel = new JSONModel({
-              selectedCategory: "paint1"
+              selectedCategory: ""
             });
             that.getView().setModel(oViewModel, "view");
 
@@ -168,6 +177,29 @@ sap.ui.define(
             oSelectedCustomerModel.getData()
           );
           this.getView().setModel(oViewModel);
+
+          // 고객 ID에 따른 카테고리 설정
+          var sCustomerId = oSelectedCustomerModel.getData().SelectedCustomer.CustomerID;
+          var sDefaultCategory = this._customerCategoryMap[sCustomerId];
+          
+          if (sDefaultCategory) {
+            // 기본 카테고리 설정
+            var oViewModel = this.getView().getModel("view");
+            if (!oViewModel) {
+              oViewModel = new JSONModel({
+                selectedCategory: sDefaultCategory
+              });
+              this.getView().setModel(oViewModel, "view");
+            } else {
+              oViewModel.setProperty("/selectedCategory", sDefaultCategory);
+            }
+            
+            // 선택된 카테고리 표시
+            var oCategorySelect = this.byId("select_Select_category");
+            if (oCategorySelect) {
+              oCategorySelect.setSelectedKey(sDefaultCategory);
+            }
+          }
         } else {
           var customerData = null;
           try {
@@ -809,10 +841,10 @@ sap.ui.define(
                     ValidTo: that._formatSAPDate(oValidTo),
                     Descr: sCustomerRequest || "",
                     DelivDay: sDeliveryDay,
-                    CreatedBy: "FIORI",
+                    CreatedBy: "CUSTOMER",
                     CreatedDate: that._formatSAPDate(new Date()),
                     CreatedTime: that._formatTime(new Date()),
-                    ChangedBy: "FIORI",
+                    ChangedBy: "CUSTOMER",
                     ChangedDate: that._formatSAPDate(new Date()),
                     ChangedTime: that._formatTime(new Date())
         };
@@ -1036,10 +1068,10 @@ sap.ui.define(
             ValidFrom: toODataDate(oColor.itemValidFrom),
             ValidTo: toODataDate(oColor.itemValidTo),
             Descr: oColor.description || sCustomerRequest || "",
-            CreatedBy: "FIORI",
+            CreatedBy: "CUSTOMER",
             CreatedDate: toODataDate(now),
             CreatedTime: toODataTime(now),
-            ChangedBy: "FIORI",
+            ChangedBy: "CUSTOMER",
             ChangedDate: toODataDate(now),
             ChangedTime: toODataTime(now)
           };
@@ -1178,9 +1210,80 @@ sap.ui.define(
       // 드롭다운에서 카테고리 선택 시 호출되는 함수
       onCategoryChange: function (oEvent) {
         var sSelectedCategory = oEvent.getParameter("selectedItem").getKey();
-        this.getView()
-          .getModel("view")
-          .setProperty("/selectedCategory", sSelectedCategory);
+        var sCurrentCategory = this.getView().getModel("view").getProperty("/selectedCategory");
+        
+        // 현재 카테고리와 선택한 카테고리가 다른 경우에만 확인
+        if (sCurrentCategory && sCurrentCategory !== sSelectedCategory) {
+          // 고객 ID 가져오기
+          var oViewModel = this.getView().getModel();
+          var sCustomerId = oViewModel.getProperty("/SelectedCustomer/CustomerID");
+          var sDefaultCategory = this._customerCategoryMap[sCustomerId];
+          
+          // 선택한 카테고리가 고객사의 주 카테고리인 경우 바로 변경
+          if (sSelectedCategory === sDefaultCategory) {
+            this._updateCategory(sSelectedCategory);
+          } else {
+            // 주 카테고리가 아닌 경우에만 확인 다이얼로그 표시
+            this._showCategoryChangeDialog(sCurrentCategory, sSelectedCategory);
+          }
+        } else {
+          this._updateCategory(sSelectedCategory);
+        }
+      },
+
+      _showCategoryChangeDialog: function(sCurrentCategory, sNewCategory) {
+        if (!this._oCategoryChangeDialog) {
+          this._oCategoryChangeDialog = sap.ui.xmlfragment(
+            "sync.dc.sd.project02.view.fragments.CategoryChangeDialog",
+            this
+          );
+          this.getView().addDependent(this._oCategoryChangeDialog);
+        }
+
+        // 카테고리 이름 매핑
+        var categoryNames = {
+          "paint1": "건설용",
+          "paint2": "자동차용",
+          "paint3": "조선용",
+          "paint4": "항공용"
+        };
+
+        // 변경 메시지 생성
+        var sMessage = categoryNames[sCurrentCategory] + "에서 " + categoryNames[sNewCategory] + "로 변경하시겠습니까?";
+        
+        // 다이얼로그 모델 설정
+        var oViewModel = this.getView().getModel("view");
+        if (!oViewModel) {
+          oViewModel = new JSONModel();
+          this.getView().setModel(oViewModel, "view");
+        }
+        oViewModel.setProperty("/categoryChangeMessage", sMessage);
+        oViewModel.setProperty("/pendingCategory", sNewCategory);
+
+        this._oCategoryChangeDialog.open();
+      },
+
+      onConfirmCategoryChange: function() {
+        var oViewModel = this.getView().getModel("view");
+        var sNewCategory = oViewModel.getProperty("/pendingCategory");
+        this._updateCategory(sNewCategory);
+        this._oCategoryChangeDialog.close();
+      },
+
+      onCancelCategoryChange: function() {
+        // 이전 카테고리로 되돌리기
+        var oViewModel = this.getView().getModel("view");
+        var sCurrentCategory = oViewModel.getProperty("/selectedCategory");
+        var oCategorySelect = this.byId("select_Select_category");
+        if (oCategorySelect) {
+          oCategorySelect.setSelectedKey(sCurrentCategory);
+        }
+        this._oCategoryChangeDialog.close();
+      },
+
+      _updateCategory: function(sCategory) {
+        var oViewModel = this.getView().getModel("view");
+        oViewModel.setProperty("/selectedCategory", sCategory);
 
         // 선택된 색상과 수량 데이터 초기화
         var oColorsModel = this.getView().getModel("colors");
@@ -1206,6 +1309,18 @@ sap.ui.define(
           // DatePicker 값 초기화
           this.byId("select_DatePicker_validFrom_new").setValue(null);
           this.byId("select_DatePicker_validTo_new").setValue(null);
+          
+          // 납품 희망일 초기화
+          var oModel = this.getView().getModel();
+          oModel.setProperty("/DeliveryDay", "");
+          this.byId("input_deliveryDay").setValue("");
+          
+          // 문의 사항 초기화
+          var oTextArea = this.byId("select_TextArea_request");
+          if (oTextArea) {
+            oTextArea.setValue("");
+          }
+          oModel.setProperty("/CustomerRequest", "");
           
           sap.m.MessageToast.show("카테고리가 변경되어 모든 입력 데이터가 초기화되었습니다.");
         }
@@ -2018,19 +2133,18 @@ sap.ui.define(
               // 계약기간이 한 달 미만인 경우
               if (dTo < nextMonthDate) {
                 // 계약기간 내에 납품희망일이 존재하는지 확인
-                var hasDeliveryDay = false;
+                var deliveryDayCount = 0;
                 var d = new Date(dFrom);
                 while (d <= dTo) {
                   if (d.getDate() === nDeliveryDay) {
-                    hasDeliveryDay = true;
-                    break;
+                    deliveryDayCount++;
                   }
                   d.setDate(d.getDate() + 1);
                 }
              
-                // 납품희망일이 존재하면 안내 메시지 표시
-                if (hasDeliveryDay) {
-                  sap.m.MessageToast.show("계약기간이 한 달 미만입니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일에 맞춰 수정해주세요.");
+                // 납품희망일이 한 번만 존재하는 경우에만 메시지 표시
+                if (deliveryDayCount === 1) {
+                  sap.m.MessageToast.show("계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일에 맞춰 수정해주세요.");
                   this.getView().getModel().setProperty("/isContractCheckPassed", false);
                   return;
                 }
