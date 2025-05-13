@@ -27,19 +27,19 @@
             class="sapUiSmallMarginBottom">
 
             <Label text="문의서번호"/>  <Input id="inqrIdInput"   placeholder="예: SD10000001" maxLength="10"/>
-            <Label text="고객 ID"/>    <Input id="custIdInput"   placeholder="예: 500000000" maxLength="10"/>
+            <Label text="고객 ID"/>    <Input id="custIdInput" type="Number"  placeholder="예: 500000000" maxLength="10"/>
             <Label text="고객명"/>     <Input id="custNameInput" placeholder="예: 현대 중공업"/>
 
             <Label text="자재 ID"/>    <Input id="matIdInput"    placeholder="예: 3000000001" maxLength="10"/>
             <Label text="국가"/>
-            <ComboBox id="salesOrgInput" placeholder="선택하세요">
-              <items>
-                <core:Item key=""    text="전체"/>
-                <core:Item key="S100" text="한국"/>
-                <core:Item key="S200" text="일본"/>
-                <core:Item key="S300" text="중국"/>
-              </items>
-            </ComboBox>
+             <Select id="salesOrgInput" width="100%">
+             <items>
+             <core:Item key="" text="선택하세요" />
+             <core:Item key="S100" text="한국" />
+             <core:Item key="S200" text="일본" />
+             <core:Item key="S300" text="중국" />
+             </items>
+             </Select>
 
             <Label text="희망계약기간"/>
             <HBox>
@@ -83,7 +83,7 @@
         id="inquiryTable"
         inset="false"
         headerText="문의서 현황"
-        noDataText="전체조회를 하고 싶다면 '조회' 버튼을 클릭하세요"
+        noDataText="전체조회를 하고 싶다면 '조회' 버튼을 클릭하세요."
         items="{headerModel>/}" 
         growing="true"
         growingScrollToLoad="true"
@@ -176,7 +176,7 @@
             </HBox>
             <Label text="매월 희망 납기일"/><Text text="{selectedModel>/deliv_day}"/>
 
-            <Label text="설명"/><Text text="{selectedModel>/hdescr}"/>
+            <Label text="문의사항"/><Text text="{selectedModel>/hdescr}"/>
           </layout:SimpleForm>
         </Panel>
 
@@ -259,7 +259,7 @@
 
                   <!-- 문의사항 -->
                   <HBox>
-                    <Text text="문의사항:" class="sapMTextEmphasized"/>
+                    <Text text="상세 문의사항:" class="sapMTextEmphasized"/>
                     <Text text="{selectedModel>idescr}"/>
                   </HBox>
 

@@ -46,19 +46,27 @@ sap.ui.define([
             dFrom   = this.byId("dateFrom").getDateValue(),
             dTo     = this.byId("dateTo").getDateValue();
   
-        if (sInqr) aFilters.push(new Filter("inqr_docu_id", FilterOperator.EQ, sInqr));
-        if (sCust) aFilters.push(new Filter("cust_id",        FilterOperator.EQ, sCust));
+        if (sInqr) aFilters.push(new Filter("inqr_docu_id", FilterOperator.Contains, sInqr));
+        if (sCust) aFilters.push(new Filter("cust_id",        FilterOperator.Contains, sCust));
         if (sName) aFilters.push(new Filter("cust_name",      FilterOperator.Contains, sName));
         if (sMat)  aFilters.push(new Filter("mat_id",         FilterOperator.EQ, sMat));
         if (sOrg)  aFilters.push(new Filter("sales_org",      FilterOperator.EQ, sOrg));
 
       if (dFrom && dTo) {
-        aFilters.push(new Filter("valid_from", FilterOperator.BT, dFrom, dTo));
-      } else if (dFrom) {
-        aFilters.push(new Filter("valid_from", FilterOperator.GE, dFrom));
-      } else if (dTo) {
-        aFilters.push(new Filter("valid_from", FilterOperator.LE, dTo));
-      }
+  aFilters.push(
+    new Filter({
+      filters: [
+        new Filter("valid_from", FilterOperator.GE, dFrom),
+        new Filter("valid_to",   FilterOperator.LE, dTo)
+      ],
+      and: true
+    })
+  );
+} else if (dFrom) {
+  aFilters.push(new Filter("valid_from", FilterOperator.GE, dFrom));
+} else if (dTo) {
+  aFilters.push(new Filter("valid_to", FilterOperator.LE, dTo));
+}
   
       // OData Read
       this.getView().getModel().read("/ZDCC_InquiryForm", {
@@ -133,20 +141,23 @@ sap.ui.define([
       MessageBox.information(
         "ℹ️ 조회 조건 안내\n\n" +
         "• 문의서번호\n" +
-        "  – 정확히 일치해야 조회됩니다.\n\n" +
+        "  – 일부 단어로도 검색 가능합니다.\n\n" +
         "• 고객 ID\n" +
-        "  – 정확히 일치해야 조회됩니다.\n\n" +
+        "  – 일부 숫자로도 검색 가능합니다.\n" +
+        "  – 숫자만 입력 가능합니다. \n\n" +
         "• 고객명\n" +
         "  – 일부 단어로도 검색 가능합니다.\n\n" +
         "• 자재 ID\n" +
         "  – 정확히 일치해야 조회됩니다.\n\n" +
         "• 국가\n" +
-        "  – 콤보박스에서 선택하세요.\n\n" +
+        "  – 리스트에서 선택하세요.\n\n" +
         "• 희망계약기간\n" +
         "  – 시작일만 입력하거나, 시작·종료일 모두 입력할 수 있습니다.\n\n" +
-        "찾고자 하는 조건을 입력한 뒤 “조회” 버튼을 눌러주세요."
+        "찾고자 하는 조건을 입력한 뒤 “조회” 버튼을 눌러주세요.\n" +
+        "조회조건을 입력하지 않으면 전체 데이터가 출력됩니다."
       );
     },
+    
 
     onSelect: function (oEvt) {
       var oCtx = oEvt.getParameter("listItem")
