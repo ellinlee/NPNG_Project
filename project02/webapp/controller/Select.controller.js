@@ -589,6 +589,14 @@ sap.ui.define(
           oColorsModel.setProperty(sPath + "/quantity", "");
           return;
         }
+
+        // 최대 주문량 체크
+        if (iQuantity > 30000) {
+          sap.m.MessageToast.show("월 아이템 최대 주문 수량은 30,000L 입니다.");
+          oSource.setValue("");
+          oColorsModel.setProperty(sPath + "/quantity", "");
+          return;
+        }
         
         // 200L 단위 체크
         if (iQuantity % 200 !== 0) {
@@ -1906,7 +1914,33 @@ sap.ui.define(
         var oValidFrom = oValidDateModel.getProperty("/validFrom");
         var oValidTo = oValidDateModel.getProperty("/validTo");
 
-        // [3] 색상별로 필수 정보(수량, 계약기간)가 모두 입력되었는지 체크
+        // [3] 필수 입력값 검증
+        var missingInputs = [];
+        
+        // 전체 계약기간 검증
+        if (!oValidFrom || !oValidTo) {
+          missingInputs.push("전체 계약기간");
+        }
+        
+        // 납기일 검증
+        if (!sDeliveryDay || sDeliveryDay.trim() === "") {
+          missingInputs.push("납기일");
+        }
+        
+        // 아이템 선택 여부 검증
+        if (!aSelectedColors || aSelectedColors.length === 0) {
+          missingInputs.push("아이템");
+        }
+
+        // 필수 입력값이 누락된 경우
+        if (missingInputs.length > 0) {
+          this.getView().getModel().setProperty("/isContractCheckPassed", false);
+          var sMessage = missingInputs.join(", ") + "을(를) 입력해주세요.";
+          sap.m.MessageToast.show(sMessage);
+          return;
+        }
+
+        // [4] 색상별로 필수 정보(수량, 계약기간)가 모두 입력되었는지 체크
         //    - 누락된 경우 어떤 색상에 어떤 정보가 빠졌는지 안내
         var missingItems = [];
         aSelectedColors.forEach(function(item) {
@@ -1938,7 +1972,7 @@ sap.ui.define(
           return dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0');
         }
 
-        // [4] 전체 계약기간 내에 납품희망일이 한 번만 존재하는지 체크
+        // [5] 전체 계약기간 내에 납품희망일이 한 번만 존재하는지 체크
         //    - 예: 2025-07-24 ~ 2025-08-24, 23일 입력 시 8월 23일만 포함 → 한 번만 주문 가능
         if (oValidFrom && oValidTo && sDeliveryDay) {
           var dFrom = new Date(oValidFrom);
@@ -1963,7 +1997,7 @@ sap.ui.define(
           }
         }
 
-        // [5] 계약기간 내 납품희망일이 실제로 몇 달에 존재하는지 체크
+        // [6] 계약기간 내 납품희망일이 실제로 몇 달에 존재하는지 체크
         //    - 계약기간이 두 달 이상이어도 실제로 한 달에만 존재하면 한 번만 주문 가능
         if (oValidFrom && oValidTo && sDeliveryDay) {
           var dFrom = new Date(oValidFrom);
@@ -1992,7 +2026,7 @@ sap.ui.define(
           }
         }
 
-        // [6] 아이템이 1개인 경우: 아이템별 계약기간이 전체 계약기간과 완전히 일치해야 함
+        // [7] 아이템이 1개인 경우: 아이템별 계약기간이 전체 계약기간과 완전히 일치해야 함
         if (aSelectedColors.length === 1) {
           // ==========================================
           // 케이스 1: 하나의 아이템만 선택한 경우

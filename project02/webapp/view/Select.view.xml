@@ -98,7 +98,7 @@
             <VBox id="select_VBox_info"
                 class="colorGrid">
                 <Text id="select_Text_info"
-                    text="최소 주문 단위는 10000L입니다. 200L단위로 주문 가능합니다."
+                    text="월 최소 주문 수량은 10000L, 최대 주문 수량은 30000L 입니다. 200L단위로 주문 가능합니다."
                     class="infoText"/>
                     
                 <Button icon="sap-icon://question-mark" text="설명 보기" press="onOpenContractGuideDialog" class="sapUiTinyMarginBottom"/>
