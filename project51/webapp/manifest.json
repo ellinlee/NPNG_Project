@@ -1,0 +1,120 @@
+{
+    "_version": "1.60.0",
+    "sap.app": {
+        "id": "project51",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:basic",
+            "version": "1.16.5",
+            "toolsId": "a8d9e9b3-af3f-462a-b3fe-3a4df2eda5a7"
+        },
+        "dataSources": {
+            "ZDCC_TEST_RESULT_CDS_VAN": {
+                "uri": "/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZDCC_TEST_RESULT_CDS_VAN',Version='0001')/$value/",
+                "type": "ODataAnnotation",
+                "settings": {
+                    "localUri": "localService/mainService/ZDCC_TEST_RESULT_CDS_VAN.xml"
+                }
+            },
+            "mainService": {
+                "uri": "/sap/opu/odata/sap/ZDCC_TEST_RESULT_CDS/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [
+                        "ZDCC_TEST_RESULT_CDS_VAN"
+                    ],
+                    "localUri": "localService/mainService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": false,
+        "dependencies": {
+            "minUI5Version": "1.120.0",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.viz": {} 
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+"models": {
+  "test": {
+    "dataSource": "mainService",
+    "preload": false,
+    "settings": {
+      "defaultBindingMode": "TwoWay"
+    },
+    "type": "sap.ui.model.odata.v2.ODataModel"
+  }
+},
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "controlAggregation": "pages",
+                "controlId": "app",
+                "transition": "slide",
+                "type": "View",
+                "viewType": "XML",
+                "path": "project51.view",
+                "async": true,
+                "viewPath": "project51.view"
+            },
+            "routes": [
+                {
+                    "name": "RouteMain",
+                    "pattern": ":?query:",
+                    "target": [
+                        "TargetMain"
+                    ]
+                }
+            ],
+            "targets": {
+                "TargetMain": {
+                    "id": "Main",
+                    "name": "Main"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "project51.view.App",
+            "type": "XML",
+            "id": "App"
+        }
+    }
+}

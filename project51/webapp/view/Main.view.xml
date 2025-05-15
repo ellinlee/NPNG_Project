@@ -1,0 +1,151 @@
+<mvc:View
+  controllerName="project51.controller.Main"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:viz="sap.viz.ui5.controls"
+  xmlns:viz.data="sap.viz.ui5.data"
+  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+  <Page id="page" title="불량률 관리">
+    <IconTabBar id="tabBar" expanded="true">
+      <items>
+
+        <!-- 플랜트별 불량률 -->
+        <IconTabFilter text="플랜트별 불량률" key="plant">
+          <VBox id="plantVBox" class="sapUiSmallMargin">
+            <!-- 필터 -->
+            <HBox alignItems="Center" justifyContent="Start" class="sapUiSmallMargin">
+              <Label text="플랜트" labelFor="plantFilter"/>
+              <Select id="plantFilter" selectedKey="" width="150px" items="{/plants}" change="onSearch">
+                <core:Item key="{id}" text="{name}"/>
+              </Select>
+              <Label text="기간" labelFor="dateRange1" class="sapUiSmallMarginBegin"/>
+              <DateRangeSelection
+                id="dateRange1"
+                width="200px"
+                displayFormat="yyyy-MM-dd"
+                change="onSearch"/>
+            </HBox>
+
+<viz:VizFrame
+  id="plantPieChart"
+  width="100%"
+  height="500px"
+  vizType="pie">
+
+  <viz:dataset>
+    <viz.data:FlattenedDataset data="{plantSummary>/results}">
+      <viz.data:dimensions>
+        <viz.data:DimensionDefinition name="상태" value="{plantSummary>state}"/>
+      </viz.data:dimensions>
+      <viz.data:measures>
+        <!-- measure 이름과 feed values에 쓸 이름이 정확히 일치해야 합니다! -->
+        <viz.data:MeasureDefinition name="건수"    value="{plantSummary>count}"/>
+        <viz.data:MeasureDefinition name="비율(%)" value="{plantSummary>ratio}"/>
+      </viz.data:measures>
+    </viz.data:FlattenedDataset>
+  </viz:dataset>
+
+  <viz:feeds>
+    <!-- size/color는 그대로 -->
+    <viz.feeds:FeedItem uid="size"    type="Measure"   values="건수"/>
+    <viz.feeds:FeedItem uid="color"   type="Dimension" values="상태"/>
+    <!-- 여기에 tooltip feed 추가 -->
+    <viz.feeds:FeedItem uid="tooltip" type="Measure"   values="건수,비율(%)"/>
+  </viz:feeds>
+</viz:VizFrame>
+
+            <!-- QC 항목별 불량 건수 막대 차트 -->
+            <viz:VizFrame
+              id="plantBarChart"
+              width="100%"
+              height="300px"
+              vizType="bar">
+              <viz:dataset>
+                <viz.data:FlattenedDataset data="{plantViol>/results}">
+                  <viz.data:dimensions>
+                    <viz.data:DimensionDefinition name="QC 항목" value="{plantViol>type}"/>
+                  </viz.data:dimensions>
+                  <viz.data:measures>
+                    <viz.data:MeasureDefinition name="불량건수" value="{plantViol>count}"/>
+                  </viz.data:measures>
+                </viz.data:FlattenedDataset>
+              </viz:dataset>
+               <viz:feeds>
+    <viz.feeds:FeedItem uid="valueAxis"    type="Measure"   values="불량건수"/>
+    <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="QC 항목"/>
+    <viz.feeds:FeedItem uid="color"        type="Dimension" values="QC 항목"/>
+  </viz:feeds>
+            </viz:VizFrame>
+          </VBox>
+        </IconTabFilter>
+
+        <!-- 라우트별 불량률 -->
+        <IconTabFilter text="라우팅별 불량률" key="route">
+          <VBox id="routeVBox" class="sapUiSmallMargin">
+            <!-- 필터 -->
+            <HBox alignItems="Center" justifyContent="Start" class="sapUiSmallMargin">
+              <Label text="라우팅" labelFor="routeFilter"/>
+              <Select id="routeFilter" selectedKey="" width="150px" items="{/routes}" change="onSearch">
+                <core:Item key="{id}" text="{name}"/>
+              </Select>
+              <Label text="기간" labelFor="dateRange2" class="sapUiSmallMarginBegin"/>
+              <DateRangeSelection
+                id="dateRange2"
+                width="200px"
+                displayFormat="yyyy-MM-dd"
+                change="onSearch"/>
+            </HBox>
+
+            <!-- 정상 vs 불량 파이 차트 -->
+            <viz:VizFrame
+              id="routePieChart"
+              width="100%"
+              height="500px"
+              vizType="pie">
+              <viz:dataset>
+                <viz.data:FlattenedDataset data="{routeSummary>/results}">
+                  <viz.data:dimensions>
+                    <viz.data:DimensionDefinition name="상태" value="{routeSummary>state}"/>
+                  </viz.data:dimensions>
+                  <viz.data:measures>
+                    <viz.data:MeasureDefinition name="비율(%)" value="{routeSummary>ratio}"/>
+                  </viz.data:measures>
+                </viz.data:FlattenedDataset>
+              </viz:dataset>
+              <viz:feeds>
+                <viz.feeds:FeedItem uid="size" type="Measure" values="비율(%)"/>
+                <viz.feeds:FeedItem uid="color" type="Dimension" values="상태"/>
+              </viz:feeds>
+            </viz:VizFrame>
+
+            <!-- QC 항목별 불량 건수 막대 차트 -->
+            <viz:VizFrame
+              id="routeBarChart"
+              width="100%"
+              height="300px"
+              vizType="column">
+              <viz:dataset>
+                <viz.data:FlattenedDataset data="{routeViol>/results}">
+                  <viz.data:dimensions>
+                    <viz.data:DimensionDefinition name="QC 항목" value="{routeViol>type}"/>
+                  </viz.data:dimensions>
+                  <viz.data:measures>
+                    <viz.data:MeasureDefinition name="불량건수" value="{routeViol>count}"/>
+                  </viz.data:measures>
+                </viz.data:FlattenedDataset>
+              </viz:dataset>
+              <viz:feeds>
+                <viz.feeds:FeedItem uid="valueAxis"    type="Measure"   values="불량건수"/>
+                <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="QC 항목"/>
+                <viz.feeds:FeedItem uid="color"        type="Dimension" values="QC 항목"/>
+              </viz:feeds>
+            </viz:VizFrame>
+          </VBox>
+        </IconTabFilter>
+
+      </items>
+    </IconTabBar>
+  </Page>
+</mvc:View>
