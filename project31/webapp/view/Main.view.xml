@@ -1,0 +1,148 @@
+<mvc:View controllerName="sync.dc.mm.project31.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Page id="page" title="{i18n>title}" showHeader="false" class="sapUiContentPadding">
+        <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+            <Toolbar >
+                <Button icon="sap-icon://question-mark" text="설명 보기" press="onOpenInfoDialog" class="sapUiTinyMarginBottom"/>
+            </Toolbar>
+            <Label text="구매그룹코드" />
+            <Select id="purGrpSelect" selectedKey="{purGrpId}">
+                <items>
+                    <core:Item key="100" text="100 원자재 구매그룹" />
+                    <core:Item key="200" text="200 포장재 구매그룹" />
+                    <core:Item key="300" text="300 서비스 구매그룹" />
+
+                </items>
+            </Select>
+
+            <Label text="자재번호"/>
+            <Input id="matIdInput" placeholder="자재번호를 입력하세요." showValueHelp="true" value="{matId}" valueHelpRequest=".onValueHelpMatId" />
+
+            <Label text="플랜트 ID" />
+            <Select id="plantIdSelect" selectedKey="{plantId}">
+                <items>
+                    <core:Item key="P100" text="P100 평택공장" />
+                    <core:Item key="P101" text="P101 청두공장" />
+                </items>
+            </Select>
+
+            <Label text="구매요청 유형" />
+            <Select id="purIdSelect" selectedKey="{purId}">
+                <items>
+                    <core:Item key="PRRM" text="PRRM 원자재 구매 요청" />
+                    <core:Item key="PRPK" text="PRPK 포장제 구매 요청" />
+                    <core:Item key="PRSV" text="PRSV 서비스 구매 요청" />
+                </items>
+            </Select>
+
+            <Label text="수량" />
+            <Input id="qtyInput" type="Number" value="{qty}" />
+
+            <Select id="uomSelect" selectedKey="{uom}">
+                <items>
+                    <core:Item key="KGM" text="KG" />
+                    <core:Item key="LTR" text="L" />
+                    <core:Item key="EA" text="EA" />
+                </items>
+            </Select>
+
+
+            <Label text="납기요청일" />
+            <DatePicker id="reqDelivDate" value="{reqDelivDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd"/>
+
+
+            <Label text="" />
+
+            <HBox>
+                <items>
+                    <Button text="구매요청 추가" icon="sap-icon://add" press="onAddPR" width="150px"/>
+                    <Label width="8px"/>
+
+                    <Button text="폼 초기화" type="Attention" icon="sap-icon://delete" width="100px" press="onResetForm"/>
+                </items>
+            </HBox>
+
+        </f:SimpleForm>
+
+        <Table id="prTable" mode="SingleSelectLeft" alternateRowColors="true" items="{tableModel>/items}" showNoData="false">
+            <headerToolbar>
+                <Toolbar >
+                    <Title text="구매요청 리스트"></Title>
+                    <ToolbarSpacer />
+                    <Button text="선택 해제" icon="sap-icon://clear-all" press=".onClearSelection"/>
+                    <Button text="삭제" type="Reject" icon="sap-icon://delete" press=".onDeletePR"/>
+                    <Button text="리스트 초기화" type="Attention" icon="sap-icon://reset" press=".onResetPR"/>
+                </Toolbar>
+            </headerToolbar>
+
+            <columns>
+                <Column>
+                    <header>
+                        <Label text="구매그룹"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="자재번호"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="자재명"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="플랜트"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="구매요청유형"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="수량"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="단위"></Label>
+                    </header>
+                </Column>
+                <Column>
+                    <header>
+                        <Label text="납기요청일"></Label>
+                    </header>
+                </Column>
+
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{tableModel>purGrpId}" />
+                        <Text text="{tableModel>matId}" />
+                        <Text text="{tableModel>matNm}" />
+                        <Text text="{tableModel>plantId}" />
+                        <Text text="{tableModel>purId}" />
+                        <Text text="{tableModel>qty}" />
+                        <Text text="{tableModel>uomDisp}"/>
+                        <Text text="{tableModel>reqDelivDate}" />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+        <footer>
+            <Bar>
+                <contentRight>
+                    <Button text="구매요청 생성" icon="sap-icon://create" type="Emphasized" press=".onCreatePR"/>
+                </contentRight>
+            </Bar>
+        </footer>
+    </Page>
+</mvc:View>
