@@ -1,0 +1,6 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <SelectDialog title="자재 선택" search="onMaterialSearch" liveChange=".onMaterialSearch" confirm="onValueHelpDialogClose" cancel="onValueHelpDialogClose" items="{matHelpModel>/}">
+        <StandardListItem title="{matHelpModel>MatId}" description="{matHelpModel>MatNm}" />
+    </SelectDialog>
+</core:FragmentDefinition>

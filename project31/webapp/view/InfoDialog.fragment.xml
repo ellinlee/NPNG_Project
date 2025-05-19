@@ -1,0 +1,22 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog id="infoDialog" title="구매요청 생성 방법" draggable="true" resizable="true" contentWidth="550px">
+        <VBox class="sapUiSmallMargin">
+            <Text text="이 화면은 구매요청을 생성하는 화면입니다.&#10;&#10;" wrapping="true"></Text>
+            <Text text="여러 건의 구매요청을 한 번에 등록할 수 있으며,"></Text>
+            <Text text="각 항목마다 개별적인 구매요청 ID가 자동으로 생성됩니다."></Text>
+            <Toolbar height="10px"/>
+
+            <Text text="항목 등록 방법" class="infoTitle"></Text>
+
+            <Text text="- 자재번호 입력 후, 자재 유형에 알맞은 구매요청 유형과 단위를 선택하세요."></Text>
+            <Text text="- 납기요청일은 반드시 오늘 이후 날짜만 선택할 수 있습니다."></Text>
+            <Text text="- [➕구매요청 추가] 버튼을 누르면 입력한 내용이 아래 리스트에 추가됩니다."></Text>
+            <Text text="- 리스트 항목 확인 후, 하단의 [📜구매요청 생성] 버튼을 눌러 등록을 완료하세요."></Text>
+
+        </VBox>
+        <endButton>
+            <Button text="닫기" press="onCloseInfoDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition> 
