@@ -10,8 +10,10 @@ sap.ui.define(
 
     return Controller.extend("sync.dc.mm.project31.controller.Main", {
       onInit() {
+        // 다크모드 적용
+        // sap.ui.getCore().applyTheme("sap_fiori_3_dark");
+
         // OData 모델 생성 및 설정
-        // var oModel = new ODataModel("/sap/opu/odata/sap/ZDCMM_GW_001_SRV/");
         var oModel = new ODataModel("/sap/opu/odata/sap/ZDCMM_GW_001_SRV/", {
           useBatch: false, // 옵션 추가
         });
@@ -104,6 +106,19 @@ sap.ui.define(
         oModel.setProperty("/ProductCollection", aProducts);
       },
 
+      // onValueHelpDialogClose: function (oEvent) {
+      //   var oSelectedItem = oEvent.getParameter("selectedItem");
+
+      //   if (oSelectedItem) {
+      //     var sMatId = oSelectedItem.getTitle();
+
+      //     // 모델에 matId 값 세팅 (default model 기준)
+      //     this.getView().getModel().setProperty("/matId", sMatId);
+
+      //     // 입력 필드에 직접 값 세팅
+      //     this.byId("matIdInput").setValue(sMatId);
+      //   }
+      // },
       onValueHelpDialogClose: function (oEvent) {
         var oSelectedItem = oEvent.getParameter("selectedItem");
 
@@ -115,6 +130,25 @@ sap.ui.define(
 
           // 입력 필드에 직접 값 세팅
           this.byId("matIdInput").setValue(sMatId);
+
+          // === 단위 자동 지정 및 비활성화 로직 직접 호출 ===
+          var oMatHelpModel = this.getView().getModel("matHelpModel");
+          var aMatList = oMatHelpModel ? oMatHelpModel.getData() : [];
+          var oSelectedMat = Array.isArray(aMatList)
+            ? aMatList.find(function (item) {
+                return item.MatId === sMatId;
+              })
+            : (aMatList.ZDCT_MM010Set || []).find(function (item) {
+                return item.MatId === sMatId;
+              });
+
+          var oUomSelect = this.byId("uomSelect");
+          if (oSelectedMat && oSelectedMat.BaseUnit) {
+            oUomSelect.setSelectedKey(oSelectedMat.BaseUnit);
+            oUomSelect.setEnabled(false);
+          } else {
+            oUomSelect.setEnabled(true);
+          }
         }
       },
 
@@ -155,6 +189,12 @@ sap.ui.define(
         // 수량이 0보다 작거나 같은지 체크
         if (parseFloat(sQty) <= 0) {
           MessageBox.error("수량은 0보다 커야 합니다.");
+          return;
+        }
+
+        // 수량 1000 이하로만 구매 가능
+        if (parseFloat(sQty) > 1000) {
+          MessageBox.error("구매 가능 수량은 최대 1,000입니다.");
           return;
         }
 
@@ -221,6 +261,15 @@ sap.ui.define(
 
         if (oReqDate <= oToday) {
           MessageBox.error("납기요청일은 오늘 이후여야 합니다.");
+          return;
+        }
+
+        // 1년(365일) 초과 불가 체크 추가
+        var diffDays = (oReqDate - oToday) / (1000 * 60 * 60 * 24);
+        if (diffDays > 365) {
+          MessageBox.error(
+            "납기요청일은 오늘로부터 1년(365일) 이내여야 합니다."
+          );
           return;
         }
 
@@ -411,6 +460,31 @@ sap.ui.define(
       onCloseInfoDialog: function () {
         if (this._oInfoDialog) {
           this._oInfoDialog.close();
+        }
+      },
+
+      // 자재번호 입력 시 단위 자동 지정 및 비활성화
+      onMatIdChange: function (oEvent) {
+        var sMatId = oEvent.getSource().getValue().trim();
+        // console.log("onMatIdChange", sMatId);
+
+        var oMatHelpModel = this.getView().getModel("matHelpModel");
+        var aMatList = oMatHelpModel ? oMatHelpModel.getData() : [];
+        var oSelectedMat = Array.isArray(aMatList)
+          ? aMatList.find(function (item) {
+              return item.MatId === sMatId;
+            })
+          : (aMatList.ZDCT_MM010Set || []).find(function (item) {
+              return item.MatId === sMatId;
+            });
+
+        var oUomSelect = this.byId("uomSelect");
+        if (oSelectedMat && oSelectedMat.BaseUnit) {
+          oUomSelect.setSelectedKey(oSelectedMat.BaseUnit);
+          oUomSelect.setEnabled(false); // 단위 필드 비활성화
+          // console.log("단위 자동 지정:", oSelectedMat.BaseUnit);
+        } else {
+          oUomSelect.setEnabled(true); // 자재가 없으면 다시 활성화
         }
       },
     });
