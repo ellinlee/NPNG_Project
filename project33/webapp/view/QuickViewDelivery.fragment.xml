@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:formatter="sync.dc.pp.project33.model.formatter">
+    <!-- <QuickView id="quickViewDelivery"> -->
+    <QuickView>
+        <QuickViewPage pageId="delivery" header="납품 상세 정보">
+            <QuickViewGroup>
+                <QuickViewGroupElement label="납품 번호" value="{uniqueOrders>deli_docu_id}" />
+                <QuickViewGroupElement label="납품 일자" value="{uniqueOrders>deli_date_str}" />
+            </QuickViewGroup>
+        </QuickViewPage>
+    </QuickView>
+</core:FragmentDefinition>

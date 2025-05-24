@@ -1,0 +1,106 @@
+<mvc:View xmlns:commons="sap.suite.ui.commons" controllerName="sync.dc.pp.project33.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:formatter="sync.dc.pp.project33.model.formatter"
+    xmlns:core="sap.ui.core"
+    xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+    <Page title="{i18n>detailTitle}" showHeader="true" class="sapUiContentPadding" showNavButton="true" navButtonPress="onGoBack">
+        <SplitApp id="splitApp">
+            <masterPages>
+                <Page id="masterPage" title="판매주문 목록" showHeader="true" showNavButton="true" navButtonPress="onGoBack">
+                    <subHeader>
+                        <Bar>
+                            <contentMiddle>
+                                <SearchField id="orderSearchField" width="100%" placeholder="판매주문 문서번호 검색" liveChange="onOrderSearch"/>
+                            </contentMiddle>
+                        </Bar>
+                    </subHeader>
+                    <List id="orderList" items="{uniqueOrders>/items}" core:require="{Formatter: 'sync/dc/pp/project33/model/formatter'}" mode="SingleSelectMaster" selectionChange="onOrderSelect">
+                        <items>
+                            <StandardListItem title="{uniqueOrders>so_docu_id}" description="{
+                                path: 'uniqueOrders>req_deli_date',
+                                formatter: 'Formatter.formatDate'
+                                }" icon="{= ${uniqueOrders>deliveryCompleted} ? 'sap-icon://status-completed' : 'sap-icon://status-in-process'
+                                    }" iconInset="false" highlight="{= ${uniqueOrders>deliveryCompleted} ? 'Success' : 'Warning'}" 
+                                    info = "{= ${uniqueOrders>deliveryCompleted} ? '출고 완료' : '미출고'}" infoState = "{= ${uniqueOrders>deliveryCompleted} ? 'Success' : 'Warning'}"/>
+                        </items>
+                    </List>
+                </Page>
+            </masterPages>
+            <detailPages>
+                <Page id="detailPage" title="{view>/customerName}" showHeader="false">
+                    <subHeader>
+                        <Bar>
+                            <contentLeft>
+                                <Text text="{view>/customerName}"></Text>
+                            </contentLeft>
+                            <contentRight>
+                                <Button text="설명 보기" icon="sap-icon://question-mark" press="onOpenInfoDialog" class="sapUiContentPadding" type="Transparent"/>
+                            </contentRight>
+                        </Bar>
+                    </subHeader>
+                    <HBox renderType="Bare" justifyContent="End">
+                        <Button text="확대" press="onZoomIn" icon="sap-icon://zoom-in"/>
+                        <Button text="축소" press="onZoomOut" icon="sap-icon://zoom-out"/>
+                    </HBox>
+
+                    <commons:ProcessFlow id="processflow2" nodePress="onNodePress" foldedCorners="true" wheelZoomable="true" scrollable="false" nodes="{pf2>/nodes}" lanes="{pf2>/lanes}" headerPress="onHeaderPress">
+                        <commons:nodes>
+                            <commons:ProcessFlowNode laneId="{pf2>lane}" nodeId="{pf2>id}" title="{pf2>title}" children="{pf2>children}" state="{pf2>state}" stateText="{pf2>stateText}" texts="{pf2>texts}" focused="{pf2>focused}"/>
+                        </commons:nodes>
+                        <commons:lanes>
+                            <commons:ProcessFlowLaneHeader laneId="{pf2>id}" iconSrc="{pf2>icon}" text="{pf2>label}" position="{pf2>position}" state="{pf2>state}" />
+                        </commons:lanes>
+                    </commons:ProcessFlow>
+
+                    <Table id="table" items="{selectedOrder>/items}" showNoData="false" alternateRowColors="true">
+                        <columns>
+                            <Column>
+                                <header>
+                                    <Label text="고객명" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Label text="판매주문 문서 번호" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Label text="자재번호" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Label text="자재명" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Label text="수량" />
+                                </header>
+                            </Column>
+                            <Column>
+                                <header>
+                                    <Label text="단위" />
+                                </header>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <Text text="{selectedOrder>cust_name}" />
+                                    <Text text="{selectedOrder>so_docu_id}" />
+                                    <Text text="{selectedOrder>mat_id}" />
+                                    <Text text="{selectedOrder>mat_nm}" />
+                                    <Text text="{selectedOrder>soi_qty}" />
+                                    <Text text="{selectedOrder>soi_uom}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </Page>
+            </detailPages>
+        </SplitApp>
+    </Page>
+</mvc:View>

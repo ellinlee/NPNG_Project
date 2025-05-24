@@ -1,0 +1,45 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog id="infoDialog" title="생산흐름 조회 페이지" draggable="true" resizable="true" contentWidth="550px">
+        <VBox class="sapUiSmallMargin">
+            <Text text="이 화면은 고객별 판매주문을 기반으로 생산 흐름을 한 눈에 확인할 수 있는 페이지입니다." wrapping="true"></Text>
+            <Text text="각 단계(고객주문, 생산계획, 계획주문, 생산오더, 납품)의 상태를 시각적으로 제공합니다."></Text>
+
+            <Text text="사용 방법" class="infoTitle"></Text>
+
+            <Text text="- 조회할 고객을 클릭하여, 해당 고객의 판매주문을 조회할 수 있습니다."></Text>
+            <Text text="- 왼쪽 상단 검색창에서 판매주문 문서번호로 주문을 검색할 수 있습니다."></Text>
+            <Text text="- [🔎확대/축소] 버튼으로 플로우를 조정할 수 있습니다. "></Text>
+            <Text text="- 📄고객주문/출고상태 노드를 클릭하면 해당 단계의 상세 정보를 볼 수 있습니다."></Text>
+
+            <Toolbar height="10px"/>
+
+            <Text text="생산 계획" class="infoTitle"></Text>
+            <Text text="- [⚪] 생산 계획 수립 전"></Text>
+            <Text text="- [🟢] 생산 계획 수립 완료"></Text>
+
+            <Toolbar height="10px"/>
+
+            <Text text="계획 주문" class="infoTitle"></Text>
+            <Text text="- [⚪] 계획 주문 생성 전"></Text>
+            <Text text="- [🟢] 계획 주문 생성 완료"></Text>
+
+            <Toolbar height="10px"/>
+
+            <Text text="생산 오더" class="infoTitle"></Text>
+            <Text text="- [🔴] 원자재 출고 전"></Text>
+            <Text text="- [🟠] 생산 전"></Text>
+            <Text text="- [🟢] 생산 완료"></Text>
+
+            <Toolbar height="10px"/>
+
+            <Text text="출고 상태" class="infoTitle"></Text>
+            <Text text="- [⚪] 출고 문서 미존재"></Text>
+            <Text text="- [🔴] 납품 전(미출고)"></Text>
+            <Text text="- [🟢] 납품 완료(출고 완료)"></Text>
+        </VBox>
+        <endButton>
+            <Button text="닫기" press="onCloseInfoDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition> 
