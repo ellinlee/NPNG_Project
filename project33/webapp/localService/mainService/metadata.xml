@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0"
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="Aggregation"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ANALYTICS',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Analytics.v1" Alias="Analytics"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CODELIST',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.CodeList.v1" Alias="SAP__CodeList"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_MEASURES',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/iwfnd/catalogservice;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_VALIDATION',Version='0001',SAP__Origin='LOCAL')/$value"
+        xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Validation.V1" Alias="Validation"/>
+    </edmx:Reference>
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZDCC_MATFLOW_CDS" xml:lang="en" sap:schema-version="1"
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="ZDCC_MATFLOWType" sap:label="[PP] 고객주문 H/I + 생산운영계획 + 계획주문 + 생산오더 + 납품문서 H" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="so_docu_id"/>
+                    <PropertyRef Name="cust_id"/>
+                    <PropertyRef Name="op_id"/>
+                    <PropertyRef Name="op_mat_id"/>
+                    <PropertyRef Name="plan_id"/>
+                    <PropertyRef Name="pro_id"/>
+                    <PropertyRef Name="deli_docu_id"/>
+                </Key>
+                <Property Name="so_docu_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="판매주문 문서 번호"/>
+                <Property Name="cust_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="고객 ID"/>
+                <Property Name="op_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="생산 운영 계획 ID"/>
+                <Property Name="op_mat_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="자재번호"/>
+                <Property Name="plan_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="계획 주문 ID"/>
+                <Property Name="pro_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="생산오더ID"/>
+                <Property Name="deli_docu_id" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="납품 문서번호"/>
+                <Property Name="cont_docu_id" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="계약서 번호"/>
+                <Property Name="order_type" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="오더유형"/>
+                <Property Name="incoterm" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="인코텀스"/>
+                <Property Name="req_deli_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="납기 요청일"/>
+                <Property Name="pay_term" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="지불조건"/>
+                <Property Name="sales_org" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="판매조직"/>
+                <Property Name="dist_cha" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="유통경로"/>
+                <Property Name="division" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="제품군"/>
+                <Property Name="so_tot_price" Type="Edm.Decimal" Precision="16" Scale="3" sap:unit="so_currency" sap:label="총 금액"/>
+                <Property Name="so_currency" Type="Edm.String" MaxLength="5" sap:display-format="UpperCase" sap:label="통화" sap:semantics="currency-code"/>
+                <Property Name="block_flag" Type="Edm.Boolean" sap:label="BLOCK 플래그"/>
+                <Property Name="so_created_by" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="생성자"/>
+                <Property Name="so_created_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생성일자"/>
+                <Property Name="so_created_time" Type="Edm.Time" Precision="0" sap:label="생성시간"/>
+                <Property Name="mat_id" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="자재번호"/>
+
+                <Property Name="soi_qty" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="op_uom" sap:label="수량"/>
+                <Property Name="soi_uom" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="단위" sap:semantics="unit-of-measure"/>
+
+
+                <Property Name="mat_nm" Type="Edm.String" MaxLength="100" sap:label="자재명"/>
+                <Property Name="mat_ty" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="자재유형" sap:quickinfo="자재유형 코드"/>
+                <Property Name="mat_group" Type="Edm.String" MaxLength="9" sap:display-format="UpperCase" sap:label="자재그룹" sap:quickinfo="자재그룹 코드"/>
+                <Property Name="cust_name" Type="Edm.String" MaxLength="15" sap:label="고객명"/>
+                <Property Name="country" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="국가코드"/>
+                <Property Name="cust_group" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="고객그룹"/>
+                <Property Name="e_mail" Type="Edm.String" MaxLength="50" sap:label="이메일"/>
+                <Property Name="lang_id" Type="Edm.String" MaxLength="2" sap:display-format="UpperCase" sap:label="언어코드"/>
+                <Property Name="telephone" Type="Edm.String" MaxLength="15" sap:display-format="UpperCase" sap:label="전화번호"/>
+                <Property Name="plant_id" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="플랜트 ID"/>
+                <Property Name="bom_id" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="BOM ID"/>
+                <Property Name="op_s_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생산 운영 계획 시작일"/>
+                <Property Name="op_e_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생산 운영 계획 종료일"/>
+                <Property Name="op_qty" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="op_uom" sap:label="수량"/>
+                <Property Name="op_uom" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="단위" sap:semantics="unit-of-measure"/>
+                <Property Name="op_status" Type="Edm.String" MaxLength="30" sap:display-format="UpperCase" sap:label="생산 운영 계획 상태"/>
+                <Property Name="op_created_by" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="생성자"/>
+                <Property Name="op_created_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생성일자"/>
+                <Property Name="op_created_time" Type="Edm.Time" Precision="0" sap:label="생성시간"/>
+                <Property Name="pl_mat_id" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="자재번호"/>
+                <Property Name="po_s_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생산 시작일"/>
+                <Property Name="po_e_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생산 종료일"/>
+                <Property Name="pl_qty" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="pl_uom" sap:label="수량"/>
+                <Property Name="pl_uom" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="단위" sap:semantics="unit-of-measure"/>
+                <Property Name="pl_created_by" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="생성자"/>
+                <Property Name="pl_created_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="변경일자"/>
+                <Property Name="pl_created_time" Type="Edm.Time" Precision="0" sap:label="변경시간"/>
+                <Property Name="po_mat_id" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="자재번호"/>
+                <Property Name="po_qty" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="po_uom" sap:label="수량"/>
+                <Property Name="po_uom" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="단위" sap:semantics="unit-of-measure"/>
+                <Property Name="prod_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생산일자"/>
+                <Property Name="po_status" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="생산 오더 상태"/>
+                <Property Name="po_created_by" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="생성자"/>
+                <Property Name="po_created_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="생성일자"/>
+                <Property Name="po_created_time" Type="Edm.Time" Precision="0" sap:label="생성시간"/>
+                <Property Name="deli_date" Type="Edm.DateTime" Precision="0" sap:display-format="Date" sap:label="출고 일자"/>
+                <Property Name="deli_status" Type="Edm.String" MaxLength="30" sap:display-format="UpperCase" sap:label="문서 상태"/>
+            </EntityType>
+            <EntityContainer Name="ZDCC_MATFLOW_CDS_Entities" m:IsDefaultEntityContainer="true" sap:message-scope-supported="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="ZDCC_MATFLOW" EntityType="ZDCC_MATFLOW_CDS.ZDCC_MATFLOWType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+            </EntityContainer>
+            <Annotation Term="Core.SchemaVersion" String="1.0.0"
+                xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <Annotations Target="ZDCC_MATFLOW_CDS.ZDCC_MATFLOW_CDS_Entities"
+                xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.ApplyMultiUnitBehaviorForSortingAndFiltering" Bool="true"/>
+            </Annotations>
+            <atom:link rel="self" href="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/sap/ZDCC_MATFLOW_CDS/$metadata"
+                xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="http://bgissap1.bgissap.co.kr:8000/sap/opu/odata/sap/ZDCC_MATFLOW_CDS/$metadata"
+                xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

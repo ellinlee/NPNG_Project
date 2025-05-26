@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:formatter="sync.dc.pp.project33.model.formatter">
+    <QuickView>
+        <QuickViewPage pageId="customerOrder" header="고객주문 상세 정보">
+            <QuickViewGroup>
+                <QuickViewGroupElement label="고객명" value="{uniqueOrders>cust_name}" />
+                <QuickViewGroupElement label="판매주문 문서 번호" value="{uniqueOrders>so_docu_id}" />
+                <QuickViewGroupElement label="계약서 번호" value="{uniqueOrders>cont_docu_id}" />
+                <QuickViewGroupElement label="요청납기일" value="{uniqueOrders>req_deli_date_str}" />
+                <QuickViewGroupElement label="주문생성일자" value="{uniqueOrders>so_created_date_str}" />
+                <QuickViewGroupElement label="주문생성시간" value="{uniqueOrders>so_created_time_str}" />
+            </QuickViewGroup>
+        </QuickViewPage>
+    </QuickView>
+</core:FragmentDefinition>

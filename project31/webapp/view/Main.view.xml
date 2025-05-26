@@ -20,7 +20,7 @@
             </Select>
 
             <Label text="자재번호"/>
-            <Input id="matIdInput" placeholder="자재번호를 입력하세요." showValueHelp="true" value="{matId}" valueHelpRequest=".onValueHelpMatId" />
+            <Input id="matIdInput" liveChange="onMatIdChange" placeholder="자재번호를 입력하세요." showValueHelp="true" value="{matId}" valueHelpRequest=".onValueHelpMatId"/>
 
             <Label text="플랜트 ID" />
             <Select id="plantIdSelect" selectedKey="{plantId}">

@@ -1,0 +1,32 @@
+<mvc:View controllerName="sync.dc.pp.project33.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}" showHeader="false" class="sapUiContentPadding">
+        <Panel expandable="false" width="auto" class="sapUiResponsiveMargin sapUiTinyMarginTopBottom customPanelShadow">
+            <VBox class="sapUiSmallMargin">
+                <Text text="생산 흐름 조회" class="sapUiSmallMarginBottom panelTitle"></Text>
+
+                <Text text="고객주문 기준으로 생산계획, 생산오더, 출고 상태까지 통합 조회할 수 있는 화면입니다." class="sapUiSmallMarginBottom"/>
+                <Text text="해당 주문에 대한 생산운영계획 수립, 계획주문/생산오더 생성, 납품완료를 단계별로 확인할 수 있습니다." class="sapUiSmallMarginBottom"/>
+
+            </VBox>
+        </Panel>
+
+        <HBox class="sapUiResponsiveMargin" justifyContent="Center">
+            <GenericTile press="onTilePress" class="tileBackgroundHyundai sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" backgroundImage="../image/hyundai.jpg" header="현대 중공업" subheader="5000000000" frameType= "TwoByOne">
+            </GenericTile>
+            <GenericTile press="onTilePress" class="tileBackgroundToyota sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" backgroundImage="../image/toyota.jpg" header="TOYOTA" subheader="6000000000" frameType= "TwoByOne">
+                <TileContent />
+            </GenericTile>
+        </HBox>
+
+        <HBox class="sapUiResponsiveMargin" justifyContent="Center">
+            <GenericTile press="onTilePress" class="mySubheaderColor tileBackgroundCOLI sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" backgroundImage="../image/coli.png" header="COLI" subheader="7000000000" frameType= "TwoByOne">
+                <TileContent />
+            </GenericTile>
+            <GenericTile press="onTilePress" class="tileBackgroundCOMAC sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" backgroundImage="../image/comac.png" header="COMAC" subheader="7000000001" frameType= "TwoByOne">
+                <TileContent />
+            </GenericTile>
+        </HBox>
+    </Page>
+</mvc:View>

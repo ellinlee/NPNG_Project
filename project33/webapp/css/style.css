@@ -1,0 +1,21 @@
+/* Enter your custom styles here */
+
+.panelTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.customPanelShadow {
+  border: 0px solid #d0d0d0;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 20px;
+}
+
+.infoTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  color: #222;
+}
