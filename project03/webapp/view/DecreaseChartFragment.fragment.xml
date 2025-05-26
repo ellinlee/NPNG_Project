@@ -1,0 +1,28 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:viz.data="sap.viz.ui5.data">
+    <Dialog title="{= '매출 변화율 차트 - ' + ${decreaseModel>/customer}}" draggable="true" resizable="true" contentWidth="700px" contentHeight="500px">
+        <VBox>
+            <viz:VizFrame id="decreaseChart" vizType="column" width="100%" height="400px">
+                <viz:dataset>
+                    <viz.data:FlattenedDataset data="{decreaseModel>/data}">
+                        <viz.data:dimensions>
+                            <viz.data:DimensionDefinition name="기간" value="{period}"/>
+                        </viz.data:dimensions>
+                        <viz.data:measures>
+                            <viz.data:MeasureDefinition name="매출액(KRW)" value="{amount}"/>
+                        </viz.data:measures>
+                    </viz.data:FlattenedDataset>
+                </viz:dataset>
+                <viz:feeds>
+                    <viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="기간"/>
+                    <viz.feeds:FeedItem uid="valueAxis" type="Measure" values="매출액(KRW)"/>
+                </viz:feeds>
+            </viz:VizFrame>
+            <VBox id="decreaseRateBox" class="sapUiSmallMargin">
+            <Text text="{= '변화율: ' + ${decreaseModel>/decreaseRate} + '%'}" class="sapUiSmallMarginTop"/>
+            </VBox>
+        </VBox>
+        <endButton>
+            <Button text="닫기" press="onCloseDecreaseChart"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition> 

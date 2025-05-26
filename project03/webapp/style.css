@@ -1,0 +1,8 @@
+/* 고객사 이미지 타일 통일 스타일 */
+.customerImageTile {
+  width: 100% !important;
+  height: 100px !important;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+} 
