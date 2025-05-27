@@ -4,7 +4,6 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/ui/model/json/JSONModel",
     "sap/ui/model/odata/v2/ODataModel",
-    // ↓ 직접 생성자 import
     "sap/viz/ui5/data/FlattenedDataset",
     "sap/viz/ui5/data/DimensionDefinition",
     "sap/viz/ui5/data/MeasureDefinition"
