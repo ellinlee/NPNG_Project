@@ -1,0 +1,28 @@
+<mvc:View controllerName="project52.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <Table id="mainTable" items="{/zdcc_mat_id_for_bom}">
+            <columns>
+                <Column>
+                    <Text text="Material ID" />
+                </Column>
+                <Column>
+                    <Text text="Material Name" />
+                </Column>
+                <Column>
+                    <Text text="Action" />
+                </Column>
+            </columns>
+            <items>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{mat_id}" />
+                        <Text text="{mat_nm}" />
+                        <Button text="Create BOM" press="onCreateBOM" />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+    </Page>
+</mvc:View>

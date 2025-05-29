@@ -1,0 +1,16 @@
+<mvc:View controllerName="project.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="detailPage" title="Material Details">
+        <VBox id="itemContainer">
+            <Text text="Material ID: {/matId}" />
+            <Text text="Material Name: {/matNm}" />
+            <Input id="bomLevelInput" placeholder="Enter BOM Level" />
+            <Input id="qtyInput" placeholder="Enter Quantity" />
+            <Input id="uomInput" placeholder="Enter Unit of Measure" />
+            <Button text="Generate BOM Header" press="onGenerateBOMHeader" />
+            <Button text="Add BOM Item" press="onAddBOMItem" />
+            <Button text="Add Input Fields" press="onAddInputFields" />
+        </VBox>
+    </Page>
+</mvc:View>

@@ -1,0 +1,18 @@
+<mvc:View controllerName="project52.controller.BOM"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="bomPage" title="Create BOM">
+        <VBox id="bomContainer">
+            <Text text="Material ID: {mat_id}" />
+            <Text text="Material Name: {mat_nm}" />
+            <HBox>
+                <Input placeholder="BOM Level" width="150px" />
+                <Input placeholder="MAT ID" width="150px" />
+                <Input placeholder="MAT NM" width="150px" />
+                <Input placeholder="Quantity" width="150px" />
+                <Input placeholder="Unit of Measure" width="150px" />
+            </HBox>
+        </VBox>
+        <Button text="BOM ITEM 추가" press="onAddBOMItem" />
+    </Page>
+</mvc:View>
