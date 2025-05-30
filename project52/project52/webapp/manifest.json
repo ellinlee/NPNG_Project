@@ -108,6 +108,11 @@
                     "target": [
                         "TargetBOM"
                     ]
+                },
+                {
+                    "name": "RouteNextPage",
+                    "pattern": "NextPage/{headerMat}/{rawMaterials}",
+                    "target": "TargetNextPage"
                 }
             ],
             "targets": {
@@ -118,6 +123,11 @@
                 },
                 "TargetBOM": {
                     "viewName": "BOM",
+                    "viewPath": "project52.view",
+                    "viewLevel": 2
+                },
+                "TargetNextPage": {
+                    "viewName": "NextPage",
                     "viewPath": "project52.view",
                     "viewLevel": 2
                 }

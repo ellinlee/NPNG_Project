@@ -1,0 +1,25 @@
+<mvc:View controllerName="project52.controller.NextPage"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="nextPage" title="Next Page">
+        <VBox>
+            <!-- 헤더 데이터 표시 -->
+            <Text text="Header Material ID: {/headerMat/matId}" />
+            <Text text="Header Material Name: {/headerMat/matNm}" />
+
+            <!-- 원자재 데이터 표시 -->
+            <List items="{/rawMaterials}">
+                <StandardListItem
+                    title="{matId}"
+                    description="{matNm}"
+                    info="{quantity} {uom} | BOM Level: {bomLevel}" /> <!-- BOM Level 추가 -->
+            </List>
+
+            <!-- 버튼 추가 -->
+            <HBox justifyContent="SpaceBetween">
+                <Button text="이전" press="onBack" />
+                <Button text="저장" press="onSave" />
+            </HBox>
+        </VBox>
+    </Page>
+</mvc:View>

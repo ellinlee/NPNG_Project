@@ -2,7 +2,7 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
     <Page id="page" title="{i18n>title}">
-        <Table id="mainTable" items="{/zdcc_mat_id_for_bom}">
+        <Table id="mainTable" items="{cds>/zdcc_mat_id_for_bom}">
             <columns>
                 <Column>
                     <Text text="Material ID" />
@@ -17,8 +17,8 @@
             <items>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{mat_id}" />
-                        <Text text="{mat_nm}" />
+                        <Text text="{cds>mat_id}" />
+                        <Text text="{cds>mat_nm}" />
                         <Button text="Create BOM" press="onCreateBOM" />
                     </cells>
                 </ColumnListItem>

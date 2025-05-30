@@ -1,18 +1,42 @@
 <mvc:View controllerName="project52.controller.BOM"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
     <Page id="bomPage" title="Create BOM">
         <VBox id="bomContainer">
-            <Text text="Material ID: {mat_id}" />
-            <Text text="Material Name: {mat_nm}" />
             <HBox>
-                <Input placeholder="BOM Level" width="150px" />
-                <Input placeholder="MAT ID" width="150px" />
-                <Input placeholder="MAT NM" width="150px" />
-                <Input placeholder="Quantity" width="150px" />
-                <Input placeholder="Unit of Measure" width="150px" />
+                <!-- BOM Level 드롭다운 -->
+                <Select width="150px">
+                    <items>
+                        <core:Item key="" text="" /> <!-- 빈 값 추가 -->
+                        <core:Item key="0" text="0" />
+                        <core:Item key="1" text="1" />
+                        <core:Item key="2" text="2" />
+                    </items>
+                </Select>
+                <Input 
+                    placeholder="Material ID (원자재)" 
+                    width="150px" 
+                    showValueHelp="true" 
+                    valueHelpRequest="onValueHelpRequest" />
+                <Input 
+                    placeholder="Material Name (원자재)" 
+                    width="150px" 
+                    editable="false" />
+                <Input 
+                    placeholder="Quantity" 
+                    width="150px" />
+                <Select width="150px">
+                    <items>
+                        <core:Item key="" text="" /> <!-- 빈 값 추가 -->
+                        <core:Item key="KG" text="KG" />
+                        <core:Item key="LTR" text="LTR" />
+                        <core:Item key="EA" text="EA" />
+                    </items>
+                </Select>
             </HBox>
         </VBox>
         <Button text="BOM ITEM 추가" press="onAddBOMItem" />
+        <Button text="다음" press="onNext" />
     </Page>
 </mvc:View>
