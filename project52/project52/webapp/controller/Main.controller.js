@@ -1,25 +1,59 @@
-sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/ui/core/routing/History"
-], (Controller, History) => {
+// sap.ui.define([
+//     "sap/ui/core/mvc/Controller",
+//     "sap/ui/core/routing/History"
+// ], (Controller, History) => {
+//     "use strict";
+
+//     return Controller.extend("project52.controller.Main", {
+//         onInit() {
+//             const oModel = this.getOwnerComponent().getModel("cds"); // CDS 모델 가져오기
+//             this.getView().setModel(oModel);
+//         },
+
+//         onCreateBOM(oEvent) {
+//             const oContext = oEvent.getSource().getBindingContext("cds"); // CDS 모델 컨텍스트 가져오기
+//             const matId = oContext.getProperty("mat_id");
+//             const matNm = oContext.getProperty("mat_nm");
+
+//             const oRouter = this.getOwnerComponent().getRouter();
+//             oRouter.navTo("RouteBOM", {
+//                 mat_id: matId,
+//                 mat_nm: matNm
+//             });
+//         }
+//     });
+// });
+
+sap.ui.define(
+  ["sap/ui/core/mvc/Controller", "sap/ui/core/routing/History"],
+  (Controller, History) => {
     "use strict";
 
     return Controller.extend("project52.controller.Main", {
-        onInit() {
-            const oModel = this.getOwnerComponent().getModel("cds"); // CDS 모델 가져오기
-            this.getView().setModel(oModel);
-        },
+      onInit() {
+        const oRouter = this.getOwnerComponent().getRouter();
+        oRouter
+          .getRoute("RouteMain")
+          .attachPatternMatched(this._onRouteMatched, this);
+      },
 
-        onCreateBOM(oEvent) {
-            const oContext = oEvent.getSource().getBindingContext("cds"); // CDS 모델 컨텍스트 가져오기
-            const matId = oContext.getProperty("mat_id");
-            const matNm = oContext.getProperty("mat_nm");
+      _onRouteMatched() {
+        const oModel = this.getOwnerComponent().getModel("cds");
+        this.getView().setModel(oModel);
+        console.log("🔁 RouteMain 재진입 - CDS 모델 다시 바인딩");
+      },
 
-            const oRouter = this.getOwnerComponent().getRouter();
-            oRouter.navTo("RouteBOM", {
-                mat_id: matId,
-                mat_nm: matNm
-            });
-        }
+      onCreateBOM(oEvent) {
+        const oContext = oEvent.getSource().getBindingContext("cds");
+        const matId = oContext.getProperty("mat_id");
+        const matNm = oContext.getProperty("mat_nm");
+
+        const oRouter = this.getOwnerComponent().getRouter();
+        oRouter.navTo("RouteBOM", {
+          mat_id: matId,
+          mat_nm: matNm,
+        });
+      },
     });
-});
+  }
+);

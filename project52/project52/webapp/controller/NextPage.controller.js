@@ -1,106 +1,148 @@
-sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/ui/model/json/JSONModel"
-], (Controller, JSONModel) => {
+sap.ui.define(
+  ["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"],
+  (Controller, JSONModel) => {
     "use strict";
 
     return Controller.extend("project52.controller.NextPage", {
-        onInit() {
-            const oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("RouteNextPage").attachPatternMatched(this._onRouteMatched, this);
-        },
+      onInit() {
+        const oRouter = this.getOwnerComponent().getRouter();
+        oRouter
+          .getRoute("RouteNextPage")
+          .attachPatternMatched(this._onRouteMatched, this);
+      },
 
-        _onRouteMatched(oEvent) {
-            // 라우팅 파라미터 가져오기
-            const oArgs = oEvent.getParameter("arguments");
+      _onRouteMatched(oEvent) {
+        // 라우팅 파라미터 가져오기
+        const oArgs = oEvent.getParameter("arguments");
 
-            // 전달된 데이터를 JSON으로 파싱
-            try {
-                const oData = {
-                    headerMat: JSON.parse(oArgs.headerMat),
-                    rawMaterials: JSON.parse(oArgs.rawMaterials)
-                };
+        // 전달된 데이터를 JSON으로 파싱
+        try {
+          const oData = {
+            headerMat: JSON.parse(oArgs.headerMat),
+            rawMaterials: JSON.parse(oArgs.rawMaterials),
+          };
 
-                // 로컬 JSON 모델 설정
-                const oLocalModel = new JSONModel(oData);
-                this.getView().setModel(oLocalModel);
-            } catch (e) {
-                console.error("Error parsing routing parameters:", e);
+          // 로컬 JSON 모델 설정
+          const oLocalModel = new JSONModel(oData);
+          this.getView().setModel(oLocalModel);
+        } catch (e) {
+          console.error("Error parsing routing parameters:", e);
+        }
+      },
+
+      onBack() {
+        // 헤더 데이터에서 mat_id 가져오기
+        const oModel = this.getView().getModel();
+        const sMatId = oModel.getProperty("/headerMat/matId");
+        const sMatNm = oModel.getProperty("/headerMat/matNm");
+
+        // 이전 페이지로 이동하면서 mat_id 전달
+        const oRouter = this.getOwnerComponent().getRouter();
+        oRouter.navTo("RouteBOM", {
+          mat_id: sMatId,
+          mat_nm: sMatNm,
+        });
+      },
+
+      onSave() {
+        const oModel = this.getOwnerComponent().getModel("bom");
+        const oLocalModel = this.getView().getModel();
+
+        const oHeaderData = oLocalModel.getProperty("/headerMat");
+        const aRawMaterials = oLocalModel.getProperty("/rawMaterials");
+
+        oModel.setUseBatch(false); // 배치 전송 비활성화
+
+        // 1. 여러 개 BomId 가져와서 클라이언트 정렬
+        oModel.read("/zdct_pp010Set", {
+          urlParameters: {
+            $top: 1000, // 충분히 넉넉하게 조회
+          },
+          success: (oData) => {
+            const aResults = oData.results || [];
+
+            // 숫자 기준 정렬
+            aResults.sort(
+              (a, b) => parseInt(b.BomId, 10) - parseInt(a.BomId, 10)
+            );
+
+            const lastBomId = aResults[0]?.BomId || "100000";
+            const nextBomNum = parseInt(lastBomId, 10) + 1;
+
+            if (nextBomNum > 999999) {
+              sap.m.MessageBox.error("BOM ID 최대값을 초과했습니다.");
+              return;
             }
-        },
 
-        onBack() {
-            // 헤더 데이터에서 mat_id 가져오기
-            const oModel = this.getView().getModel();
-            const sMatId = oModel.getProperty("/headerMat/matId");
-            const sMatNm = oModel.getProperty("/headerMat/matNm");
+            const newBomId = nextBomNum.toString().padStart(6, "0");
 
-            // 이전 페이지로 이동하면서 mat_id 전달
-            const oRouter = this.getOwnerComponent().getRouter();
-            oRouter.navTo("RouteBOM", {
-                mat_id: sMatId,
-                mat_nm: sMatNm
-            });
-        },
+            // 🔍 콘솔 로그
+            console.log("📦 마지막 BomId:", lastBomId);
+            console.log("🚀 새로 생성된 BomId:", newBomId);
 
-        onSave() {
-            const oModel = this.getOwnerComponent().getModel("bom"); // BOM 모델 가져오기
-            const oLocalModel = this.getView().getModel(); // 로컬 JSON 모델 가져오기
-
-            // 헤더 데이터 가져오기
-            const oHeaderData = oLocalModel.getProperty("/headerMat");
-
-            // 원자재 데이터 가져오기
-            const aRawMaterials = oLocalModel.getProperty("/rawMaterials");
-
-            // 배치 요청 시작
-            oModel.setDeferredGroups(["batchGroup1"]); // 배치 그룹 설정
-
-            // 변경 세트 생성
-            const mParameters = {
-                groupId: "batchGroup1",
-                changeSetId: "changeSet1"
-            };
-
-            // 헤더 데이터 추가
+            // 2. 헤더 저장
             const oPP010Data = {
-                BomId: oHeaderData.BomId, // 헤더의 BomId 사용
-                MatId: oHeaderData.matId,
-                MatNm: oHeaderData.matNm,
-                Qty: "1", // 하드코딩된 값
-                Uom: "EA", // 하드코딩된 값
-                BomVersion: "1", // 하드코딩된 값
-                DeleteFlag: false // 하드코딩된 값
+              BomId: newBomId,
+              MatId: oHeaderData.matId,
+              MatNm: oHeaderData.matNm,
+              Qty: "1",
+              Uom: "EA",
+              BomVersion: "1",
+              DeleteFlag: false,
             };
-            oModel.create("/zdct_pp010Set", oPP010Data, mParameters);
 
-            // PP011 데이터 생성 및 추가
-            let iBomItem = 10; // BomItem 초기값 설정
-            aRawMaterials.forEach((oMaterial) => {
-                const oPP011Item = {
-                    BomId: oHeaderData.BomId, // 헤더의 BomId 사용
-                    BomItem: iBomItem.toString().padStart(6, "0"), // BomItem 생성
+            oModel.create("/zdct_pp010Set", oPP010Data, {
+              success: () => {
+                console.log("✅ 헤더 저장 성공:", newBomId);
+
+                // 3. 구성 저장
+                let iBomItem = 10;
+                aRawMaterials.forEach((oMaterial) => {
+                  const oPP011Item = {
+                    BomId: newBomId,
+                    BomItem: iBomItem.toString().padStart(6, "0"),
                     MatId: oMaterial.matId,
                     BomLevel: oMaterial.bomLevel,
                     MatNm: oMaterial.matNm,
                     Qty: oMaterial.quantity,
                     Uom: oMaterial.uom,
-                    DeleteFlag: false // 하드코딩된 값
-                };
-                iBomItem += 10; // BomItem 증가
-                oModel.create("/zdct_pp011Set", oPP011Item, mParameters);
-            });
+                    DeleteFlag: false,
+                  };
+                  iBomItem += 10;
 
-            // 배치 요청 실행
-            oModel.submitChanges({
-                groupId: "batchGroup1",
-                success: (oData) => {
-                    console.log("Batch request successfully submitted:", oData);
-                },
-                error: (oError) => {
-                    console.error("Error submitting batch request:", oError);
-                }
+                  oModel.create("/zdct_pp011Set", oPP011Item, {
+                    success: () => {
+                      console.log("✅ 구성 저장 성공:", oPP011Item.MatId);
+                    },
+                    error: (err) => {
+                      console.error(
+                        "❌ 구성 저장 실패:",
+                        oPP011Item.MatId,
+                        err
+                      );
+                      sap.m.MessageBox.error(
+                        `자재 ${oPP011Item.MatId} 저장 실패`
+                      );
+                    },
+                  });
+                });
+
+                sap.m.MessageToast.show("BOM 생성 완료");
+                const oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("RouteMain", {}, true);
+              },
+              error: (err) => {
+                console.error("❌ 헤더 저장 실패", err);
+                sap.m.MessageBox.error("헤더 저장 중 오류가 발생했습니다.");
+              },
             });
-        }
+          },
+          error: (err) => {
+            console.error("❌ BomId 조회 실패", err);
+            sap.m.MessageBox.error("BomId 생성 실패: 기존 ID 조회 중 오류");
+          },
+        });
+      },
     });
-});
+  }
+);

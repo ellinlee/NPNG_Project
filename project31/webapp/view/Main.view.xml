@@ -45,7 +45,7 @@
             <Select id="uomSelect" selectedKey="{uom}">
                 <items>
                     <core:Item key="KGM" text="KG" />
-                    <core:Item key="LTR" text="L" />
+                    <core:Item key="LTR" text="LTR" />
                     <core:Item key="EA" text="EA" />
                 </items>
             </Select>

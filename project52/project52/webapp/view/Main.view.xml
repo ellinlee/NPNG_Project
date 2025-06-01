@@ -1,28 +1,84 @@
 <mvc:View controllerName="project52.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
-        <Table id="mainTable" items="{cds>/zdcc_mat_id_for_bom}">
-            <columns>
-                <Column>
-                    <Text text="Material ID" />
-                </Column>
-                <Column>
-                    <Text text="Material Name" />
-                </Column>
-                <Column>
-                    <Text text="Action" />
-                </Column>
-            </columns>
-            <items>
-                <ColumnListItem>
-                    <cells>
-                        <Text text="{cds>mat_id}" />
-                        <Text text="{cds>mat_nm}" />
-                        <Button text="Create BOM" press="onCreateBOM" />
-                    </cells>
-                </ColumnListItem>
-            </items>
-        </Table>
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Page
+        id="page"
+        title="BOM 생성 프로그램"
+        class="sapUiContentPadding"
+        backgroundDesign="Standard"
+        showHeader="true">
+
+        <!-- 전체 중앙 정렬 컨테이너 -->
+        <VBox
+            alignItems="Center"
+            width="100%">
+            
+            <!-- 실제 콘텐츠 컨테이너: 최대 1200px 폭 제한 -->
+            <VBox width="100%">
+
+                <!-- 프로그램 설명 타이틀 -->
+                <ObjectHeader
+                    title="BOM 생성 프로그램"
+                    intro="미등록 자재에 대한 BOM을 손쉽게 생성하세요."
+                    backgroundDesign="Solid"
+                />
+
+                <!-- 정보 메시지 -->
+                <MessageStrip
+                    text="🧾 아래는 현재 BOM이 등록되지 않은 완제품 자재 목록입니다. 각 자재에 대해 BOM 헤더와 구성품을 함께 등록할 수 있습니다."
+                type="Success"
+                    showIcon="true"
+
+                />
+
+                <!-- 리스트 영역 -->
+                <Panel
+                    headerText="BOM 미등록 완제품 리스트"
+
+                    width="100%"
+                    expandable="false">
+
+                    <Table
+                        id="mainTable"
+                        items="{cds>/zdcc_mat_id_for_bom}"
+                        inset="false"
+                        noDataText="모든 자재에 BOM이 이미 등록되었습니다. 🎉"
+                        growing="true"
+
+                        width="100%">
+
+                        <columns>
+                            <Column>
+                                <Text text="✅ 자재 ID" />
+                            </Column>
+                            <Column>
+                                <Text text="📄 자재명" />
+                            </Column>
+                            <Column>
+                                <Text text="" />
+                            </Column>
+                        </columns>
+
+                        <items>
+                            <ColumnListItem vAlign="Middle">
+                                <cells>
+                                    <Text text="{cds>mat_id}" />
+                                    <Text text="{cds>mat_nm}" />
+                                    <Button
+                                        text="BOM 생성"
+                                        type="Emphasized"
+                                        icon="sap-icon://add-document"
+                                        press="onCreateBOM"
+                                        class="sapUiTinyMargin"
+                                    />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </Panel>
+            </VBox>
+        </VBox>
     </Page>
 </mvc:View>

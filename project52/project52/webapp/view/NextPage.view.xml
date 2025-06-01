@@ -1,24 +1,47 @@
 <mvc:View controllerName="project52.controller.NextPage"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
-    <Page id="nextPage" title="Next Page">
-        <VBox>
-            <!-- 헤더 데이터 표시 -->
-            <Text text="Header Material ID: {/headerMat/matId}" />
-            <Text text="Header Material Name: {/headerMat/matNm}" />
 
-            <!-- 원자재 데이터 표시 -->
-            <List items="{/rawMaterials}">
-                <StandardListItem
-                    title="{matId}"
-                    description="{matNm}"
-                    info="{quantity} {uom} | BOM Level: {bomLevel}" /> <!-- BOM Level 추가 -->
-            </List>
+    <Page id="nextPage" title="최종 확인" backgroundDesign="Standard" class="sapUiContentPadding">
+        <VBox alignItems="Stretch" width="100%">
+            
+            <!-- 프로그램 설명 -->
+            <ObjectHeader
+                title="최종 BOM 확인"
+                intro="입력한 내용을 확인하고 저장을 완료하세요."
+                backgroundDesign="Solid"
+            />
 
-            <!-- 버튼 추가 -->
-            <HBox justifyContent="SpaceBetween">
-                <Button text="이전" press="onBack" />
-                <Button text="저장" press="onSave" />
+            <!-- 정보 메시지 -->
+            <MessageStrip
+                text=" 아래는 입력하신 BOM 헤더 및 구성품 정보입니다. '저장' 버튼을 누르면 데이터가 시스템에 등록됩니다."
+                type="Success"
+                showIcon="true"
+                class="sapUiMediumMarginBottom"
+            />
+
+            <!-- 헤더 정보 표시 -->
+            <Panel headerText="📦 완제품 정보" backgroundDesign="Solid" class="sapUiNoContentPadding sapUiMediumMarginBottom">
+                <VBox class="sapUiSmallMargin">
+                    <Text text="완제품 자재 ID: {/headerMat/matId}" />
+                    <Text text="완제품 자재 이름: {/headerMat/matNm}" />
+                </VBox>
+            </Panel>
+
+            <!-- 원자재 구성품 목록 -->
+            <Panel headerText="🔧 구성품 목록" backgroundDesign="Solid" class="sapUiNoContentPadding sapUiMediumMarginBottom">
+                <List items="{/rawMaterials}">
+                    <StandardListItem
+                        title="{matId}"
+                        description="{matNm}"
+                        info="{quantity} {uom} | BOM 레벨: {bomLevel}" />
+                </List>
+            </Panel>
+
+            <!-- 버튼 -->
+            <HBox justifyContent="End" alignItems="Center" width="100%" class="sapUiSmallMarginTop">
+                <Button text="이전" press="onBack" type="Transparent" class="sapUiTinyMarginEnd" />
+                <Button text="저장" press="onSave" type="Emphasized" icon="sap-icon://save" />
             </HBox>
         </VBox>
     </Page>

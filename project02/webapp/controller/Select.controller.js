@@ -17,10 +17,10 @@ sap.ui.define(
 
         // 고객별 카테고리 매핑 정의
         this._customerCategoryMap = {
-          "5000000000": "paint3", // 현대 중공업 - 조선용
-          "6000000000": "paint2", // TOYOTA - 자동차용
-          "7000000000": "paint1", // CPID - 건설용
-          "7000000001": "paint4"  // COMAC - 항공용
+          5000000000: "paint3", // 현대 중공업 - 조선용
+          6000000000: "paint2", // TOYOTA - 자동차용
+          7000000000: "paint1", // CPID - 건설용
+          7000000001: "paint4", // COMAC - 항공용
         };
 
         // 새로고침 여부 확인 (로컬 스토리지를 사용)
@@ -63,13 +63,13 @@ sap.ui.define(
         // 유효기간 모델 초기화
         var oValidDateModel = new JSONModel({
           validFrom: null,
-          validTo: null
+          validTo: null,
         });
         this.getView().setModel(oValidDateModel, "validDate");
 
         // 저장 버튼 비활성화
         var oViewModel = new JSONModel({
-          isContractCheckPassed: false
+          isContractCheckPassed: false,
         });
         this.getView().setModel(oViewModel);
       },
@@ -79,12 +79,12 @@ sap.ui.define(
         var oModel = this.getOwnerComponent().getModel();
 
         oModel.read("/ZDCT_MM010Set", {
-          success: function(oData) {
+          success: function (oData) {
             var oMaterialModel = new JSONModel({
-              materials: oData.results.map(function(item) {
+              materials: oData.results.map(function (item) {
                 var colorMatch = item.MatNm.match(/\(#([0-9A-Fa-f]{6})\)/);
                 var colorCode = colorMatch ? "#" + colorMatch[1] : null;
-                
+
                 // 자재 번호 범위에 따라 카테고리 결정
                 var matId = parseInt(item.MatId);
                 var category;
@@ -97,43 +97,43 @@ sap.ui.define(
                 } else if (matId >= 3000000193 && matId <= 3000000256) {
                   category = "paint4"; // 항공용
                 }
-                
+
                 return {
                   MatID: item.MatId,
                   MatName: item.MatNm,
                   category: category || item.MatTy, // 기존 MatTy를 fallback으로 사용
-                  ColorCode: colorCode
+                  ColorCode: colorCode,
                 };
-              })
+              }),
             });
 
             that.getView().setModel(oMaterialModel, "materials");
 
             // 기본 카테고리 설정 제거
             var oViewModel = new JSONModel({
-              selectedCategory: ""
+              selectedCategory: "",
             });
             that.getView().setModel(oViewModel, "view");
 
             var availableColors = {};
-            oData.results.forEach(function(item) {
+            oData.results.forEach(function (item) {
               var colorMatch = item.MatNm.match(/\(#([0-9A-Fa-f]{6})\)/);
               if (colorMatch) {
                 var colorCode = "#" + colorMatch[1];
                 availableColors[colorCode] = {
                   code: colorCode,
-                  materialId: item.MatId
+                  materialId: item.MatId,
                 };
               }
             });
 
             var oColorContainer = that.byId("select_HBox_colorContainer");
             var aColorButtons = oColorContainer.getItems();
-            
-            aColorButtons.forEach(function(oVBox) {
+
+            aColorButtons.forEach(function (oVBox) {
               var oButton = oVBox.getItems()[0];
               var sColorCode = oButton.data("color");
-              
+
               var colorInfo = availableColors[sColorCode];
               if (colorInfo) {
                 oButton.addStyleClass("materialColor");
@@ -141,9 +141,11 @@ sap.ui.define(
               }
             });
           },
-          error: function(oError) {
-            sap.m.MessageToast.show("자재 데이터를 불러오는 중 오류가 발생했습니다.");
-          }
+          error: function (oError) {
+            sap.m.MessageToast.show(
+              "자재 데이터를 불러오는 중 오류가 발생했습니다."
+            );
+          },
         });
       },
 
@@ -166,7 +168,9 @@ sap.ui.define(
         var sCustomerName = decodeURIComponent(oArgs.customerName);
 
         var oComponent = this.getOwnerComponent();
-        var oSelectedCustomerModel = oComponent.getModel("selectedCustomerModel");
+        var oSelectedCustomerModel = oComponent.getModel(
+          "selectedCustomerModel"
+        );
 
         if (
           oSelectedCustomerModel &&
@@ -179,21 +183,22 @@ sap.ui.define(
           this.getView().setModel(oViewModel);
 
           // 고객 ID에 따른 카테고리 설정
-          var sCustomerId = oSelectedCustomerModel.getData().SelectedCustomer.CustomerID;
+          var sCustomerId =
+            oSelectedCustomerModel.getData().SelectedCustomer.CustomerID;
           var sDefaultCategory = this._customerCategoryMap[sCustomerId];
-          
+
           if (sDefaultCategory) {
             // 기본 카테고리 설정
             var oViewModel = this.getView().getModel("view");
             if (!oViewModel) {
               oViewModel = new JSONModel({
-                selectedCategory: sDefaultCategory
+                selectedCategory: sDefaultCategory,
               });
               this.getView().setModel(oViewModel, "view");
             } else {
               oViewModel.setProperty("/selectedCategory", sDefaultCategory);
             }
-            
+
             // 선택된 카테고리 표시
             var oCategorySelect = this.byId("select_Select_category");
             if (oCategorySelect) {
@@ -263,7 +268,9 @@ sap.ui.define(
         var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
 
         // 현재 선택된 카테고리 가져오기
-        var sSelectedCategory = this.getView().getModel("view").getProperty("/selectedCategory");
+        var sSelectedCategory = this.getView()
+          .getModel("view")
+          .getProperty("/selectedCategory");
 
         // 선택된 색상 정보 객체 생성
         var colorInfo = {
@@ -272,7 +279,7 @@ sap.ui.define(
           timestamp: new Date().toISOString(),
           colorStyle: "background-color: " + sColorCode + ";",
           materialId: sMaterialId,
-          description: ""
+          description: "",
         };
 
         // 이미 선택된 색상인지 확인
@@ -297,7 +304,7 @@ sap.ui.define(
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
       },
 
-      _openIndustrySelectionDialog: function(sColorCode) {
+      _openIndustrySelectionDialog: function (sColorCode) {
         if (!this._oIndustrySelectionDialog) {
           this._oIndustrySelectionDialog = sap.ui.xmlfragment(
             "sync.dc.sd.project02.view.IndustrySelectionDialog",
@@ -313,22 +320,22 @@ sap.ui.define(
             { key: "construction", text: "건설용" },
             { key: "automotive", text: "자동차용" },
             { key: "shipbuilding", text: "조선용" },
-            { key: "aerospace", text: "항공용" }
-          ]
+            { key: "aerospace", text: "항공용" },
+          ],
         });
 
         this._oIndustrySelectionDialog.setModel(oModel);
         this._oIndustrySelectionDialog.open();
       },
 
-      onIndustrySelected: function(oEvent) {
+      onIndustrySelected: function (oEvent) {
         var sSelectedIndustry = oEvent.getParameter("selectedItem").getKey();
         var oModel = this._oIndustrySelectionDialog.getModel();
         var sColorCode = oModel.getProperty("/colorCode");
-        
+
         // 산업별 자재 번호 매핑
         var sMaterialId;
-        switch(sSelectedIndustry) {
+        switch (sSelectedIndustry) {
           case "construction":
             sMaterialId = "3000000257";
             break;
@@ -351,7 +358,7 @@ sap.ui.define(
           colorStyle: "background-color: " + sColorCode + ";",
           materialId: sMaterialId,
           description: "",
-          industry: sSelectedIndustry
+          industry: sSelectedIndustry,
         };
 
         // 선택된 색상 목록에 추가
@@ -370,7 +377,7 @@ sap.ui.define(
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
       },
 
-      onCancelIndustrySelection: function() {
+      onCancelIndustrySelection: function () {
         this._oIndustrySelectionDialog.close();
       },
 
@@ -488,15 +495,17 @@ sap.ui.define(
       // 타임스탬프 포맷팅
       _formatTimestamp: function (sTimestamp) {
         if (!sTimestamp) return "";
-        
+
         var oDate = new Date(sTimestamp);
         var sYear = oDate.getFullYear();
         var sMonth = (oDate.getMonth() + 1).toString().padStart(2, "0");
         var sDay = oDate.getDate().toString().padStart(2, "0");
         var sHours = oDate.getHours().toString().padStart(2, "0");
         var sMinutes = oDate.getMinutes().toString().padStart(2, "0");
-        
-        return sYear + "-" + sMonth + "-" + sDay + " " + sHours + ":" + sMinutes;
+
+        return (
+          sYear + "-" + sMonth + "-" + sDay + " " + sHours + ":" + sMinutes
+        );
       },
 
       // 선택된 색상 목록 표시
@@ -506,7 +515,11 @@ sap.ui.define(
         var oValidTo = oValidDateModel.getProperty("/validTo");
         var oModel = this.getView().getModel();
         var sDeliveryDay = oModel.getProperty("/DeliveryDay");
-        if (!oValidFrom && !oValidTo && (!sDeliveryDay || sDeliveryDay.trim() === "")) {
+        if (
+          !oValidFrom &&
+          !oValidTo &&
+          (!sDeliveryDay || sDeliveryDay.trim() === "")
+        ) {
           sap.m.MessageToast.show("계약기간과 납품희망일을 모두 입력해주세요.");
           return;
         } else if (!oValidFrom || !oValidTo) {
@@ -526,12 +539,13 @@ sap.ui.define(
         // 날짜를 yyyy-MM-dd 형식으로 변환하는 함수
         function formatDateToYYYYMMDD(date) {
           if (!date) return null;
-          if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date;
-          var dateObj = (typeof date === 'string') ? new Date(date) : date;
+          if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date))
+            return date;
+          var dateObj = typeof date === "string" ? new Date(date) : date;
           var year = dateObj.getFullYear();
-          var month = String(dateObj.getMonth() + 1).padStart(2, '0');
-          var day = String(dateObj.getDate()).padStart(2, '0');
-          return year + '-' + month + '-' + day;
+          var month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          var day = String(dateObj.getDate()).padStart(2, "0");
+          return year + "-" + month + "-" + day;
         }
 
         // 인덱스 정보 추가 및 날짜 포맷팅
@@ -567,21 +581,21 @@ sap.ui.define(
       },
 
       // 수량 변경 처리
-      onQuantityChange: function(oEvent) {
+      onQuantityChange: function (oEvent) {
         var sValue = oEvent.getParameter("value");
         var oSource = oEvent.getSource();
         var sPath = oSource.getBindingContext("colors").getPath();
         var oColorsModel = this.getView().getModel("colors");
-        
+
         // 수량이 비어있는 경우
         if (!sValue) {
           oColorsModel.setProperty(sPath + "/quantity", "");
           return;
         }
-        
+
         // 숫자로 변환
         var iQuantity = parseInt(sValue);
-        
+
         // 최소 주문량 체크
         if (iQuantity < 10000) {
           sap.m.MessageToast.show("최소 주문량은 10,000L 입니다.");
@@ -597,7 +611,7 @@ sap.ui.define(
           oColorsModel.setProperty(sPath + "/quantity", "");
           return;
         }
-        
+
         // 200L 단위 체크
         if (iQuantity % 200 !== 0) {
           sap.m.MessageToast.show("주문량은 200L 단위로 입력해주세요.");
@@ -605,7 +619,7 @@ sap.ui.define(
           oColorsModel.setProperty(sPath + "/quantity", "");
           return;
         }
-        
+
         // 유효한 수량인 경우 저장
         oColorsModel.setProperty(sPath + "/quantity", iQuantity);
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
@@ -664,7 +678,7 @@ sap.ui.define(
         // 납품 희망일 필수값 체크
         if (!sDeliveryDay || sDeliveryDay.trim() === "") {
           sap.m.MessageToast.show("납품 희망일은 필수 입력값입니다.");
-            return;
+          return;
         }
 
         // 계약기간 필수값 체크
@@ -681,33 +695,34 @@ sap.ui.define(
 
         // 아이템별 필수값 체크
         var aMissingItems = [];
-        aSelectedColors.forEach(function(oColor, iIndex) {
+        aSelectedColors.forEach(function (oColor, iIndex) {
           var sMissingFields = [];
-          
+
           if (!oColor.quantity) {
             sMissingFields.push("주문 수량");
           }
-          
+
           if (!oColor.itemValidFrom) {
             sMissingFields.push("계약 시작일");
           }
-          
+
           if (!oColor.itemValidTo) {
             sMissingFields.push("계약 종료일");
           }
-          
+
           if (sMissingFields.length > 0) {
             aMissingItems.push({
               colorCode: oColor.colorCode,
-              missingFields: sMissingFields
+              missingFields: sMissingFields,
             });
           }
         });
 
         if (aMissingItems.length > 0) {
           var sMessage = "다음 색상의 필수 정보가 누락되었습니다:\n";
-          aMissingItems.forEach(function(oItem) {
-            sMessage += "\n- " + oItem.colorCode + ": " + oItem.missingFields.join(", ");
+          aMissingItems.forEach(function (oItem) {
+            sMessage +=
+              "\n- " + oItem.colorCode + ": " + oItem.missingFields.join(", ");
           });
           sap.m.MessageToast.show(sMessage);
           return;
@@ -721,20 +736,24 @@ sap.ui.define(
           customerName: oModel.getProperty("/SelectedCustomer/CustomerName"),
           deliveryDay: sDeliveryDay,
           validFrom: oValidFrom,
-          validTo: oValidTo
+          validTo: oValidTo,
         };
 
         // [추가] SaveConfirmDialog 열기 직전, itemValidFrom/itemValidTo를 Date 객체 또는 null로 보정
         var changed = false;
-        aSelectedColors.forEach(function(item) {
+        aSelectedColors.forEach(function (item) {
           // 시작일
           if (item.itemValidFrom) {
             if (typeof item.itemValidFrom === "string") {
               var d = new Date(item.itemValidFrom);
-              item.itemValidFrom = (d instanceof Date && !isNaN(d.getTime())) ? d : null;
+              item.itemValidFrom =
+                d instanceof Date && !isNaN(d.getTime()) ? d : null;
               changed = true;
             }
-            if (!(item.itemValidFrom instanceof Date) || isNaN(item.itemValidFrom.getTime())) {
+            if (
+              !(item.itemValidFrom instanceof Date) ||
+              isNaN(item.itemValidFrom.getTime())
+            ) {
               item.itemValidFrom = null;
               changed = true;
             }
@@ -746,10 +765,14 @@ sap.ui.define(
           if (item.itemValidTo) {
             if (typeof item.itemValidTo === "string") {
               var d = new Date(item.itemValidTo);
-              item.itemValidTo = (d instanceof Date && !isNaN(d.getTime())) ? d : null;
+              item.itemValidTo =
+                d instanceof Date && !isNaN(d.getTime()) ? d : null;
               changed = true;
             }
-            if (!(item.itemValidTo instanceof Date) || isNaN(item.itemValidTo.getTime())) {
+            if (
+              !(item.itemValidTo instanceof Date) ||
+              isNaN(item.itemValidTo.getTime())
+            ) {
               item.itemValidTo = null;
               changed = true;
             }
@@ -778,11 +801,11 @@ sap.ui.define(
           );
           this.getView().addDependent(this._oSaveConfirmDialog);
         }
-        
+
         // view 모델을 다이얼로그에 전달
         var oViewModel = this.getView().getModel("view");
         this._oSaveConfirmDialog.setModel(oViewModel, "view");
-        
+
         this._oSaveConfirmDialog.open();
       },
 
@@ -802,108 +825,119 @@ sap.ui.define(
         var oModel = this.getOwnerComponent().getModel();
         var oColorsModel = this.getView().getModel("colors");
         var oValidDateModel = this.getView().getModel("validDate");
-        
+
         // 고객 정보 가져오기
         var oViewModel = this.getView().getModel();
         var oSelectedCustomer = oViewModel.getProperty("/SelectedCustomer");
         var sCustomerId = oSelectedCustomer ? oSelectedCustomer.CustomerID : "";
-        var sCustomerName = oSelectedCustomer ? oSelectedCustomer.CustomerName : "";
-        
+        var sCustomerName = oSelectedCustomer
+          ? oSelectedCustomer.CustomerName
+          : "";
+
         var sCustomerRequest = oViewModel.getProperty("/CustomerRequest");
-        var aSelectedColors = JSON.parse(JSON.stringify(oColorsModel.getProperty("/selectedColors")));
-        
+        var aSelectedColors = JSON.parse(
+          JSON.stringify(oColorsModel.getProperty("/selectedColors"))
+        );
+
         // 납기일 가져오기
         var sDeliveryDay = oViewModel.getProperty("/DeliveryDay");
         console.log("입력된 납기일:", sDeliveryDay);
         console.log("입력된 고객 요청사항:", sCustomerRequest);
-        
+
         var oValidFrom = oValidDateModel.getProperty("/validFrom");
         var oValidTo = oValidDateModel.getProperty("/validTo");
 
         // 고객 ID가 없는 경우 처리
         if (!sCustomerId) {
-            sap.m.MessageToast.show("고객 정보가 없습니다. 다시 시도해주세요.");
+          sap.m.MessageToast.show("고객 정보가 없습니다. 다시 시도해주세요.");
           return;
         }
 
         // 납기일이 없는 경우 처리
         if (!sDeliveryDay || sDeliveryDay.trim() === "") {
-            sap.m.MessageToast.show("납품 희망일은 필수 입력값입니다.");
-              return;
-            }
+          sap.m.MessageToast.show("납품 희망일은 필수 입력값입니다.");
+          return;
+        }
 
         // 문서 번호 생성
         this._getLatestDocumentNumber()
-            .then(function(sDocumentNumber) {
-                var newDocNumber = that._generateNextDocumentNumber(sDocumentNumber);
+          .then(function (sDocumentNumber) {
+            var newDocNumber =
+              that._generateNextDocumentNumber(sDocumentNumber);
             that._documentNumber = newDocNumber;
 
-                // 헤더 데이터 생성
-        var oHeaderData = {
-                    InqrDocuId: newDocNumber,
-                    CustId: sCustomerId,
-          SalesOrg: "S100",
-          DistCha: "10",
-          Division: "10",
-                    ValidFrom: that._formatSAPDate(oValidFrom),
-                    ValidTo: that._formatSAPDate(oValidTo),
-                    Descr: sCustomerRequest || "",
-                    DelivDay: sDeliveryDay,
-                    CreatedBy: "CUSTOMER",
-                    CreatedDate: that._formatSAPDate(new Date()),
-                    CreatedTime: that._formatTime(new Date()),
-                    ChangedBy: "CUSTOMER",
-                    ChangedDate: that._formatSAPDate(new Date()),
-                    ChangedTime: that._formatTime(new Date())
-        };
+            // 헤더 데이터 생성
+            var oHeaderData = {
+              InqrDocuId: newDocNumber,
+              CustId: sCustomerId,
+              SalesOrg: "S100",
+              DistCha: "10",
+              Division: "10",
+              ValidFrom: that._formatSAPDate(oValidFrom),
+              ValidTo: that._formatSAPDate(oValidTo),
+              Descr: sCustomerRequest || "",
+              DelivDay: sDeliveryDay,
+              CreatedBy: "CUSTOMER",
+              CreatedDate: that._formatSAPDate(new Date()),
+              CreatedTime: that._formatTime(new Date()),
+              ChangedBy: "CUSTOMER",
+              ChangedDate: that._formatSAPDate(new Date()),
+              ChangedTime: that._formatTime(new Date()),
+            };
 
-        // 고객 ID에 따라 SalesOrg, DistCha, Division 설정
-                switch (sCustomerId) {
-          case "5000000000": // 현대 중공업
-            oHeaderData.SalesOrg = "S100";
-            oHeaderData.DistCha = "10";
-            oHeaderData.Division = "10";
-            break;
-          case "6000000000": // TOYOTA
-            oHeaderData.SalesOrg = "S200";
-            oHeaderData.DistCha = "20";
-            oHeaderData.Division = "20";
-            break;
-          case "7000000000": // CPID
-            oHeaderData.SalesOrg = "S300";
-            oHeaderData.DistCha = "20";
-            oHeaderData.Division = "30";
-            break;
-          case "7000000001": // COMAC
-            oHeaderData.SalesOrg = "S300";
-            oHeaderData.DistCha = "20";
-            oHeaderData.Division = "40";
-            break;
-        }
+            // 고객 ID에 따라 SalesOrg, DistCha, Division 설정
+            switch (sCustomerId) {
+              case "5000000000": // 현대 중공업
+                oHeaderData.SalesOrg = "S100";
+                oHeaderData.DistCha = "10";
+                oHeaderData.Division = "10";
+                break;
+              case "6000000000": // TOYOTA
+                oHeaderData.SalesOrg = "S200";
+                oHeaderData.DistCha = "20";
+                oHeaderData.Division = "20";
+                break;
+              case "7000000000": // CPID
+                oHeaderData.SalesOrg = "S300";
+                oHeaderData.DistCha = "20";
+                oHeaderData.Division = "30";
+                break;
+              case "7000000001": // COMAC
+                oHeaderData.SalesOrg = "S300";
+                oHeaderData.DistCha = "20";
+                oHeaderData.Division = "40";
+                break;
+            }
 
-                console.log("저장할 헤더 데이터:", oHeaderData);
+            console.log("저장할 헤더 데이터:", oHeaderData);
 
-                // 헤더 데이터 저장
-        oModel.create("/ZDCT_SD040Set", oHeaderData, {
-                    success: function() {
-            console.log("헤더 데이터 저장 성공");
-                        that._saveItemData(newDocNumber, aSelectedColors, sCustomerRequest);
-                        // 저장 성공 후 화면 초기화 및 다이얼로그 닫기
-                        if (that._oSaveConfirmDialog) {
-                          that._oSaveConfirmDialog.close();
-                        }
-                        that._resetAfterSave();
-                    },
-                    error: function(oError) {
-            console.error("헤더 데이터 저장 실패:", oError);
-            that.getView().setBusy(false);
-            sap.m.MessageToast.show("데이터 저장 중 오류가 발생했습니다.");
-                    }
-                });
-            })
-            .catch(function(error) {
-                sap.m.MessageToast.show("문서 번호 생성 중 오류가 발생했습니다: " + error);
-        });
+            // 헤더 데이터 저장
+            oModel.create("/ZDCT_SD040Set", oHeaderData, {
+              success: function () {
+                console.log("헤더 데이터 저장 성공");
+                that._saveItemData(
+                  newDocNumber,
+                  aSelectedColors,
+                  sCustomerRequest
+                );
+                // 저장 성공 후 화면 초기화 및 다이얼로그 닫기
+                if (that._oSaveConfirmDialog) {
+                  that._oSaveConfirmDialog.close();
+                }
+                that._resetAfterSave();
+              },
+              error: function (oError) {
+                console.error("헤더 데이터 저장 실패:", oError);
+                that.getView().setBusy(false);
+                sap.m.MessageToast.show("데이터 저장 중 오류가 발생했습니다.");
+              },
+            });
+          })
+          .catch(function (error) {
+            sap.m.MessageToast.show(
+              "문서 번호 생성 중 오류가 발생했습니다: " + error
+            );
+          });
       },
 
       /**
@@ -915,12 +949,17 @@ sap.ui.define(
       _formatSAPDate: function (oDate) {
         if (!oDate) return null;
         // 날짜를 UTC 기준으로 변환하여 시간대 차이 보정
-        var utcDate = new Date(Date.UTC(
-          oDate.getFullYear(),
-          oDate.getMonth(),
-          oDate.getDate(),
-          0, 0, 0, 0
-        ));
+        var utcDate = new Date(
+          Date.UTC(
+            oDate.getFullYear(),
+            oDate.getMonth(),
+            oDate.getDate(),
+            0,
+            0,
+            0,
+            0
+          )
+        );
         return "/Date(" + utcDate.getTime() + ")/";
       },
 
@@ -945,7 +984,11 @@ sap.ui.define(
        * @param {string} sCustomerRequest - 공통 문의사항
        * @private
        */
-      _saveItemData: function (sDocumentNumber, aSelectedColors, sCustomerRequest) {
+      _saveItemData: function (
+        sDocumentNumber,
+        aSelectedColors,
+        sCustomerRequest
+      ) {
         var that = this;
         var oModel = this.getOwnerComponent().getModel();
         var oMaterialsModel = this.getView().getModel("materials");
@@ -961,21 +1004,29 @@ sap.ui.define(
         // 시간 포맷 함수
         function toODataTime(date) {
           if (!date) return null;
-          return "PT" + date.getHours() + "H" + date.getMinutes() + "M" + date.getSeconds() + "S";
+          return (
+            "PT" +
+            date.getHours() +
+            "H" +
+            date.getMinutes() +
+            "M" +
+            date.getSeconds() +
+            "S"
+          );
         }
 
         // 산업별 자재 번호 범위 정의
         var MATERIAL_RANGES = {
-          construction: { start: 3000000001, end: 3000000064 },  // 건설용
-          automotive: { start: 3000000065, end: 3000000128 },    // 자동차용
-          shipbuilding: { start: 3000000129, end: 3000000192 },  // 조선용
-          aerospace: { start: 3000000193, end: 3000000256 }      // 항공용
+          construction: { start: 3000000001, end: 3000000064 }, // 건설용
+          automotive: { start: 3000000065, end: 3000000128 }, // 자동차용
+          shipbuilding: { start: 3000000129, end: 3000000192 }, // 조선용
+          aerospace: { start: 3000000193, end: 3000000256 }, // 항공용
         };
 
         // TOYOTA의 FFD54F 색상에 대한 산업별 자재 매핑
         function getToyotaFFD54FMaterialId(category) {
           var range;
-          switch(category) {
+          switch (category) {
             case "paint1": // 건설용
               range = MATERIAL_RANGES.construction;
               break;
@@ -997,93 +1048,108 @@ sap.ui.define(
         }
 
         // 선택된 색상에 해당하는 자재 찾기 및 OData 구조에 맞게 매핑
-        var aItemsToSave = aSelectedColors.map(function(oColor, iIndex) {
-          // 자재명에서 색상 코드 추출
-          var colorMatch = oColor.colorCode.match(/#([0-9A-Fa-f]{6})/);
-          if (!colorMatch) return null;
+        var aItemsToSave = aSelectedColors
+          .map(function (oColor, iIndex) {
+            // 자재명에서 색상 코드 추출
+            var colorMatch = oColor.colorCode.match(/#([0-9A-Fa-f]{6})/);
+            if (!colorMatch) return null;
 
-          // 해당 색상 코드를 가진 자재 찾기
-          var oMaterial = aMaterials.find(function(oMat) {
-            var matColorMatch = oMat.MatName.match(/\(#([0-9A-Fa-f]{6})\)/);
-            return matColorMatch && "#" + matColorMatch[1] === oColor.colorCode;
-          });
+            // 해당 색상 코드를 가진 자재 찾기
+            var oMaterial = aMaterials.find(function (oMat) {
+              var matColorMatch = oMat.MatName.match(/\(#([0-9A-Fa-f]{6})\)/);
+              return (
+                matColorMatch && "#" + matColorMatch[1] === oColor.colorCode
+              );
+            });
 
-          if (!oMaterial) return null;
+            if (!oMaterial) return null;
 
-          // 현재 선택된 카테고리(산업)에 따라 자재 번호 매핑
-          var sCustomerId = that.getView().getModel().getProperty("/SelectedCustomer/CustomerID");
-          var sSelectedCategory = that.getView().getModel("view").getProperty("/selectedCategory");
-          
-          console.log("현재 선택된 카테고리:", sSelectedCategory);
-          console.log("고객 ID:", sCustomerId);
-          console.log("색상 코드:", oColor.colorCode);
-          console.log("원래 자재 번호:", oMaterial.MatID);
+            // 현재 선택된 카테고리(산업)에 따라 자재 번호 매핑
+            var sCustomerId = that
+              .getView()
+              .getModel()
+              .getProperty("/SelectedCustomer/CustomerID");
+            var sSelectedCategory = that
+              .getView()
+              .getModel("view")
+              .getProperty("/selectedCategory");
 
-          // 카테고리에 따른 자재 번호 범위 결정
-          var range;
-          switch(sSelectedCategory) {
-            case "paint1": // 건설용
-              range = MATERIAL_RANGES.construction;
-              break;
-            case "paint2": // 자동차용
-              range = MATERIAL_RANGES.automotive;
-              break;
-            case "paint3": // 조선용
-              range = MATERIAL_RANGES.shipbuilding;
-              break;
-            case "paint4": // 항공용
-              range = MATERIAL_RANGES.aerospace;
-              break;
-            default:
-              range = MATERIAL_RANGES.automotive; // 기본값
-          }
+            console.log("현재 선택된 카테고리:", sSelectedCategory);
+            console.log("고객 ID:", sCustomerId);
+            console.log("색상 코드:", oColor.colorCode);
+            console.log("원래 자재 번호:", oMaterial.MatID);
 
-          // 원래 자재 번호를 해당 범위 내의 순차적인 번호로 매핑
-          var originalMatId = parseInt(oMaterial.MatID);
-          var baseNumber = 3000000000; // 기본 번호
-          var sequenceNumber = originalMatId - baseNumber; // 1~260 사이의 순서 번호
-          var sMaterialId;
-
-          // TOYOTA의 FFD54F 색상인 경우 카테고리별 대체 자재 매핑
-          if (sCustomerId === "6000000000" && oColor.colorCode === "#FFD54F") {
-            switch(sSelectedCategory) {
+            // 카테고리에 따른 자재 번호 범위 결정
+            var range;
+            switch (sSelectedCategory) {
               case "paint1": // 건설용
-                sMaterialId = "3000000257";
+                range = MATERIAL_RANGES.construction;
                 break;
               case "paint2": // 자동차용
-                sMaterialId = "3000000258";
+                range = MATERIAL_RANGES.automotive;
                 break;
               case "paint3": // 조선용
-                sMaterialId = "3000000259";
+                range = MATERIAL_RANGES.shipbuilding;
                 break;
               case "paint4": // 항공용
-                sMaterialId = "3000000260";
+                range = MATERIAL_RANGES.aerospace;
                 break;
               default:
-                sMaterialId = (range.start + sequenceNumber - 1).toString();
+                range = MATERIAL_RANGES.automotive; // 기본값
             }
-          } else {
-            sMaterialId = (range.start + sequenceNumber - 1).toString();
-          }
-          console.log("매핑된 자재 ID:", sMaterialId);
 
-          return {
-            InqrDocuId: sDocumentNumber,
-            InqrItemId: ((iIndex + 1) * 10).toString().padStart(6, "0"),
-            MatId: sMaterialId,
-            Uom: "L",
-            Qty: Number(oColor.quantity).toFixed(3),
-            ValidFrom: toODataDate(oColor.itemValidFrom),
-            ValidTo: toODataDate(oColor.itemValidTo),
-            Descr: oColor.description || sCustomerRequest || "",
-            CreatedBy: "CUSTOMER",
-            CreatedDate: toODataDate(now),
-            CreatedTime: toODataTime(now),
-            ChangedBy: "CUSTOMER",
-            ChangedDate: toODataDate(now),
-            ChangedTime: toODataTime(now)
-          };
-        }).filter(function(item) { return item !== null; });
+            // 원래 자재 번호를 해당 범위 내의 순차적인 번호로 매핑
+            var originalMatId = parseInt(oMaterial.MatID);
+            var baseNumber = 3000000000; // 기본 번호
+            var sequenceNumber = originalMatId - baseNumber; // 1~260 사이의 순서 번호
+            var sMaterialId;
+
+            // TOYOTA의 FFD54F 색상인 경우 카테고리별 대체 자재 매핑
+            if (
+              sCustomerId === "6000000000" &&
+              oColor.colorCode === "#FFD54F"
+            ) {
+              switch (sSelectedCategory) {
+                case "paint1": // 건설용
+                  sMaterialId = "3000000257";
+                  break;
+                case "paint2": // 자동차용
+                  sMaterialId = "3000000258";
+                  break;
+                case "paint3": // 조선용
+                  sMaterialId = "3000000259";
+                  break;
+                case "paint4": // 항공용
+                  sMaterialId = "3000000260";
+                  break;
+                default:
+                  sMaterialId = (range.start + sequenceNumber - 1).toString();
+              }
+            } else {
+              sMaterialId = (range.start + sequenceNumber - 1).toString();
+            }
+            console.log("매핑된 자재 ID:", sMaterialId);
+
+            return {
+              InqrDocuId: sDocumentNumber,
+              InqrItemId: ((iIndex + 1) * 10).toString().padStart(6, "0"),
+              MatId: sMaterialId,
+              Uom: "LTR",
+              Qty: Number(oColor.quantity).toFixed(3),
+              ValidFrom: toODataDate(oColor.itemValidFrom),
+              ValidTo: toODataDate(oColor.itemValidTo),
+              Descr: oColor.description || sCustomerRequest || "",
+              CreatedBy: "CUSTOMER",
+              CreatedDate: toODataDate(now),
+              CreatedTime: toODataTime(now),
+              ChangedBy: "CUSTOMER",
+              ChangedDate: toODataDate(now),
+              ChangedTime: toODataTime(now),
+            };
+          })
+          .filter(function (item) {
+            return item !== null;
+          });
 
         if (aItemsToSave.length === 0) {
           this.getView().setBusy(false);
@@ -1105,7 +1171,9 @@ sap.ui.define(
           console.log("모든 아이템 저장 완료");
           this.getView().setBusy(false);
           if (this._documentNumber) {
-            sap.m.MessageToast.show("문의서 " + this._documentNumber + " 저장이 완료되었습니다.");
+            sap.m.MessageToast.show(
+              "문의서 " + this._documentNumber + " 저장이 완료되었습니다."
+            );
           }
           return;
         }
@@ -1114,12 +1182,12 @@ sap.ui.define(
         var oModel = this.getOwnerComponent().getModel();
 
         oModel.create("/ZDCT_SD041Set", oItem, {
-          success: function() {
+          success: function () {
             console.log("아이템 데이터 저장 성공:", iIndex + 1);
             that._savedItems++;
             that._saveNextItem(iIndex + 1);
           },
-          error: function(oError) {
+          error: function (oError) {
             console.error("아이템 데이터 저장 실패:", oError);
             if (oError.responseText) {
               try {
@@ -1130,7 +1198,7 @@ sap.ui.define(
               }
             }
             that._saveNextItem(iIndex + 1);
-          }
+          },
         });
       },
 
@@ -1218,15 +1286,19 @@ sap.ui.define(
       // 드롭다운에서 카테고리 선택 시 호출되는 함수
       onCategoryChange: function (oEvent) {
         var sSelectedCategory = oEvent.getParameter("selectedItem").getKey();
-        var sCurrentCategory = this.getView().getModel("view").getProperty("/selectedCategory");
-        
+        var sCurrentCategory = this.getView()
+          .getModel("view")
+          .getProperty("/selectedCategory");
+
         // 현재 카테고리와 선택한 카테고리가 다른 경우에만 확인
         if (sCurrentCategory && sCurrentCategory !== sSelectedCategory) {
           // 고객 ID 가져오기
           var oViewModel = this.getView().getModel();
-          var sCustomerId = oViewModel.getProperty("/SelectedCustomer/CustomerID");
+          var sCustomerId = oViewModel.getProperty(
+            "/SelectedCustomer/CustomerID"
+          );
           var sDefaultCategory = this._customerCategoryMap[sCustomerId];
-          
+
           // 선택한 카테고리가 고객사의 주 카테고리인 경우 바로 변경
           if (sSelectedCategory === sDefaultCategory) {
             this._updateCategory(sSelectedCategory);
@@ -1239,7 +1311,7 @@ sap.ui.define(
         }
       },
 
-      _showCategoryChangeDialog: function(sCurrentCategory, sNewCategory) {
+      _showCategoryChangeDialog: function (sCurrentCategory, sNewCategory) {
         if (!this._oCategoryChangeDialog) {
           this._oCategoryChangeDialog = sap.ui.xmlfragment(
             "sync.dc.sd.project02.view.fragments.CategoryChangeDialog",
@@ -1250,15 +1322,19 @@ sap.ui.define(
 
         // 카테고리 이름 매핑
         var categoryNames = {
-          "paint1": "건설용",
-          "paint2": "자동차용",
-          "paint3": "조선용",
-          "paint4": "항공용"
+          paint1: "건설용",
+          paint2: "자동차용",
+          paint3: "조선용",
+          paint4: "항공용",
         };
 
         // 변경 메시지 생성
-        var sMessage = categoryNames[sCurrentCategory] + "에서 " + categoryNames[sNewCategory] + "로 변경하시겠습니까?";
-        
+        var sMessage =
+          categoryNames[sCurrentCategory] +
+          "에서 " +
+          categoryNames[sNewCategory] +
+          "로 변경하시겠습니까?";
+
         // 다이얼로그 모델 설정
         var oViewModel = this.getView().getModel("view");
         if (!oViewModel) {
@@ -1271,14 +1347,14 @@ sap.ui.define(
         this._oCategoryChangeDialog.open();
       },
 
-      onConfirmCategoryChange: function() {
+      onConfirmCategoryChange: function () {
         var oViewModel = this.getView().getModel("view");
         var sNewCategory = oViewModel.getProperty("/pendingCategory");
         this._updateCategory(sNewCategory);
         this._oCategoryChangeDialog.close();
       },
 
-      onCancelCategoryChange: function() {
+      onCancelCategoryChange: function () {
         // 이전 카테고리로 되돌리기
         var oViewModel = this.getView().getModel("view");
         var sCurrentCategory = oViewModel.getProperty("/selectedCategory");
@@ -1289,14 +1365,14 @@ sap.ui.define(
         this._oCategoryChangeDialog.close();
       },
 
-      _updateCategory: function(sCategory) {
+      _updateCategory: function (sCategory) {
         var oViewModel = this.getView().getModel("view");
         oViewModel.setProperty("/selectedCategory", sCategory);
 
         // 선택된 색상과 수량 데이터 초기화
         var oColorsModel = this.getView().getModel("colors");
         var aSelectedColors = oColorsModel.getProperty("/selectedColors") || [];
-        
+
         // 선택된 색상이 있는 경우에만 초기화
         if (aSelectedColors.length > 0) {
           // 모든 선택된 색상의 하이라이트 제거
@@ -1308,29 +1384,31 @@ sap.ui.define(
 
           // 선택된 색상 배열 초기화
           oColorsModel.setProperty("/selectedColors", []);
-          
+
           // 전체 계약 기간 초기화
           var oValidDateModel = this.getView().getModel("validDate");
           oValidDateModel.setProperty("/validFrom", null);
           oValidDateModel.setProperty("/validTo", null);
-          
+
           // DatePicker 값 초기화
           this.byId("select_DatePicker_validFrom_new").setValue(null);
           this.byId("select_DatePicker_validTo_new").setValue(null);
-          
+
           // 납품 희망일 초기화
           var oModel = this.getView().getModel();
           oModel.setProperty("/DeliveryDay", "");
           this.byId("input_deliveryDay").setValue("");
-          
+
           // 문의 사항 초기화
           var oTextArea = this.byId("select_TextArea_request");
           if (oTextArea) {
             oTextArea.setValue("");
           }
           oModel.setProperty("/CustomerRequest", "");
-          
-          sap.m.MessageToast.show("카테고리가 변경되어 모든 입력 데이터가 초기화되었습니다.");
+
+          sap.m.MessageToast.show(
+            "카테고리가 변경되어 모든 입력 데이터가 초기화되었습니다."
+          );
         }
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
       },
@@ -1348,119 +1426,151 @@ sap.ui.define(
       },
 
       // 유효기간 시작일 변경 처리
-      onValidFromChange: function(oEvent) {
+      onValidFromChange: function (oEvent) {
         var oDate = oEvent.getParameter("value");
         var oValidDateModel = this.getView().getModel("validDate");
         var oDatePicker = oEvent.getSource();
-        
+
         // 현재 날짜
         var oCurrentDate = new Date();
         oCurrentDate.setHours(0, 0, 0, 0);
-        
+
         // 최소 시작일 계산 (현재로부터 2개월 후)
         var oMinDate = new Date();
         oMinDate.setMonth(oMinDate.getMonth() + 2);
         oMinDate.setHours(0, 0, 0, 0);
-        
+
         if (oDate) {
           // Date 객체로 변환 시도
           try {
-            if (typeof oDate === 'string') {
+            if (typeof oDate === "string") {
               // 문자열이면 Date 객체로 변환 시도
               oDate = new Date(oDate);
               if (isNaN(oDate.getTime())) {
                 throw new Error("유효하지 않은 날짜 형식입니다.");
               }
             }
-            
+
             // 날짜 비교를 위해 시간 정보 제거
-            oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
-            
+            oDate = new Date(
+              oDate.getFullYear(),
+              oDate.getMonth(),
+              oDate.getDate()
+            );
+
             // 과거 날짜 체크
             if (oDate < oCurrentDate) {
               sap.m.MessageToast.show("과거 날짜는 입력할 수 없습니다.");
               oDatePicker.setValue(null);
               oValidDateModel.setProperty("/validFrom", null);
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
               return;
             }
-            
+
             // 2개월 이후 체크
             if (oDate < oMinDate) {
-              sap.m.MessageToast.show("계약 시작일은 최소 2개월 이후로 설정해야 합니다.");
+              sap.m.MessageToast.show(
+                "계약 시작일은 최소 2개월 이후로 설정해야 합니다."
+              );
               oDatePicker.setValue(null);
               oValidDateModel.setProperty("/validFrom", null);
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
               return;
             }
           } catch (error) {
-            sap.m.MessageToast.show("유효하지 않은 날짜 형식입니다. 올바른 날짜를 입력해주세요.");
+            sap.m.MessageToast.show(
+              "유효하지 않은 날짜 형식입니다. 올바른 날짜를 입력해주세요."
+            );
             oDatePicker.setValue(null);
             oValidDateModel.setProperty("/validFrom", null);
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
             return;
           }
         }
-        
+
         oValidDateModel.setProperty("/validFrom", oDate);
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
       },
 
       // 유효기간 종료일 변경 처리
-      onValidToChange: function(oEvent) {
+      onValidToChange: function (oEvent) {
         var oDate = oEvent.getParameter("value");
         var oValidDateModel = this.getView().getModel("validDate");
         var oDatePicker = oEvent.getSource();
         var oValidFrom = oValidDateModel.getProperty("/validFrom");
-        
+
         // 현재 날짜
         var oCurrentDate = new Date();
         oCurrentDate.setHours(0, 0, 0, 0);
-        
+
         if (oDate) {
           // Date 객체로 변환 시도
           try {
-            if (typeof oDate === 'string') {
+            if (typeof oDate === "string") {
               // 문자열이면 Date 객체로 변환 시도
               oDate = new Date(oDate);
               if (isNaN(oDate.getTime())) {
                 throw new Error("유효하지 않은 날짜 형식입니다.");
               }
             }
-            
+
             // 날짜 비교를 위해 시간 정보 제거
-            oDate = new Date(oDate.getFullYear(), oDate.getMonth(), oDate.getDate());
-            
+            oDate = new Date(
+              oDate.getFullYear(),
+              oDate.getMonth(),
+              oDate.getDate()
+            );
+
             // 2029년 12월 31일 이후 체크
             var maxDate = new Date(2029, 11, 31); // 11은 12월을 의미 (월은 0부터 시작)
             if (oDate > maxDate) {
-              sap.m.MessageToast.show("문의는 2029년 12월 31일까지의 기간만 가능합니다.");
+              sap.m.MessageToast.show(
+                "문의는 2029년 12월 31일까지의 기간만 가능합니다."
+              );
               oDatePicker.setValue(null);
               oValidDateModel.setProperty("/validTo", null);
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
               return;
             }
-            
+
             // 과거 날짜 체크
             if (oDate < oCurrentDate) {
               sap.m.MessageToast.show("과거 날짜는 입력할 수 없습니다.");
               oDatePicker.setValue(null);
               oValidDateModel.setProperty("/validTo", null);
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
               return;
             }
-            
+
             if (oValidFrom) {
-              if (typeof oValidFrom === 'string') {
+              if (typeof oValidFrom === "string") {
                 oValidFrom = new Date(oValidFrom);
               }
-              oValidFrom = new Date(oValidFrom.getFullYear(), oValidFrom.getMonth(), oValidFrom.getDate());
-              
+              oValidFrom = new Date(
+                oValidFrom.getFullYear(),
+                oValidFrom.getMonth(),
+                oValidFrom.getDate()
+              );
+
               if (oDate < oValidFrom) {
-                sap.m.MessageToast.show("계약 종료일은 시작일보다 이후여야 합니다.");
+                sap.m.MessageToast.show(
+                  "계약 종료일은 시작일보다 이후여야 합니다."
+                );
                 oDatePicker.setValue(null);
                 oValidDateModel.setProperty("/validTo", null);
-                this.getView().getModel().setProperty("/isContractCheckPassed", false);
+                this.getView()
+                  .getModel()
+                  .setProperty("/isContractCheckPassed", false);
                 return;
               }
 
@@ -1469,11 +1579,11 @@ sap.ui.define(
                 // 계약기간이 한 달 미만인 경우 체크
                 var startDate = new Date(oValidFrom);
                 var endDate = new Date(oDate);
-                
+
                 // 시작일의 다음 달 같은 날짜 계산
                 var nextMonthDate = new Date(startDate);
                 nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-                
+
                 // 다음 달에 같은 일자가 없는 경우 (예: 1월 31일, 3월 31일 등)
                 // if (nextMonthDate.getDate() !== startDate.getDate()) {
                 //   sap.m.MessageToast.show("계약기간이 한 달이 되려면 시작일과 종료일이 같은 일자여야 합니다. (예: 7월 23일부터 8월 23일까지)");
@@ -1482,34 +1592,42 @@ sap.ui.define(
                 //   this.getView().getModel().setProperty("/isContractCheckPassed", false);
                 //   return;
                 // }
-                
+
                 if (endDate < nextMonthDate) {
-                  sap.m.MessageToast.show("계약기간이 한 달 미만입니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일에 맞춰 수정해주세요.");
+                  sap.m.MessageToast.show(
+                    "계약기간이 한 달 미만입니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일에 맞춰 수정해주세요."
+                  );
                   oDatePicker.setValue(null);
                   oValidDateModel.setProperty("/validTo", null);
-                  this.getView().getModel().setProperty("/isContractCheckPassed", false);
+                  this.getView()
+                    .getModel()
+                    .setProperty("/isContractCheckPassed", false);
                   return;
                 }
               }
             }
           } catch (error) {
-            sap.m.MessageToast.show("유효하지 않은 날짜 형식입니다. 올바른 날짜를 입력해주세요.");
+            sap.m.MessageToast.show(
+              "유효하지 않은 날짜 형식입니다. 올바른 날짜를 입력해주세요."
+            );
             oDatePicker.setValue(null);
             oValidDateModel.setProperty("/validTo", null);
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
             return;
           }
         }
-        
+
         oValidDateModel.setProperty("/validTo", oDate);
         this.getView().getModel().setProperty("/isContractCheckPassed", false);
       },
 
-      onOpenDeliveryDayDialog: function(oEvent) {
+      onOpenDeliveryDayDialog: function (oEvent) {
         this._openDeliveryDayDialog();
       },
 
-      _openDeliveryDayDialog: function() {
+      _openDeliveryDayDialog: function () {
         var oValidDateModel = this.getView().getModel("validDate");
         var oValidFrom = oValidDateModel.getProperty("/validFrom");
         var oValidTo = oValidDateModel.getProperty("/validTo");
@@ -1518,35 +1636,35 @@ sap.ui.define(
           sap.m.MessageToast.show("먼저 계약기간을 입력해주세요.");
           return;
         }
-        
+
         // 날짜 포맷팅
         var oFormat = sap.ui.core.format.DateFormat.getDateInstance({
-          pattern: "yyyy-MM-dd"
+          pattern: "yyyy-MM-dd",
         });
         var sValidFrom = oFormat.format(oValidFrom);
         var sValidTo = oFormat.format(oValidTo);
 
         // 선택 가능한 날짜 목록 생성
         var aDays = [];
-        
+
         // 시작일과 종료일이 같은 경우 (하루만 선택 가능)
         if (sValidFrom === sValidTo) {
           var iDay = oValidFrom.getDate();
           aDays.push({
             day: iDay + "일",
             value: iDay,
-            selected: false
+            selected: false,
           });
         } else {
           // 시작일과 종료일이 다른 경우 (기간 내의 모든 날짜 선택 가능)
           var iStartDay = oValidFrom.getDate();
           var iEndDay = oValidTo.getDate();
-          
+
           for (var i = iStartDay; i <= iEndDay; i++) {
             aDays.push({
               day: i + "일",
               value: i,
-              selected: false
+              selected: false,
             });
           }
         }
@@ -1555,11 +1673,11 @@ sap.ui.define(
         var oViewModel = this.getView().getModel();
         var sCurrentValue = oViewModel.getProperty("/DeliveryDay");
         if (sCurrentValue) {
-          var aCurrentDays = sCurrentValue.split(",").map(function(s) {
+          var aCurrentDays = sCurrentValue.split(",").map(function (s) {
             return parseInt(s.trim());
           });
-          
-          aDays.forEach(function(oDay) {
+
+          aDays.forEach(function (oDay) {
             if (aCurrentDays.includes(oDay.value)) {
               oDay.selected = true;
             }
@@ -1571,7 +1689,7 @@ sap.ui.define(
           validFrom: sValidFrom,
           validTo: sValidTo,
           days: aDays,
-          selectedDays: sCurrentValue || ""
+          selectedDays: sCurrentValue || "",
         });
 
         if (!this._oDeliveryDayDialog) {
@@ -1587,45 +1705,51 @@ sap.ui.define(
         this._oDeliveryDayDialog.open();
       },
 
-      onDaySelect: function(oEvent) {
+      onDaySelect: function (oEvent) {
         var oButton = oEvent.getSource();
         var sDay = oButton.getText().replace("일", "");
-        
+
         var oModel = this._oDeliveryDayDialog.getModel("validDate");
         var aDays = oModel.getProperty("/days");
-        
+
         // 선택된 날짜 업데이트
-        aDays.forEach(function(oDay) {
+        aDays.forEach(function (oDay) {
           if (oDay.day === sDay + "일") {
             oDay.selected = !oDay.selected; // 토글 방식으로 선택/해제
           }
         });
-        
+
         // 선택된 날짜들을 문자열로 변환
         var aSelectedDays = aDays
-          .filter(function(oDay) { return oDay.selected; })
-          .map(function(oDay) { return oDay.value; })
-          .sort(function(a, b) { return a - b; });
-        
+          .filter(function (oDay) {
+            return oDay.selected;
+          })
+          .map(function (oDay) {
+            return oDay.value;
+          })
+          .sort(function (a, b) {
+            return a - b;
+          });
+
         var sSelectedDays = aSelectedDays.join(", ");
-        
+
         // 모델 업데이트
         oModel.setProperty("/days", aDays);
         oModel.setProperty("/selectedDays", sSelectedDays);
       },
 
-      onConfirm: function() {
+      onConfirm: function () {
         var oModel = this._oDeliveryDayDialog.getModel("validDate");
         var sSelectedDays = oModel.getProperty("/selectedDays");
-        
+
         // 메인 모델에 선택된 날짜들 저장
         var oViewModel = this.getView().getModel();
         oViewModel.setProperty("/DeliveryDay", sSelectedDays);
-        
+
         this._oDeliveryDayDialog.close();
       },
 
-      onCancel: function() {
+      onCancel: function () {
         this._oDeliveryDayDialog.close();
       },
 
@@ -1637,78 +1761,78 @@ sap.ui.define(
       _getLatestDocumentNumber: function () {
         var that = this;
         return new Promise(function (resolve, reject) {
-            // ZDCT_SD040 테이블에서 최대 문서번호를 조회하는 OData 호출
-            var oModel = that.getOwnerComponent().getModel(); // 기본 OData 모델
+          // ZDCT_SD040 테이블에서 최대 문서번호를 조회하는 OData 호출
+          var oModel = that.getOwnerComponent().getModel(); // 기본 OData 모델
 
-            if (!oModel) {
-                // OData 모델이 없는 경우 (개발 환경 등)
-                console.warn("OData 모델이 없습니다. 임시 문서번호를 사용합니다.");
-                resolve("SD10000000"); // 형식에 맞는 기본값
+          if (!oModel) {
+            // OData 모델이 없는 경우 (개발 환경 등)
+            console.warn("OData 모델이 없습니다. 임시 문서번호를 사용합니다.");
+            resolve("SD10000000"); // 형식에 맞는 기본값
             return;
           }
 
-            // "/ZDCT_SD040Set" 엔티티 세트에 대한 쿼리 준비
-            var sPath = "/ZDCT_SD040Set";
+          // "/ZDCT_SD040Set" 엔티티 세트에 대한 쿼리 준비
+          var sPath = "/ZDCT_SD040Set";
 
-            console.log("최신 문서번호 조회 시작");
+          console.log("최신 문서번호 조회 시작");
 
-            // 데이터 조회 - 모든 항목 가져오기
-            oModel.read(sPath, {
-                success: function (oData) {
-                    console.log("문서번호 조회 응답:", oData);
+          // 데이터 조회 - 모든 항목 가져오기
+          oModel.read(sPath, {
+            success: function (oData) {
+              console.log("문서번호 조회 응답:", oData);
 
-                    if (oData && oData.results && oData.results.length > 0) {
-                        // 결과가 있는 경우, 모든 결과를 확인하여 최대 문서번호 찾기
-                        var maxDocNo = "SD10000000"; // 기본값 설정
+              if (oData && oData.results && oData.results.length > 0) {
+                // 결과가 있는 경우, 모든 결과를 확인하여 최대 문서번호 찾기
+                var maxDocNo = "SD10000000"; // 기본값 설정
 
-                        // JavaScript에서 직접 최대 문서번호 찾기
-                        oData.results.forEach(function (item) {
-                            if (item.InqrDocuId && item.InqrDocuId !== "NaN") {
-                                // 숫자 부분만 추출해서 비교
-                                var currentMatches = item.InqrDocuId.match(/^SD(\d+)$/);
-                                var maxMatches = maxDocNo.match(/^SD(\d+)$/);
+                // JavaScript에서 직접 최대 문서번호 찾기
+                oData.results.forEach(function (item) {
+                  if (item.InqrDocuId && item.InqrDocuId !== "NaN") {
+                    // 숫자 부분만 추출해서 비교
+                    var currentMatches = item.InqrDocuId.match(/^SD(\d+)$/);
+                    var maxMatches = maxDocNo.match(/^SD(\d+)$/);
 
-                                if (
-                                    currentMatches &&
-                                    currentMatches.length > 1 &&
-                                    maxMatches &&
-                                    maxMatches.length > 1
-                                ) {
-                                    var currentNum = parseInt(currentMatches[1], 10);
-                                    var maxNum = parseInt(maxMatches[1], 10);
+                    if (
+                      currentMatches &&
+                      currentMatches.length > 1 &&
+                      maxMatches &&
+                      maxMatches.length > 1
+                    ) {
+                      var currentNum = parseInt(currentMatches[1], 10);
+                      var maxNum = parseInt(maxMatches[1], 10);
 
-                                    if (currentNum > maxNum) {
-                                        maxDocNo = item.InqrDocuId;
-                                    }
-                                }
-                            }
-                        });
-
-                        console.log("최대 문서번호 찾음:", maxDocNo);
-                        resolve(maxDocNo);
-                    } else {
-                        // 결과가 없는 경우 기본값 사용
-                        console.log("문서번호 조회 결과가 없습니다. 기본값 사용");
-                        resolve("SD10000000"); // 형식에 맞는 기본값
+                      if (currentNum > maxNum) {
+                        maxDocNo = item.InqrDocuId;
+                      }
                     }
-                },
-                error: function (oError) {
-                    // 오류 발생 시 로그 출력 후 기본값 사용
-                    console.error("문서번호 조회 중 오류 발생:", oError);
+                  }
+                });
 
-                    // 상세 오류 정보 출력
-                    if (oError.responseText) {
-                        try {
-                            var errorDetails = JSON.parse(oError.responseText);
-                            console.error("상세 오류:", errorDetails);
-                        } catch (e) {
-                            console.error("오류 응답:", oError.responseText);
-                        }
-                    }
+                console.log("최대 문서번호 찾음:", maxDocNo);
+                resolve(maxDocNo);
+              } else {
+                // 결과가 없는 경우 기본값 사용
+                console.log("문서번호 조회 결과가 없습니다. 기본값 사용");
+                resolve("SD10000000"); // 형식에 맞는 기본값
+              }
+            },
+            error: function (oError) {
+              // 오류 발생 시 로그 출력 후 기본값 사용
+              console.error("문서번호 조회 중 오류 발생:", oError);
 
-                    resolve("SD10000000"); // 형식에 맞는 기본값
+              // 상세 오류 정보 출력
+              if (oError.responseText) {
+                try {
+                  var errorDetails = JSON.parse(oError.responseText);
+                  console.error("상세 오류:", errorDetails);
+                } catch (e) {
+                  console.error("오류 응답:", oError.responseText);
                 }
-            });
+              }
+
+              resolve("SD10000000"); // 형식에 맞는 기본값
+            },
+          });
         });
       },
 
@@ -1722,52 +1846,59 @@ sap.ui.define(
         console.log("입력된 현재 문서번호:", sCurrentDocNumber);
 
         if (!sCurrentDocNumber) {
-            console.warn("문서번호가 없습니다. 기본값 사용");
-            return "SD10000000"; // 기본값
+          console.warn("문서번호가 없습니다. 기본값 사용");
+          return "SD10000000"; // 기본값
         }
 
         // 문서번호 형식 검증: "SD" 접두사 다음에 숫자
         var matches = sCurrentDocNumber.match(/^SD(\d+)$/);
         if (!matches || matches.length < 2) {
-            console.warn("잘못된 문서번호 형식: " + sCurrentDocNumber);
-            return "SD10000000"; // 형식이 맞지 않으면 기본값 반환
+          console.warn("잘못된 문서번호 형식: " + sCurrentDocNumber);
+          return "SD10000000"; // 형식이 맞지 않으면 기본값 반환
         }
 
         // 숫자 부분 추출
         var numericPart = matches[1];
         var currentNumber = parseInt(numericPart, 10);
-        console.log("추출된 숫자 부분:", numericPart, "현재 번호:", currentNumber);
+        console.log(
+          "추출된 숫자 부분:",
+          numericPart,
+          "현재 번호:",
+          currentNumber
+        );
 
         // 단순히 1 증가
         var nextNumber = currentNumber + 1;
         console.log("다음 번호:", nextNumber);
 
         // 원래 자릿수 유지
-        var paddedNextNumber = nextNumber.toString().padStart(numericPart.length, "0");
+        var paddedNextNumber = nextNumber
+          .toString()
+          .padStart(numericPart.length, "0");
         var nextDocNumber = "SD" + paddedNextNumber;
 
         console.log("생성된 다음 문서번호:", nextDocNumber);
         return nextDocNumber;
       },
 
-      onDeliveryDayChange: function(oEvent) {
+      onDeliveryDayChange: function (oEvent) {
         var oDatePicker = oEvent.getSource();
         var oDate = oDatePicker.getDateValue();
         var oModel = this.getView().getModel();
-        
+
         if (oDate) {
           // yyyy-MM-dd 형식으로 변환
           var yyyy = oDate.getFullYear();
-          var mm = (oDate.getMonth() + 1).toString().padStart(2, '0');
-          var dd = oDate.getDate().toString().padStart(2, '0');
-          var sDate = yyyy + '-' + mm + '-' + dd;
+          var mm = (oDate.getMonth() + 1).toString().padStart(2, "0");
+          var dd = oDate.getDate().toString().padStart(2, "0");
+          var sDate = yyyy + "-" + mm + "-" + dd;
           oModel.setProperty("/DeliveryDay", sDate);
         } else {
-            oModel.setProperty("/DeliveryDay", "");
-          }
+          oModel.setProperty("/DeliveryDay", "");
+        }
       },
 
-      onDeliveryDayInputChange: function(oEvent) {
+      onDeliveryDayInputChange: function (oEvent) {
         var sValue = oEvent.getSource().getValue().trim();
         var oModel = this.getView().getModel();
         var oValidDateModel = this.getView().getModel("validDate");
@@ -1782,29 +1913,34 @@ sap.ui.define(
           sap.m.MessageToast.show("1~31 사이의 숫자만 입력하세요.");
           oEvent.getSource().setValue("");
           oModel.setProperty("/DeliveryDay", "");
-            return;
-          }
+          return;
+        }
 
         var nDay = parseInt(sValue, 10);
         if (isNaN(nDay) || nDay < 1 || nDay > 31) {
           sap.m.MessageToast.show("1~31 사이의 숫자만 입력하세요.");
           oEvent.getSource().setValue("");
           oModel.setProperty("/DeliveryDay", "");
-            return;
-          }
+          return;
+        }
 
         // 계약기간 내의 모든 달에 대해 입력한 day가 실제로 존재하는지 확인
         if (oValidFrom && oValidTo) {
-          var dFrom = (typeof oValidFrom === "string") ? new Date(oValidFrom) : oValidFrom;
-          var dTo = (typeof oValidTo === "string") ? new Date(oValidTo) : oValidTo;
+          var dFrom =
+            typeof oValidFrom === "string" ? new Date(oValidFrom) : oValidFrom;
+          var dTo =
+            typeof oValidTo === "string" ? new Date(oValidTo) : oValidTo;
 
           // [추가] 두 달에 걸쳐 있지만 실제로 한 번의 주문만 발생하는 경우(시작일이 1일이 아니거나, 종료일이 마지막 날이 아닌 경우)
           var isOneOrderCase = false;
           if (
-            (dFrom.getFullYear() !== dTo.getFullYear() || dFrom.getMonth() !== dTo.getMonth())
+            dFrom.getFullYear() !== dTo.getFullYear() ||
+            dFrom.getMonth() !== dTo.getMonth()
           ) {
             var fromIsFirst = dFrom.getDate() === 1;
-            var toIsLast = dTo.getDate() === new Date(dTo.getFullYear(), dTo.getMonth() + 1, 0).getDate();
+            var toIsLast =
+              dTo.getDate() ===
+              new Date(dTo.getFullYear(), dTo.getMonth() + 1, 0).getDate();
             if (!fromIsFirst || !toIsLast) {
               isOneOrderCase = true;
             }
@@ -1824,16 +1960,15 @@ sap.ui.define(
           }
 
           if (
-            (
-              (diffDays < 31 && (
-                dFrom.getFullYear() !== dTo.getFullYear() ||
+            (diffDays < 31 &&
+              (dFrom.getFullYear() !== dTo.getFullYear() ||
                 dFrom.getMonth() !== dTo.getMonth() ||
-                dFrom.getDate() !== dTo.getDate()
-              )) ||
-              (isOneOrderCase && dayCount < 2)
-            )
+                dFrom.getDate() !== dTo.getDate())) ||
+            (isOneOrderCase && dayCount < 2)
           ) {
-            sap.m.MessageToast.show("계약기간이 한 번의 주문만 가능한 구간입니다. 계약 시작일과 종료일을 같게 해주세요.");
+            sap.m.MessageToast.show(
+              "계약기간이 한 번의 주문만 가능한 구간입니다. 계약 시작일과 종료일을 같게 해주세요."
+            );
             oEvent.getSource().setValue("");
             oModel.setProperty("/DeliveryDay", "");
             return;
@@ -1849,7 +1984,11 @@ sap.ui.define(
             var endDay = dTo.getDate();
             if (nDay < startDay || nDay > endDay) {
               sap.m.MessageToast.show(
-                "계약기간(" + startDay + "일 ~ " + endDay + "일) 내의 날짜만 입력할 수 있습니다."
+                "계약기간(" +
+                  startDay +
+                  "일 ~ " +
+                  endDay +
+                  "일) 내의 날짜만 입력할 수 있습니다."
               );
               oEvent.getSource().setValue("");
               oModel.setProperty("/DeliveryDay", "");
@@ -1865,7 +2004,9 @@ sap.ui.define(
           ) {
             var onlyDay = dFrom.getDate();
             if (nDay !== onlyDay) {
-              sap.m.MessageToast.show("계약기간이 하루인 경우 " + onlyDay + "일만 입력할 수 있습니다.");
+              sap.m.MessageToast.show(
+                "계약기간이 하루인 경우 " + onlyDay + "일만 입력할 수 있습니다."
+              );
               oEvent.getSource().setValue("");
               oModel.setProperty("/DeliveryDay", "");
               return;
@@ -1874,13 +2015,13 @@ sap.ui.define(
             var yearMonthSet = new Set();
             var d = new Date(dFrom);
             while (d <= dTo) {
-              yearMonthSet.add(d.getFullYear() + '-' + (d.getMonth() + 1));
+              yearMonthSet.add(d.getFullYear() + "-" + (d.getMonth() + 1));
               d.setMonth(d.getMonth() + 1);
               d.setDate(1);
             }
             var invalidMonth = false;
-            yearMonthSet.forEach(function(ym) {
-              var parts = ym.split('-');
+            yearMonthSet.forEach(function (ym) {
+              var parts = ym.split("-");
               var year = parseInt(parts[0], 10);
               var month = parseInt(parts[1], 10);
               var lastDay = new Date(year, month, 0).getDate();
@@ -1889,19 +2030,21 @@ sap.ui.define(
               }
             });
             if (invalidMonth) {
-              sap.m.MessageToast.show("계약기간 내의 모든 달에 해당 일자가 존재해야 합니다.");
+              sap.m.MessageToast.show(
+                "계약기간 내의 모든 달에 해당 일자가 존재해야 합니다."
+              );
               oEvent.getSource().setValue("");
-            oModel.setProperty("/DeliveryDay", "");
+              oModel.setProperty("/DeliveryDay", "");
               return;
+            }
           }
-        }
         }
 
         // 정상 입력이면 모델에 저장
         oModel.setProperty("/DeliveryDay", nDay.toString());
       },
 
-      onCheckContractAvailable: function() {
+      onCheckContractAvailable: function () {
         // [1] 메인 모델(뷰 전체 데이터)와 색상별 선택 정보 모델을 가져옵니다.
         var oModel = this.getView().getModel();
         var oColorsModel = this.getView().getModel("colors");
@@ -1916,17 +2059,17 @@ sap.ui.define(
 
         // [3] 필수 입력값 검증
         var missingInputs = [];
-        
+
         // 전체 계약기간 검증
         if (!oValidFrom || !oValidTo) {
           missingInputs.push("전체 계약기간");
         }
-        
+
         // 납기일 검증
         if (!sDeliveryDay || sDeliveryDay.trim() === "") {
           missingInputs.push("납기일");
         }
-        
+
         // 아이템 선택 여부 검증
         if (!aSelectedColors || aSelectedColors.length === 0) {
           missingInputs.push("아이템");
@@ -1934,7 +2077,9 @@ sap.ui.define(
 
         // 필수 입력값이 누락된 경우
         if (missingInputs.length > 0) {
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
+          this.getView()
+            .getModel()
+            .setProperty("/isContractCheckPassed", false);
           var sMessage = missingInputs.join(", ") + "을(를) 입력해주세요.";
           sap.m.MessageToast.show(sMessage);
           return;
@@ -1943,23 +2088,30 @@ sap.ui.define(
         // [4] 색상별로 필수 정보(수량, 계약기간)가 모두 입력되었는지 체크
         //    - 누락된 경우 어떤 색상에 어떤 정보가 빠졌는지 안내
         var missingItems = [];
-        aSelectedColors.forEach(function(item) {
+        aSelectedColors.forEach(function (item) {
           var missingFields = [];
           if (!item.quantity) missingFields.push("수량");
           if (!item.itemValidFrom) missingFields.push("계약 시작일");
           if (!item.itemValidTo) missingFields.push("계약 종료일");
           if (missingFields.length > 0) {
-            missingItems.push({ colorCode: item.colorCode, missingFields: missingFields });
+            missingItems.push({
+              colorCode: item.colorCode,
+              missingFields: missingFields,
+            });
           }
         });
         if (missingItems.length > 0) {
           // 누락된 정보가 있으면 메시지 표시 후 함수 종료
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
+          this.getView()
+            .getModel()
+            .setProperty("/isContractCheckPassed", false);
           var sMessage = "다음 색상의 필수 정보가 누락되었습니다:\n";
-          missingItems.forEach(function(item) {
-            sMessage += "\n- " + item.colorCode + ": " + item.missingFields.join(", ");
+          missingItems.forEach(function (item) {
+            sMessage +=
+              "\n- " + item.colorCode + ": " + item.missingFields.join(", ");
           });
-          sMessage += "\n\n선택 색상 보기 버튼을 클릭하여 누락된 정보를 입력해주세요.";
+          sMessage +=
+            "\n\n선택 색상 보기 버튼을 클릭하여 누락된 정보를 입력해주세요.";
           sap.m.MessageToast.show(sMessage);
           return;
         }
@@ -1967,9 +2119,20 @@ sap.ui.define(
         // 날짜를 yyyy-MM-dd 문자열로 변환하는 유틸리티 함수
         function toYMDstr(d) {
           if (!d) return "";
-          if (typeof d === "string" && d.length === 10 && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-          var dateObj = (typeof d === "string") ? new Date(d) : d;
-          return dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0');
+          if (
+            typeof d === "string" &&
+            d.length === 10 &&
+            /^\d{4}-\d{2}-\d{2}$/.test(d)
+          )
+            return d;
+          var dateObj = typeof d === "string" ? new Date(d) : d;
+          return (
+            dateObj.getFullYear() +
+            "-" +
+            String(dateObj.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(dateObj.getDate()).padStart(2, "0")
+          );
         }
 
         // [5] 전체 계약기간 내에 납품희망일이 한 번만 존재하는지 체크
@@ -1978,20 +2141,28 @@ sap.ui.define(
           var dFrom = new Date(oValidFrom);
           var dTo = new Date(oValidTo);
           var nDeliveryDay = parseInt(sDeliveryDay, 10);
-          dFrom = new Date(dFrom.getFullYear(), dFrom.getMonth(), dFrom.getDate());
+          dFrom = new Date(
+            dFrom.getFullYear(),
+            dFrom.getMonth(),
+            dFrom.getDate()
+          );
           dTo = new Date(dTo.getFullYear(), dTo.getMonth(), dTo.getDate());
 
           // === 하루짜리 계약(시작일=종료일)인 경우는 예외로 통과 ===
           if (dFrom.getTime() !== dTo.getTime()) {
             var deliveryDayCount = 0;
-          var d = new Date(dFrom);
-          while (d <= dTo) {
+            var d = new Date(dFrom);
+            while (d <= dTo) {
               if (d.getDate() === nDeliveryDay) deliveryDayCount++;
               d.setDate(d.getDate() + 1);
             }
             if (deliveryDayCount === 1) {
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
-              sap.m.MessageToast.show("전체 계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 수정해주세요.");
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
+              sap.m.MessageToast.show(
+                "전체 계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 수정해주세요."
+              );
               return;
             }
           }
@@ -2009,18 +2180,30 @@ sap.ui.define(
             var monthsWithDeliveryDay = 0;
             var d = new Date(dFrom.getFullYear(), dFrom.getMonth(), 1);
             while (d <= dTo) {
-              var lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+              var lastDay = new Date(
+                d.getFullYear(),
+                d.getMonth() + 1,
+                0
+              ).getDate();
               if (nDeliveryDay <= lastDay) {
-                var deliveryDate = new Date(d.getFullYear(), d.getMonth(), nDeliveryDay);
+                var deliveryDate = new Date(
+                  d.getFullYear(),
+                  d.getMonth(),
+                  nDeliveryDay
+                );
                 if (deliveryDate >= dFrom && deliveryDate <= dTo) {
                   monthsWithDeliveryDay++;
+                }
               }
-            }
-            d.setMonth(d.getMonth() + 1);
+              d.setMonth(d.getMonth() + 1);
             }
             if (monthsWithDeliveryDay < 2) {
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
-              sap.m.MessageToast.show("계약기간 내에 납품희망일이 한 달에만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 수정해주세요.");
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
+              sap.m.MessageToast.show(
+                "계약기간 내에 납품희망일이 한 달에만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 수정해주세요."
+              );
               return;
             }
           }
@@ -2031,24 +2214,27 @@ sap.ui.define(
           // ==========================================
           // 케이스 1: 하나의 아이템만 선택한 경우
           // ==========================================
-          
+
           // 아이템별 계약기간이 전체 계약기간과 완전히 일치하는지만 체크
           var item = aSelectedColors[0];
           var itemFromStr = toYMDstr(item.itemValidFrom);
           var itemToStr = toYMDstr(item.itemValidTo);
           var globalFromStr = toYMDstr(oValidFrom);
           var globalToStr = toYMDstr(oValidTo);
-          
+
           if (itemFromStr !== globalFromStr || itemToStr !== globalToStr) {
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
-            sap.m.MessageToast.show("전체 계약기간과 아이템별 계약기간이 일치해야 합니다. 선택한 색상 보기 버튼을 눌러 다시 한 번 입력해주세요.");
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
+            sap.m.MessageToast.show(
+              "전체 계약기간과 아이템별 계약기간이 일치해야 합니다. 선택한 색상 보기 버튼을 눌러 다시 한 번 입력해주세요."
+            );
             return;
           }
-          
+
           // 계약기간이 일치하면 성공
           this.getView().getModel().setProperty("/isContractCheckPassed", true);
           sap.m.MessageToast.show("계약 체결이 가능한 조건입니다!");
-          
         } else {
           // ==========================================
           // 케이스 2: 여러 아이템이 선택된 경우
@@ -2060,72 +2246,111 @@ sap.ui.define(
           }
           var dFrom = toDateOnly(new Date(oValidFrom));
           var dTo = toDateOnly(new Date(oValidTo));
-          var allItemsMatch = aSelectedColors.length > 0 && aSelectedColors.every(function(item) {
-            if (!item.itemValidFrom || !item.itemValidTo) return false;
-            var iFrom = toDateOnly(new Date(item.itemValidFrom));
-            var iTo = toDateOnly(new Date(item.itemValidTo));
-            return iFrom.getTime() === iTo.getTime() && iFrom.getTime() === dFrom.getTime();
-          });
+          var allItemsMatch =
+            aSelectedColors.length > 0 &&
+            aSelectedColors.every(function (item) {
+              if (!item.itemValidFrom || !item.itemValidTo) return false;
+              var iFrom = toDateOnly(new Date(item.itemValidFrom));
+              var iTo = toDateOnly(new Date(item.itemValidTo));
+              return (
+                iFrom.getTime() === iTo.getTime() &&
+                iFrom.getTime() === dFrom.getTime()
+              );
+            });
           if (dFrom.getTime() === dTo.getTime() && allItemsMatch) {
-            this.getView().getModel().setProperty("/isContractCheckPassed", true);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", true);
             sap.m.MessageToast.show("계약 체결이 가능한 조건입니다!");
             return;
           }
 
           // [2.1] 적어도 하나의 아이템이 전체 계약기간과 일치하는지 체크
           var hasItemCoveringFullPeriod = false;
-          aSelectedColors.forEach(function(item) {
+          aSelectedColors.forEach(function (item) {
             var fromStr = toYMDstr(item.itemValidFrom);
             var toStr = toYMDstr(item.itemValidTo);
             var globalFromStr = toYMDstr(oValidFrom);
             var globalToStr = toYMDstr(oValidTo);
-            
+
             if (fromStr === globalFromStr && toStr === globalToStr) {
               hasItemCoveringFullPeriod = true;
             }
           });
-          
+
           if (!hasItemCoveringFullPeriod) {
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
-            sap.m.MessageToast.show("적어도 한 개의 아이템의 계약기간이 전체 계약기간과 완전히 일치해야 합니다. 아이템별 계약기간을 다시 확인해주세요.");
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
+            sap.m.MessageToast.show(
+              "적어도 한 개의 아이템의 계약기간이 전체 계약기간과 완전히 일치해야 합니다. 아이템별 계약기간을 다시 확인해주세요."
+            );
             return;
           }
 
           // [2.2] 아이템별 계약기간이 전체 계약기간을 벗어나는지 체크
           var invalidPeriodItems = []; // 전체 계약기간을 벗어난 색상 저장 배열
-          aSelectedColors.forEach(function(item) {
+          aSelectedColors.forEach(function (item) {
             var itemFrom = new Date(item.itemValidFrom); // 아이템별 시작일
-            var itemTo = new Date(item.itemValidTo);     // 아이템별 종료일
-            var globalFrom = new Date(oValidFrom);       // 전체 시작일
-            var globalTo = new Date(oValidTo);           // 전체 종료일
-            
+            var itemTo = new Date(item.itemValidTo); // 아이템별 종료일
+            var globalFrom = new Date(oValidFrom); // 전체 시작일
+            var globalTo = new Date(oValidTo); // 전체 종료일
+
             // 시간 정보 제거(날짜만 비교)
-            itemFrom = new Date(itemFrom.getFullYear(), itemFrom.getMonth(), itemFrom.getDate());
-            itemTo = new Date(itemTo.getFullYear(), itemTo.getMonth(), itemTo.getDate());
-            globalFrom = new Date(globalFrom.getFullYear(), globalFrom.getMonth(), globalFrom.getDate());
-            globalTo = new Date(globalTo.getFullYear(), globalTo.getMonth(), globalTo.getDate());
-            
+            itemFrom = new Date(
+              itemFrom.getFullYear(),
+              itemFrom.getMonth(),
+              itemFrom.getDate()
+            );
+            itemTo = new Date(
+              itemTo.getFullYear(),
+              itemTo.getMonth(),
+              itemTo.getDate()
+            );
+            globalFrom = new Date(
+              globalFrom.getFullYear(),
+              globalFrom.getMonth(),
+              globalFrom.getDate()
+            );
+            globalTo = new Date(
+              globalTo.getFullYear(),
+              globalTo.getMonth(),
+              globalTo.getDate()
+            );
+
             // 시작일이 전체 시작일보다 이전이거나, 종료일이 전체 종료일보다 이후면 배열에 추가
             if (itemFrom < globalFrom || itemTo > globalTo) {
               invalidPeriodItems.push({
                 colorCode: item.colorCode,
                 isBefore: itemFrom < globalFrom,
-                isAfter: itemTo > globalTo
+                isAfter: itemTo > globalTo,
               });
             }
           });
-          
+
           // 벗어난 색상이 있으면 메시지 표시 후 함수 종료
           if (invalidPeriodItems.length > 0) {
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
-            var sMessage = "다음 색상의 계약기간이 전체 계약기간을 벗어납니다:\n";
-            invalidPeriodItems.forEach(function(item) {
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
+            var sMessage =
+              "다음 색상의 계약기간이 전체 계약기간을 벗어납니다:\n";
+            invalidPeriodItems.forEach(function (item) {
               if (item.isBefore && item.isAfter) {
-                sMessage += "\n- " + item.colorCode + ": 시작일과 종료일 모두 전체 계약기간을 벗어납니다.";
+                sMessage +=
+                  "\n- " +
+                  item.colorCode +
+                  ": 시작일과 종료일 모두 전체 계약기간을 벗어납니다.";
               } else if (item.isBefore) {
-                sMessage += "\n- " + item.colorCode + ": 시작일이 전체 계약기간보다 이전입니다.";
+                sMessage +=
+                  "\n- " +
+                  item.colorCode +
+                  ": 시작일이 전체 계약기간보다 이전입니다.";
               } else if (item.isAfter) {
-                sMessage += "\n- " + item.colorCode + ": 종료일이 전체 계약기간보다 이후입니다.";
+                sMessage +=
+                  "\n- " +
+                  item.colorCode +
+                  ": 종료일이 전체 계약기간보다 이후입니다.";
               }
             });
             sap.m.MessageToast.show(sMessage);
@@ -2135,19 +2360,27 @@ sap.ui.define(
           // [2.3] 전체 계약기간과 납품희망일을 고려하여 한 번의 오더만 가능한 상황 체크
           if (oValidFrom && oValidTo && sDeliveryDay) {
             var dFrom = new Date(oValidFrom); // 전체 계약 시작일
-            var dTo = new Date(oValidTo);     // 전체 계약 종료일
+            var dTo = new Date(oValidTo); // 전체 계약 종료일
             var nDeliveryDay = parseInt(sDeliveryDay, 10); // 납품희망일 숫자
-           
+
             // 시간 정보 제거
-            dFrom = new Date(dFrom.getFullYear(), dFrom.getMonth(), dFrom.getDate());
+            dFrom = new Date(
+              dFrom.getFullYear(),
+              dFrom.getMonth(),
+              dFrom.getDate()
+            );
             dTo = new Date(dTo.getFullYear(), dTo.getMonth(), dTo.getDate());
-            
+
             // 계약기간이 하루인 경우(시작일과 종료일이 같은 경우) 특별 처리
             if (dFrom.getTime() === dTo.getTime()) {
               // 계약기간이 하루인 경우, 납품희망일이 그 날짜와 일치하는지만 확인
               if (dFrom.getDate() !== nDeliveryDay) {
-                sap.m.MessageToast.show("계약기간이 하루인 경우 납품희망일은 계약일과 같아야 합니다.");
-                this.getView().getModel().setProperty("/isContractCheckPassed", false);
+                sap.m.MessageToast.show(
+                  "계약기간이 하루인 경우 납품희망일은 계약일과 같아야 합니다."
+                );
+                this.getView()
+                  .getModel()
+                  .setProperty("/isContractCheckPassed", false);
                 return;
               }
               // 납품희망일이 계약일과 일치하면 이 검사는 통과
@@ -2156,14 +2389,18 @@ sap.ui.define(
               // 시작일의 다음 달 같은 날짜 계산
               var nextMonthDate = new Date(dFrom);
               nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-           
+
               // 다음 달에 같은 일자가 없는 경우(예: 1월 31일, 3월 31일 등)
               if (nextMonthDate.getDate() !== dFrom.getDate()) {
-                sap.m.MessageToast.show("계약기간이 한 달이 되려면 시작일과 종료일이 같은 일자여야 합니다. (예: 7월 23일부터 8월 23일까지)");
-                this.getView().getModel().setProperty("/isContractCheckPassed", false);
+                sap.m.MessageToast.show(
+                  "계약기간이 한 달이 되려면 시작일과 종료일이 같은 일자여야 합니다. (예: 7월 23일부터 8월 23일까지)"
+                );
+                this.getView()
+                  .getModel()
+                  .setProperty("/isContractCheckPassed", false);
                 return;
               }
-           
+
               // 계약기간이 한 달 미만인 경우
               if (dTo < nextMonthDate) {
                 // 계약기간 내에 납품희망일이 존재하는지 확인
@@ -2175,11 +2412,15 @@ sap.ui.define(
                   }
                   d.setDate(d.getDate() + 1);
                 }
-             
+
                 // 납품희망일이 한 번만 존재하는 경우에만 메시지 표시
                 if (deliveryDayCount === 1) {
-                  sap.m.MessageToast.show("계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일에 맞춰 수정해주세요.");
-                  this.getView().getModel().setProperty("/isContractCheckPassed", false);
+                  sap.m.MessageToast.show(
+                    "계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일에 맞춰 수정해주세요."
+                  );
+                  this.getView()
+                    .getModel()
+                    .setProperty("/isContractCheckPassed", false);
                   return;
                 }
               }
@@ -2189,16 +2430,25 @@ sap.ui.define(
           // [2.4] 계약기간 내에 납품희망일이 한 번만 존재하는 아이템이 있는지 체크
           if (oValidFrom && oValidTo && sDeliveryDay) {
             var oneOrderColorCodes = [];
-            aSelectedColors.forEach(function(item) {
+            aSelectedColors.forEach(function (item) {
               var from = item.itemValidFrom;
               var to = item.itemValidTo;
               if (from && to) {
-                var dItemFrom = (typeof from === "string") ? new Date(from) : from;
-                var dItemTo = (typeof to === "string") ? new Date(to) : to;
-                
-                dItemFrom = new Date(dItemFrom.getFullYear(), dItemFrom.getMonth(), dItemFrom.getDate());
-                dItemTo = new Date(dItemTo.getFullYear(), dItemTo.getMonth(), dItemTo.getDate());
-                
+                var dItemFrom =
+                  typeof from === "string" ? new Date(from) : from;
+                var dItemTo = typeof to === "string" ? new Date(to) : to;
+
+                dItemFrom = new Date(
+                  dItemFrom.getFullYear(),
+                  dItemFrom.getMonth(),
+                  dItemFrom.getDate()
+                );
+                dItemTo = new Date(
+                  dItemTo.getFullYear(),
+                  dItemTo.getMonth(),
+                  dItemTo.getDate()
+                );
+
                 // === 하루짜리 계약(시작일=종료일)인 경우는 예외로 통과 ===
                 if (dItemFrom.getTime() !== dItemTo.getTime()) {
                   var count = 0;
@@ -2215,83 +2465,103 @@ sap.ui.define(
                 }
               }
             });
-            
+
             if (oneOrderColorCodes.length > 0) {
-              sap.m.MessageToast.show("다음 색상(들)의 계약기간 내에 납품희망일이 한 번만 존재합니다: " + oneOrderColorCodes.join(", ") + "\n한 건의 주문만 가능하므로, 계약기간을 희망 납품일과 동일하게 설정해주세요.");
-              this.getView().getModel().setProperty("/isContractCheckPassed", false);
+              sap.m.MessageToast.show(
+                "다음 색상(들)의 계약기간 내에 납품희망일이 한 번만 존재합니다: " +
+                  oneOrderColorCodes.join(", ") +
+                  "\n한 건의 주문만 가능하므로, 계약기간을 희망 납품일과 동일하게 설정해주세요."
+              );
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
               return;
             }
           }
 
           // [2.5] 납품희망일이 계약기간의 모든 달에 존재하는지 체크
-        var hasValidDeliveryDay = true;
+          var hasValidDeliveryDay = true;
           var invalidItems = [];
-        aSelectedColors.forEach(function(item) {
-          var from = item.itemValidFrom;
-          var to = item.itemValidTo;
-          if (from && to) {
-            var dFrom = (typeof from === "string") ? new Date(from) : from;
-            var dTo = (typeof to === "string") ? new Date(to) : to;
-            
-            // 계약기간 내의 모든 날짜를 체크
-            var d = new Date(dFrom);
-            var found = false;
-            while (d <= dTo) {
-              if (d.getDate() === nDeliveryDay) {
-                found = true;
-                break;
+          aSelectedColors.forEach(function (item) {
+            var from = item.itemValidFrom;
+            var to = item.itemValidTo;
+            if (from && to) {
+              var dFrom = typeof from === "string" ? new Date(from) : from;
+              var dTo = typeof to === "string" ? new Date(to) : to;
+
+              // 계약기간 내의 모든 날짜를 체크
+              var d = new Date(dFrom);
+              var found = false;
+              while (d <= dTo) {
+                if (d.getDate() === nDeliveryDay) {
+                  found = true;
+                  break;
+                }
+                d.setDate(d.getDate() + 1);
               }
-              d.setDate(d.getDate() + 1);
-            }
-            
-            if (!found) {
-              hasValidDeliveryDay = false;
+
+              if (!found) {
+                hasValidDeliveryDay = false;
                 invalidItems.push(item.colorCode);
+              }
             }
+          });
+
+          if (!hasValidDeliveryDay) {
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
+            sap.m.MessageToast.show(
+              "다음 색상의 계약기간 내에 선택한 납품 희망일이 존재하지 않습니다: " +
+                invalidItems.join(", ") +
+                ". 아이템별 계약기간을 다시 확인해주세요."
+            );
+            return;
           }
-        });
-        
-        if (!hasValidDeliveryDay) {
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
-            sap.m.MessageToast.show("다음 색상의 계약기간 내에 선택한 납품 희망일이 존재하지 않습니다: " + invalidItems.join(", ") + ". 아이템별 계약기간을 다시 확인해주세요.");
-          return;
-        }
 
           // [2.6] 희망 납품일이 아이템별 계약기간 내에서 두 번 이상 발생할 수 있는지 체크
-        var hasItemWithTwoOrders = false;
-        aSelectedColors.forEach(function(item) {
-          var from = item.itemValidFrom;
-          var to = item.itemValidTo;
-          if (from && to) {
-            var dFrom = (typeof from === "string") ? new Date(from) : from;
-            var dTo = (typeof to === "string") ? new Date(to) : to;
-            var count = 0;
-            var d = new Date(dFrom);
-            while (d <= dTo) {
-              if (d.getDate() === nDeliveryDay) {
-                count++;
+          var hasItemWithTwoOrders = false;
+          aSelectedColors.forEach(function (item) {
+            var from = item.itemValidFrom;
+            var to = item.itemValidTo;
+            if (from && to) {
+              var dFrom = typeof from === "string" ? new Date(from) : from;
+              var dTo = typeof to === "string" ? new Date(to) : to;
+              var count = 0;
+              var d = new Date(dFrom);
+              while (d <= dTo) {
+                if (d.getDate() === nDeliveryDay) {
+                  count++;
+                }
+                d.setDate(d.getDate() + 1);
               }
-              d.setDate(d.getDate() + 1);
+              if (count >= 2) {
+                hasItemWithTwoOrders = true;
+              }
             }
-            if (count >= 2) {
-              hasItemWithTwoOrders = true;
-            }
+          });
+
+          if (!hasItemWithTwoOrders) {
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
+            sap.m.MessageToast.show(
+              "선택한 희망 납품일이 아이템별 계약기간 내에서 두 번 이상 발생할 수 있도록 아이템별 계약기간을 다시 확인해주세요."
+            );
+            return;
           }
-        });
-          
-        if (!hasItemWithTwoOrders) {
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
-          sap.m.MessageToast.show("선택한 희망 납품일이 아이템별 계약기간 내에서 두 번 이상 발생할 수 있도록 아이템별 계약기간을 다시 확인해주세요.");
-          return;
-        }
 
           // [2.7] 계약기간 내에 납품희망일이 한 번만 존재하는지 체크
           if (oValidFrom && oValidTo && sDeliveryDay) {
             var dFrom = new Date(oValidFrom);
             var dTo = new Date(oValidTo);
             var nDeliveryDay = parseInt(sDeliveryDay, 10);
-            
-            dFrom = new Date(dFrom.getFullYear(), dFrom.getMonth(), dFrom.getDate());
+
+            dFrom = new Date(
+              dFrom.getFullYear(),
+              dFrom.getMonth(),
+              dFrom.getDate()
+            );
             dTo = new Date(dTo.getFullYear(), dTo.getMonth(), dTo.getDate());
 
             var deliveryDayCount = 0;
@@ -2304,15 +2574,19 @@ sap.ui.define(
             }
 
             if (deliveryDayCount === 1) {
-              sap.m.MessageToast.show("계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일과 동일하게 설정해주세요.");
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
-          return;
+              sap.m.MessageToast.show(
+                "계약기간 내에 납품희망일이 한 번만 존재합니다. 한 건의 주문만 가능하므로, 계약기간을 희망 납품일과 동일하게 설정해주세요."
+              );
+              this.getView()
+                .getModel()
+                .setProperty("/isContractCheckPassed", false);
+              return;
             }
-        }
-        
+          }
+
           // 모든 검사를 통과하면 계약 체결 가능
-        this.getView().getModel().setProperty("/isContractCheckPassed", true);
-        sap.m.MessageToast.show("계약 체결이 가능한 조건입니다!");
+          this.getView().getModel().setProperty("/isContractCheckPassed", true);
+          sap.m.MessageToast.show("계약 체결이 가능한 조건입니다!");
         }
 
         // 날짜 비교를 위한 유틸리티 함수
@@ -2324,14 +2598,21 @@ sap.ui.define(
         if (oValidFrom && oValidTo && sDeliveryDay) {
           var dFrom = toDateOnly(new Date(oValidFrom));
           var dTo = toDateOnly(new Date(oValidTo));
-          var allItemsMatch = aSelectedColors.length > 0 && aSelectedColors.every(function(item) {
-            if (!item.itemValidFrom || !item.itemValidTo) return false;
-            var iFrom = toDateOnly(new Date(item.itemValidFrom));
-            var iTo = toDateOnly(new Date(item.itemValidTo));
-            return iFrom.getTime() === iTo.getTime() && iFrom.getTime() === dFrom.getTime();
-          });
+          var allItemsMatch =
+            aSelectedColors.length > 0 &&
+            aSelectedColors.every(function (item) {
+              if (!item.itemValidFrom || !item.itemValidTo) return false;
+              var iFrom = toDateOnly(new Date(item.itemValidFrom));
+              var iTo = toDateOnly(new Date(item.itemValidTo));
+              return (
+                iFrom.getTime() === iTo.getTime() &&
+                iFrom.getTime() === dFrom.getTime()
+              );
+            });
           if (dFrom.getTime() === dTo.getTime() && allItemsMatch) {
-            this.getView().getModel().setProperty("/isContractCheckPassed", true);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", true);
             sap.m.MessageToast.show("계약 체결이 가능한 조건입니다!");
             return;
           }
@@ -2339,7 +2620,7 @@ sap.ui.define(
 
         // [추가] 아이템별 계약기간을 Date 객체로 변환해서 모델에 저장
         var changed = false;
-        aSelectedColors.forEach(function(item) {
+        aSelectedColors.forEach(function (item) {
           if (item.itemValidFrom && typeof item.itemValidFrom === "string") {
             var d = new Date(item.itemValidFrom);
             if (d instanceof Date && !isNaN(d.getTime())) {
@@ -2361,7 +2642,7 @@ sap.ui.define(
       },
 
       // 아이템별 계약 시작일 변경 처리
-      onItemValidFromChange: function(oEvent) {
+      onItemValidFromChange: function (oEvent) {
         var oDate = oEvent.getParameter("value");
         var oSource = oEvent.getSource();
         var sPath = oSource.getBindingContext("colors").getPath();
@@ -2372,37 +2653,45 @@ sap.ui.define(
 
         function toDateOnly(d) {
           var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-          date.setHours(0,0,0,0);
+          date.setHours(0, 0, 0, 0);
           return date;
         }
 
         function formatDateToYYYYMMDD(date) {
           if (!date) return null;
           var year = date.getFullYear();
-          var month = String(date.getMonth() + 1).padStart(2, '0');
-          var day = String(date.getDate()).padStart(2, '0');
-          return year + '-' + month + '-' + day;
+          var month = String(date.getMonth() + 1).padStart(2, "0");
+          var day = String(date.getDate()).padStart(2, "0");
+          return year + "-" + month + "-" + day;
         }
 
         // yyyy-mm-dd 형식 허용
-        if (typeof oDate === 'string') {
+        if (typeof oDate === "string") {
           // yyyy-mm-dd 형식만 허용
           if (/^\d{4}-\d{2}-\d{2}$/.test(oDate)) {
             oDate = new Date(oDate);
           } else {
-            sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
+            sap.m.MessageToast.show(
+              "유효하지 않은 날짜입니다. 다시 입력해주세요."
+            );
             oSource.setValue(null);
             oColorsModel.setProperty(sPath + "/itemValidFrom", null);
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
             return;
           }
         }
 
         if (!(oDate instanceof Date) || isNaN(oDate.getTime())) {
-          sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
+          sap.m.MessageToast.show(
+            "유효하지 않은 날짜입니다. 다시 입력해주세요."
+          );
           oSource.setValue(null);
           oColorsModel.setProperty(sPath + "/itemValidFrom", null);
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
+          this.getView()
+            .getModel()
+            .setProperty("/isContractCheckPassed", false);
           return;
         }
 
@@ -2412,7 +2701,9 @@ sap.ui.define(
         // [기존 로직]
         if (oDate) {
           if (oDate < oGlobalValidFrom) {
-            sap.m.MessageToast.show("아이템별 계약 시작일은 전체 계약기간 내에 있어야 합니다.");
+            sap.m.MessageToast.show(
+              "아이템별 계약 시작일은 전체 계약기간 내에 있어야 합니다."
+            );
             oSource.setValue(null);
             oColorsModel.setProperty(sPath + "/itemValidFrom", null);
             return;
@@ -2426,7 +2717,7 @@ sap.ui.define(
       },
 
       // 아이템별 계약 종료일 변경 처리
-      onItemValidToChange: function(oEvent) {
+      onItemValidToChange: function (oEvent) {
         var oDate = oEvent.getParameter("value");
         var oSource = oEvent.getSource();
         var sPath = oSource.getBindingContext("colors").getPath();
@@ -2437,36 +2728,44 @@ sap.ui.define(
 
         function toDateOnly(d) {
           var date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-          date.setHours(0,0,0,0);
+          date.setHours(0, 0, 0, 0);
           return date;
         }
 
         function formatDateToYYYYMMDD(date) {
           if (!date) return null;
           var year = date.getFullYear();
-          var month = String(date.getMonth() + 1).padStart(2, '0');
-          var day = String(date.getDate()).padStart(2, '0');
-          return year + '-' + month + '-' + day;
+          var month = String(date.getMonth() + 1).padStart(2, "0");
+          var day = String(date.getDate()).padStart(2, "0");
+          return year + "-" + month + "-" + day;
         }
 
         // yyyy-mm-dd 형식 허용
-        if (typeof oDate === 'string') {
+        if (typeof oDate === "string") {
           if (/^\d{4}-\d{2}-\d{2}$/.test(oDate)) {
             oDate = new Date(oDate);
           } else {
-            sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
+            sap.m.MessageToast.show(
+              "유효하지 않은 날짜입니다. 다시 입력해주세요."
+            );
             oSource.setValue(null);
             oColorsModel.setProperty(sPath + "/itemValidTo", null);
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
             return;
           }
         }
 
         if (!(oDate instanceof Date) || isNaN(oDate.getTime())) {
-          sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
+          sap.m.MessageToast.show(
+            "유효하지 않은 날짜입니다. 다시 입력해주세요."
+          );
           oSource.setValue(null);
           oColorsModel.setProperty(sPath + "/itemValidTo", null);
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
+          this.getView()
+            .getModel()
+            .setProperty("/isContractCheckPassed", false);
           return;
         }
 
@@ -2477,25 +2776,33 @@ sap.ui.define(
         if (oDate) {
           try {
             if (oDate < toDateOnly(oGlobalValidFrom)) {
-              sap.m.MessageToast.show("아이템별 계약 종료일은 전체 계약기간 내에 있어야 합니다.");
+              sap.m.MessageToast.show(
+                "아이템별 계약 종료일은 전체 계약기간 내에 있어야 합니다."
+              );
               oSource.setValue(null);
               oColorsModel.setProperty(sPath + "/itemValidTo", null);
               return;
             }
             if (oDate > toDateOnly(oGlobalValidTo)) {
-              sap.m.MessageToast.show("아이템별 계약 종료일은 전체 계약기간을 벗어날 수 없습니다.");
+              sap.m.MessageToast.show(
+                "아이템별 계약 종료일은 전체 계약기간을 벗어날 수 없습니다."
+              );
               oSource.setValue(null);
               oColorsModel.setProperty(sPath + "/itemValidTo", null);
               return;
             }
-            var oItemValidFrom = oColorsModel.getProperty(sPath + "/itemValidFrom");
+            var oItemValidFrom = oColorsModel.getProperty(
+              sPath + "/itemValidFrom"
+            );
             if (oItemValidFrom) {
-              if (typeof oItemValidFrom === 'string') {
+              if (typeof oItemValidFrom === "string") {
                 oItemValidFrom = new Date(oItemValidFrom);
               }
               oItemValidFrom = toDateOnly(oItemValidFrom);
               if (oDate < oItemValidFrom) {
-                sap.m.MessageToast.show("아이템별 계약 종료일은 시작일보다 이후여야 합니다.");
+                sap.m.MessageToast.show(
+                  "아이템별 계약 종료일은 시작일보다 이후여야 합니다."
+                );
                 oSource.setValue(null);
                 oColorsModel.setProperty(sPath + "/itemValidTo", null);
                 return;
@@ -2503,7 +2810,9 @@ sap.ui.define(
               if (oDate.getTime() === oItemValidFrom.getTime()) {
                 var formattedDate = formatDateToYYYYMMDD(oDate);
                 oColorsModel.setProperty(sPath + "/itemValidTo", formattedDate);
-                this.getView().getModel().setProperty("/isContractCheckPassed", false);
+                this.getView()
+                  .getModel()
+                  .setProperty("/isContractCheckPassed", false);
                 return;
               }
               var startDate = oItemValidFrom;
@@ -2511,13 +2820,17 @@ sap.ui.define(
               var nextMonthDate = new Date(startDate);
               nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
               if (nextMonthDate.getDate() !== startDate.getDate()) {
-                sap.m.MessageToast.show("계약기간이 한 달이 되려면 시작일과 종료일이 같은 일자여야 합니다. (예: 7월 23일부터 8월 23일까지)");
+                sap.m.MessageToast.show(
+                  "계약기간이 한 달이 되려면 시작일과 종료일이 같은 일자여야 합니다. (예: 7월 23일부터 8월 23일까지)"
+                );
                 oSource.setValue(null);
                 oColorsModel.setProperty(sPath + "/itemValidTo", null);
                 return;
               }
               if (endDate < nextMonthDate) {
-                sap.m.MessageToast.show("계약기간이 한 달 미만입니다. 한 건의 주문만 가능하므로, 계약기간을 납품일과 동일하게 설정해주세요.");
+                sap.m.MessageToast.show(
+                  "계약기간이 한 달 미만입니다. 한 건의 주문만 가능하므로, 계약기간을 납품일과 동일하게 설정해주세요."
+                );
                 oSource.setValue(null);
                 oColorsModel.setProperty(sPath + "/itemValidTo", null);
                 return;
@@ -2526,23 +2839,31 @@ sap.ui.define(
             // yyyy-MM-dd 형식으로 변환하여 저장
             var formattedDate = formatDateToYYYYMMDD(oDate);
             oColorsModel.setProperty(sPath + "/itemValidTo", formattedDate);
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
           } catch (error) {
-            sap.m.MessageToast.show("유효하지 않은 날짜입니다. 다시 입력해주세요.");
+            sap.m.MessageToast.show(
+              "유효하지 않은 날짜입니다. 다시 입력해주세요."
+            );
             oSource.setValue(null);
             oColorsModel.setProperty(sPath + "/itemValidTo", null);
-            this.getView().getModel().setProperty("/isContractCheckPassed", false);
+            this.getView()
+              .getModel()
+              .setProperty("/isContractCheckPassed", false);
           }
         } else {
           oColorsModel.setProperty(sPath + "/itemValidTo", null);
-          this.getView().getModel().setProperty("/isContractCheckPassed", false);
+          this.getView()
+            .getModel()
+            .setProperty("/isContractCheckPassed", false);
         }
       },
 
       /**
        * 문의 기반 계약 주문 프로세스 안내 다이얼로그 오픈
        */
-      onOpenContractGuideDialog: function() {
+      onOpenContractGuideDialog: function () {
         if (!this._oContractGuideDialog) {
           this._oContractGuideDialog = sap.ui.xmlfragment(
             "sync.dc.sd.project02.view.ContractGuideDialog",
@@ -2556,7 +2877,7 @@ sap.ui.define(
       /**
        * 문의 기반 계약 주문 프로세스 안내 다이얼로그 닫기
        */
-      onCloseContractGuideDialog: function() {
+      onCloseContractGuideDialog: function () {
         if (this._oContractGuideDialog) {
           this._oContractGuideDialog.close();
         }

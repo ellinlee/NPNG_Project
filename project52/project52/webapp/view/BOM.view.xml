@@ -2,41 +2,78 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core">
-    <Page id="bomPage" title="Create BOM">
-        <VBox id="bomContainer">
-            <HBox>
-                <!-- BOM Level 드롭다운 -->
-                <Select width="150px">
-                    <items>
-                        <core:Item key="" text="" /> <!-- 빈 값 추가 -->
-                        <core:Item key="0" text="0" />
-                        <core:Item key="1" text="1" />
-                        <core:Item key="2" text="2" />
-                    </items>
-                </Select>
-                <Input 
-                    placeholder="Material ID (원자재)" 
-                    width="150px" 
-                    showValueHelp="true" 
-                    valueHelpRequest="onValueHelpRequest" />
-                <Input 
-                    placeholder="Material Name (원자재)" 
-                    width="150px" 
-                    editable="false" />
-                <Input 
-                    placeholder="Quantity" 
-                    width="150px" />
-                <Select width="150px">
-                    <items>
-                        <core:Item key="" text="" /> <!-- 빈 값 추가 -->
-                        <core:Item key="KG" text="KG" />
-                        <core:Item key="LTR" text="LTR" />
-                        <core:Item key="EA" text="EA" />
-                    </items>
-                </Select>
-            </HBox>
+
+    <Page id="bomPage" title="BOM 아이템 생성" backgroundDesign="Standard" class="sapUiContentPadding">
+
+        <!-- 🔷 상단 설명 영역 -->
+        <VBox alignItems="Stretch" width="100%">
+            <ObjectHeader
+                title="BOM 아이템 생성 프로그램"
+                intro="하나의 완제품에 대해 BOM 헤더와 구성품을 함께 입력하고 저장할 수 있습니다. BOM ITEM 추가 버튼을 눌러 항목을 추가할 수 있습니다."
+                backgroundDesign="Solid"
+            />
+
+            <MessageStrip
+                text="아래 입력란을 채워 구성품을 추가하고, '다음' 버튼을 눌러 저장을 진행하세요."
+                type="Success"
+                showIcon="true"
+                class="sapUiSmallMarginBottom"
+            />
         </VBox>
-        <Button text="BOM ITEM 추가" press="onAddBOMItem" />
-        <Button text="다음" press="onNext" />
+
+        <!-- 🧾 입력 필드를 감싸는 흰색 박스 -->
+        <Panel
+            headerText="BOM 입력"
+            backgroundDesign="Solid"
+            class="sapUiNoContentPadding sapUiMediumMarginBottom"
+            width="100%">
+
+            <VBox id="bomContainer" class="sapUiContentPadding" width="100%" >
+
+                <!-- 입력 필드 라인 -->
+                <HBox width="100%" justifyContent="Start" alignItems="Center">
+                    <Select>
+                        <items>
+                            <core:Item key="" text="" />
+                            <core:Item key="0" text="0" />
+                            <core:Item key="1" text="1" />
+                            <core:Item key="2" text="2" />
+                        </items>
+                    </Select>
+
+                    <Input
+                        placeholder="원자재 ID"
+
+                        showValueHelp="true"
+                        valueHelpRequest="onValueHelpRequest" />
+
+                    <Input
+                        placeholder="원자재 이름"
+
+                        editable="false" />
+
+                    <Input
+                        placeholder="수량"
+                        />
+
+                    <Select>
+                        <items>
+                            <core:Item key="" text="" />
+                            <core:Item key="KG" text="KG" />
+                            <core:Item key="LTR" text="LTR" />
+                            <core:Item key="EA" text="EA" />
+                        </items>
+                    </Select>
+                </HBox>
+            </VBox>
+        </Panel>
+
+        <!-- 🔘 하단 버튼 영역 -->
+        <HBox justifyContent="Center" alignItems="Center" width="100%">
+            <Button text="BOM ITEM 추가" press="onAddBOMItem" type="Default" class="sapUiTinyMarginEnd" />
+            <Button text="이전" press="onBack" type="Transparent" class="sapUiTinyMarginEnd" />
+            <Button text="다음" press="onNext" type="Emphasized" icon="sap-icon://navigation-right-arrow" />
+        </HBox>
+
     </Page>
 </mvc:View>
