@@ -28,15 +28,20 @@
                 </VBox>
             </Panel>
 
-            <!-- 원자재 구성품 목록 -->
-            <Panel headerText="🔧 구성품 목록" backgroundDesign="Solid" class="sapUiNoContentPadding sapUiMediumMarginBottom">
-                <List items="{/rawMaterials}">
-                    <StandardListItem
-                        title="{matId}"
-                        description="{matNm}"
-                        info="{quantity} {uom} | BOM 레벨: {bomLevel}" />
-                </List>
-            </Panel>
+
+          <!-- 원자재 구성품 목록 -->
+<Panel headerText="🔧 구성품 목록" backgroundDesign="Solid" class="sapUiNoContentPadding sapUiMediumMarginBottom">
+    <VBox id="materialList" class="sapUiSmallMargin" items="{/rawMaterials}">
+        <VBox>
+            <Text text="자재 ID: {matId}" />
+            <Text text="자재 이름: {matNm}" />
+            <Text text="수량: {quantity} {uom}" />
+            <Text text="BOM 레벨: {bomLevel}" />
+            <Toolbar class="sapUiTinyMarginBottom"></Toolbar> <!-- 줄 구분용 -->
+        </VBox>
+    </VBox>
+</Panel>
+
 
             <!-- 버튼 -->
             <HBox justifyContent="End" alignItems="Center" width="100%" class="sapUiSmallMarginTop">

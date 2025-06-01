@@ -39,6 +39,7 @@ sap.ui.define(
 
       _onRouteMatched() {
         const oModel = this.getOwnerComponent().getModel("cds");
+        oModel.refresh(true); // 서버로부터 강제 새로고침
         this.getView().setModel(oModel);
         console.log("🔁 RouteMain 재진입 - CDS 모델 다시 바인딩");
       },

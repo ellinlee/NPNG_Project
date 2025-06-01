@@ -39,7 +39,34 @@ sap.ui.define(
           oVBox.removeItem(aItems[0]);
           oVBox.removeItem(aItems[1]);
         }
+        while (oVBox.getItems().length > 3) {
+          // 항상 3번째 인덱스부터 삭제 (index: 0, 1 = Text / index: 2 = 첫 입력 세트)
+          oVBox.removeItem(oVBox.getItems()[3]);
+          if (!oItem.isA("sap.m.Text")) {
+            oVBox.removeItem(oItem);
+          } else {
+            // 텍스트인 경우 앞 2개는 유지하고 나머지 이후 항목 삭제
+            if (oVBox.getItems().length > 2) {
+              oVBox.removeItem(oVBox.getItems()[2]);
+            } else {
+              break;
+            }
+          }
+        }
 
+        for (let i = 2; i < aItems.length; i++) {
+          const oItem = aItems[i];
+          if (oItem.isA("sap.m.HBox")) {
+            const aFields = oItem.getItems();
+
+            aFields[0].setSelectedKey(""); // BOM Level 초기화
+            aFields[1].setValue(""); // 원자재 ID 초기화
+            aFields[2].setValue(""); // 원자재 이름 초기화
+            aFields[3].setValue(""); // 수량 초기화
+            aFields[4].setSelectedKey(""); // 단위 초기화
+            // 삭제 버튼(aFields[5])은 건드릴 필요 없음
+          }
+        }
         // 새로운 텍스트 컨트롤 추가
         oVBox.insertItem(
           new Text({ text: `원자재 ID: ${this.headerMat.matId}` }),
@@ -61,7 +88,7 @@ sap.ui.define(
         const oHBox = new HBox({
           items: [
             new Select({
-              width: "150px",
+              width: "100px",
               items: [
                 new Item({ key: "", text: "" }), // 빈 값 추가
                 new Item({ key: "0", text: "0" }),
@@ -71,19 +98,18 @@ sap.ui.define(
             }),
             new Input({
               placeholder: "원자재 ID",
-              width: "150px",
-              editable: false, // 입력 불가능한 칸으로 설정
+              width: "300px",
               showValueHelp: true, // 서치 헬프 활성화
               valueHelpRequest: (oEvent) => this.onValueHelpRequest(oEvent), // 서치 헬프 이벤트 핸들러
             }),
             new Input({
               placeholder: "원자재 이름",
-              width: "150px",
+              width: "300px",
               editable: false, // 입력 불가능한 칸으로 설정
             }),
-            new Input({ placeholder: "Quantity", width: "150px" }),
+            new Input({ placeholder: "수량", width: "100px" }),
             new Select({
-              width: "150px",
+              width: "100px",
               items: [
                 new Item({ key: "", text: "" }), // 빈 값 추가
                 new Item({ key: "KG", text: "KG" }),
@@ -115,24 +141,30 @@ sap.ui.define(
         const oVBox = this.byId("bomContainer");
         const aItems = oVBox.getItems();
         const aRawMaterials = [];
-        let bValid = true; // 모든 입력값이 유효한지 확인하는 플래그
+        let bValid = true; // 전체 입력 유효성
+        let bInvalidQuantity = false; // 수량 포맷 에러 플래그
 
-        // 원자재 데이터를 수집
+        const quantityRegex = /^(?!0+(?:\.0+)?$)\d{1,13}(\.\d{1,3})?$/; // 양수, 최대 13자리 + . + 3자리
+
         aItems.forEach((oItem) => {
           if (oItem.isA("sap.m.HBox")) {
             const aInputs = oItem.getItems();
-            const sBOMLevel = aInputs[0].getSelectedKey(); // 드롭다운에서 선택된 BOM Level
-            const sMatId = aInputs[1].getValue(); // Material ID
-            const sMatNm = aInputs[2].getValue(); // Material Name
-            const sQuantity = aInputs[3].getValue(); // Quantity
-            const sUOM = aInputs[4].getSelectedKey(); // 드롭다운에서 선택된 UOM
+            const sBOMLevel = aInputs[0].getSelectedKey();
+            const sMatId = aInputs[1].getValue();
+            const sMatNm = aInputs[2].getValue();
+            const sQuantity = aInputs[3].getValue();
+            const sUOM = aInputs[4].getSelectedKey();
 
-            // 필드 검증
+            // 공란 체크
             if (!sBOMLevel || !sMatId || !sMatNm || !sQuantity || !sUOM) {
               bValid = false;
             }
 
-            // BOM 데이터를 배열에 추가
+            // 수량 형식 검사
+            if (!quantityRegex.test(sQuantity)) {
+              bInvalidQuantity = true;
+            }
+
             aRawMaterials.push({
               bomLevel: sBOMLevel,
               matId: sMatId,
@@ -143,23 +175,23 @@ sap.ui.define(
           }
         });
 
-        // 모든 필드가 유효하지 않으면 메시지 표시
         if (!bValid) {
           sap.m.MessageToast.show("모든 필드를 입력하세요.");
           return;
         }
 
-        console.log("Header Material:", this.headerMat);
-        console.log("Raw Materials:", aRawMaterials);
+        if (bInvalidQuantity) {
+          sap.m.MessageToast.show("유효하지 않은 수량입니다.");
+          return;
+        }
 
-        // 라우터를 사용하여 새로운 페이지로 이동
+        // 데이터 전달 및 페이지 전환
         const oRouter = this.getOwnerComponent().getRouter();
         oRouter.navTo("RouteNextPage", {
-          headerMat: JSON.stringify(this.headerMat), // 헤더 완제품 데이터
-          rawMaterials: JSON.stringify(aRawMaterials), // 원자재 데이터
+          headerMat: JSON.stringify(this.headerMat),
+          rawMaterials: JSON.stringify(aRawMaterials),
         });
       },
-
       onValueHelpRequest(oEvent) {
         const oInput = oEvent.getSource();
         const oModel = this.getOwnerComponent().getModel("bom");

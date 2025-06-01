@@ -29,10 +29,19 @@
             width="100%">
 
             <VBox id="bomContainer" class="sapUiContentPadding" width="100%" >
+<HBox height="20px" />
 
+   <!-- 🔷 컬럼 제목 라벨 -->
+<HBox width="100%" justifyContent="Start" alignItems="Center" class="sapUiTinyMarginBottom">
+    <Label text="BOM 레벨" width="110px" design="Bold" />
+    <Label text="원자재 ID" width="300px" design="Bold" />
+    <Label text="원자재 이름" width="300px" design="Bold" />
+    <Label text="수량" width="100px" design="Bold" />
+    <Label text="단위" width="100px" design="Bold" />
+</HBox>
                 <!-- 입력 필드 라인 -->
                 <HBox width="100%" justifyContent="Start" alignItems="Center">
-                    <Select>
+                    <Select width="100px">
                         <items>
                             <core:Item key="" text="" />
                             <core:Item key="0" text="0" />
@@ -41,22 +50,24 @@
                         </items>
                     </Select>
 
-                    <Input
+                    <Input required="true"
                         placeholder="원자재 ID"
+                        width="300px"
 
                         showValueHelp="true"
                         valueHelpRequest="onValueHelpRequest" />
 
-                    <Input
+                    <Input required="true"
                         placeholder="원자재 이름"
-
+                        width="300px"
                         editable="false" />
 
-                    <Input
+                    <Input required="true"
+                        width="100px"
                         placeholder="수량"
                         />
 
-                    <Select>
+                    <Select width="100px">
                         <items>
                             <core:Item key="" text="" />
                             <core:Item key="KG" text="KG" />

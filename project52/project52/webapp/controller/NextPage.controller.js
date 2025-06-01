@@ -126,8 +126,7 @@ sap.ui.define(
                     },
                   });
                 });
-
-                sap.m.MessageToast.show("BOM 생성 완료");
+                sap.m.MessageToast.show(`BOM ID ${newBomId} 생성 완료`);
                 const oRouter = this.getOwnerComponent().getRouter();
                 oRouter.navTo("RouteMain", {}, true);
               },
