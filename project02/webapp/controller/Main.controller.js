@@ -20,7 +20,7 @@ sap.ui.define([
             },
             { 
               CustomerID: "7000000000", 
-              CustomerName: "CPID" 
+              CustomerName: "COLI" 
             },
             { 
               CustomerID: "7000000001", 

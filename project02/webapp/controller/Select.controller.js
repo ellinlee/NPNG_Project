@@ -109,11 +109,14 @@ sap.ui.define(
 
             that.getView().setModel(oMaterialModel, "materials");
 
-            // 기본 카테고리 설정 제거
-            var oViewModel = new JSONModel({
-              selectedCategory: ""
-            });
-            that.getView().setModel(oViewModel, "view");
+            // view 모델이 없을 때만 초기화 (기존 카테고리 설정 유지)
+            var oViewModel = that.getView().getModel("view");
+            if (!oViewModel) {
+              oViewModel = new JSONModel({
+                selectedCategory: ""
+              });
+              that.getView().setModel(oViewModel, "view");
+            }
 
             var availableColors = {};
             oData.results.forEach(function(item) {
@@ -201,6 +204,7 @@ sap.ui.define(
             }
           }
         } else {
+          // 로컬 스토리지에서 고객 정보 복원 시도
           var customerData = null;
           try {
             var storedCustomer = localStorage.getItem("selectedCustomer");
@@ -211,32 +215,6 @@ sap.ui.define(
             console.error("로컬 스토리지에서 고객 정보 복원 실패:", e);
           }
 
-          if (!customerData && sCustomerName) {
-            var customersList = [
-              { CustomerID: "5000000000", CustomerName: "현대 중공업" },
-              { CustomerID: "6000000000", CustomerName: "TOYOTA" },
-              { CustomerID: "7000000000", CustomerName: "CPID" },
-              { CustomerID: "7000000001", CustomerName: "COMAC" },
-            ];
-
-            var foundCustomer = customersList.find(function (customer) {
-              return customer.CustomerName === sCustomerName;
-            });
-
-            if (foundCustomer) {
-              customerData = foundCustomer;
-
-              try {
-                localStorage.setItem(
-                  "selectedCustomer",
-                  JSON.stringify(customerData)
-                );
-              } catch (e) {
-                console.error("로컬 스토리지 저장 실패:", e);
-              }
-            }
-          }
-
           if (customerData) {
             var oBackupModel = new sap.ui.model.json.JSONModel({
               SelectedCustomer: customerData,
@@ -244,8 +222,34 @@ sap.ui.define(
 
             this.getView().setModel(oBackupModel);
             oComponent.setModel(oBackupModel, "selectedCustomerModel");
+            
+            // 고객 ID에 따른 카테고리 설정
+            var sCustomerId = customerData.CustomerID;
+            var sDefaultCategory = this._customerCategoryMap[sCustomerId];
+            
+            if (sDefaultCategory) {
+              // 기본 카테고리 설정
+              var oViewModel = this.getView().getModel("view");
+              if (!oViewModel) {
+                oViewModel = new JSONModel({
+                  selectedCategory: sDefaultCategory
+                });
+                this.getView().setModel(oViewModel, "view");
+              } else {
+                oViewModel.setProperty("/selectedCategory", sDefaultCategory);
+              }
+              
+              // 선택된 카테고리 표시
+              var oCategorySelect = this.byId("select_Select_category");
+              if (oCategorySelect) {
+                oCategorySelect.setSelectedKey(sDefaultCategory);
+              }
+            }
           } else {
             sap.m.MessageToast.show("고객 데이터를 불러오는 데 실패했습니다.");
+            // Main 화면으로 리다이렉트
+            var oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("RouteMain");
           }
         }
 
@@ -1035,7 +1039,8 @@ sap.ui.define(
               range = MATERIAL_RANGES.aerospace;
               break;
             default:
-              range = MATERIAL_RANGES.automotive; // 기본값
+              console.error("알 수 없는 카테고리:", sSelectedCategory);
+              return null; // 알 수 없는 카테고리인 경우 null 반환
           }
 
           // 원래 자재 번호를 해당 범위 내의 순차적인 번호로 매핑
