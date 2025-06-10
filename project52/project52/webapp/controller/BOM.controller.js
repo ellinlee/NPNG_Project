@@ -39,34 +39,12 @@ sap.ui.define(
           oVBox.removeItem(aItems[0]);
           oVBox.removeItem(aItems[1]);
         }
-        while (oVBox.getItems().length > 3) {
-          // 항상 3번째 인덱스부터 삭제 (index: 0, 1 = Text / index: 2 = 첫 입력 세트)
-          oVBox.removeItem(oVBox.getItems()[3]);
-          if (!oItem.isA("sap.m.Text")) {
-            oVBox.removeItem(oItem);
-          } else {
-            // 텍스트인 경우 앞 2개는 유지하고 나머지 이후 항목 삭제
-            if (oVBox.getItems().length > 2) {
-              oVBox.removeItem(oVBox.getItems()[2]);
-            } else {
-              break;
-            }
-          }
+
+        // 초기화: 기존 BOM 입력 세트 제거
+        while (oVBox.getItems().length > 0) {
+          oVBox.removeItem(oVBox.getItems()[0]);
         }
 
-        for (let i = 2; i < aItems.length; i++) {
-          const oItem = aItems[i];
-          if (oItem.isA("sap.m.HBox")) {
-            const aFields = oItem.getItems();
-
-            aFields[0].setSelectedKey(""); // BOM Level 초기화
-            aFields[1].setValue(""); // 원자재 ID 초기화
-            aFields[2].setValue(""); // 원자재 이름 초기화
-            aFields[3].setValue(""); // 수량 초기화
-            aFields[4].setSelectedKey(""); // 단위 초기화
-            // 삭제 버튼(aFields[5])은 건드릴 필요 없음
-          }
-        }
         // 새로운 텍스트 컨트롤 추가
         oVBox.insertItem(
           new Text({ text: `원자재 ID: ${this.headerMat.matId}` }),
@@ -76,6 +54,9 @@ sap.ui.define(
           new Text({ text: `원자재 이름: ${this.headerMat.matNm}` }),
           1
         );
+
+        // 초기 BOM 입력 세트 추가
+        this.onAddBOMItem(); // 기본 입력 세트 생성
       },
 
       onBack() {
